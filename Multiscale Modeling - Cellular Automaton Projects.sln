@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellularAutomatonGUI", "CellularAutomatonGUI\CellularAutomatonGUI.csproj", "{744B3FD9-D970-4C60-97F6-5A8B59E5E75B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElementaryCellularAutomaton", "ElementaryCellularAutomaton\ElementaryCellularAutomaton.csproj", "{F54369EE-971D-44A9-B97A-E9FFBFE58DEC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{744B3FD9-D970-4C60-97F6-5A8B59E5E75B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{744B3FD9-D970-4C60-97F6-5A8B59E5E75B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{744B3FD9-D970-4C60-97F6-5A8B59E5E75B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F54369EE-971D-44A9-B97A-E9FFBFE58DEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F54369EE-971D-44A9-B97A-E9FFBFE58DEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F54369EE-971D-44A9-B97A-E9FFBFE58DEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F54369EE-971D-44A9-B97A-E9FFBFE58DEC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
