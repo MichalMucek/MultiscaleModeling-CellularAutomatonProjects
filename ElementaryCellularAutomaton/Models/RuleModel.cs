@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ElementaryCellularAutomaton.Models
 {
-    class RuleModel
+    public class RuleModel
     {
         private readonly string _binaryRepresentation;
         private readonly string _decimalRepresentation;

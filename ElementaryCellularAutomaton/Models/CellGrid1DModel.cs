@@ -2,24 +2,19 @@
 
 namespace ElementaryCellularAutomaton.Models
 {
-    enum BoundaryCondition
+    public class CellGrid1DModel
     {
-        FalseOutside, TrueOutside, Periodical
-    }
-
-    class CellGrid1DModel
-    {
-        public List<CellModel> CurrentState { get; private set; } = new List<CellModel>();
-        public LinkedList<CellModel[]> PreviousStates { get; private set; } = new LinkedList<CellModel[]>();
-        public CellModel[] PreviousState { get; private set; }
+        private List<CellModel> CurrentState { get; set; } = new List<CellModel>();
+        private LinkedList<CellModel[]> PreviousStates { get; set; } = new LinkedList<CellModel[]>();
+        private CellModel[] PreviousState { get; set; }
         public RuleModel Rule { get; private set; }
-        public BoundaryCondition BoundaryCondition { get; set; }
+        public BoundaryConditionModel BoundaryCondition { get; set; }
         public readonly int Size;
         public readonly int FirstCellId = 1;
         public readonly int LastCellId;
         public int GenerationCount { get; private set; } = 0;
 
-        public CellGrid1DModel(int size, RuleModel rule, BoundaryCondition boundaryCondition)
+        public CellGrid1DModel(int size, RuleModel rule, BoundaryConditionModel boundaryCondition)
         {
             Size = size;
             LastCellId = size;
@@ -52,13 +47,13 @@ namespace ElementaryCellularAutomaton.Models
                 {
                     switch (BoundaryCondition)
                     {
-                        case BoundaryCondition.FalseOutside:
+                        case BoundaryConditionModel.FalseOutside:
                             cellsNeighborhood = GetCellsNeighborhoodForFalseOutsideBc(evolvingCellId);
                             break;
-                        case BoundaryCondition.TrueOutside:
+                        case BoundaryConditionModel.TrueOutside:
                             cellsNeighborhood = GetCellsNeighborhoodForTrueOutsideBc(evolvingCellId);
                             break;
-                        case BoundaryCondition.Periodical:
+                        case BoundaryConditionModel.Periodical:
                             cellsNeighborhood = GetCellsNeighborhoodForPeriodicalBc(evolvingCellId);
                             break;
                     }
