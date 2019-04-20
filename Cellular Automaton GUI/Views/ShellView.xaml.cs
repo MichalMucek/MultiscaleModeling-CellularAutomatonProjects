@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Cellular_Automaton_GUI.Views
+namespace CellularAutomatonGUI.Views
 {
     /// <summary>
     /// Interaction logic for ShellView.xaml

@@ -1,5 +1,5 @@
 ﻿using Caliburn.Micro;
-using Cellular_Automaton_GUI.ViewModels;
+using CellularAutomatonGUI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Cellular_Automaton_GUI
+namespace CellularAutomatonGUI
 {
     class Bootstrapper : BootstrapperBase
     {

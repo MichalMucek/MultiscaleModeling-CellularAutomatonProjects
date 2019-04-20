@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Cellular_Automaton_GUI
+namespace CellularAutomatonGUI
 {
     /// <summary>
     /// Interaction logic for App.xaml

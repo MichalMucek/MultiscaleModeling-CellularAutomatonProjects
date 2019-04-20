@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Cellular_Automaton_GUI.Properties
+namespace CellularAutomatonGUI.Properties
 {
 
 
