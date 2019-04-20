@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ElementaryCellularAutomaton
 {
@@ -19,8 +15,15 @@ namespace ElementaryCellularAutomaton
             Right = binaryRepresentation[2] == '1';
         }
 
-        public CellsNeighborhood(int decimalRepresentation) 
+        public CellsNeighborhood(int decimalRepresentation)
             : this(Convert.ToString(decimalRepresentation, BINARY_NUMERAL_SYSTEM)) { }
+
+        public CellsNeighborhood(bool left, bool center, bool right)
+        {
+            Left = left;
+            Center = center;
+            Right = right;
+        }
 
         public bool Equals(CellsNeighborhood cellsNeighborhood)
             => cellsNeighborhood.Left == Left &&

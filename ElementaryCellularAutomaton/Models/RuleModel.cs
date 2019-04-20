@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ElementaryCellularAutomaton.Models
 {
     class RuleModel
     {
-        private string _binaryRepresentation;
-        private string _decimalRepresentation;
+        private readonly string _binaryRepresentation;
+        private readonly string _decimalRepresentation;
         public readonly Dictionary<CellsNeighborhood, bool> Table;
 
         private const int DECIMAL_NUMERAL_SYSTEM = 10;
@@ -20,7 +17,7 @@ namespace ElementaryCellularAutomaton.Models
             _binaryRepresentation = Convert.ToString(base10, BINARY_NUMERAL_SYSTEM);
             _decimalRepresentation = base10.ToString();
 
-            setTable();
+            SetTable();
         }
 
         public RuleModel(string base2)
@@ -28,13 +25,13 @@ namespace ElementaryCellularAutomaton.Models
             _binaryRepresentation = base2;
             _decimalRepresentation = Convert.ToString(Convert.ToInt32(base2, BINARY_NUMERAL_SYSTEM), DECIMAL_NUMERAL_SYSTEM);
 
-            setTable();
+            SetTable();
         }
 
-        private void setTable()
+        private void SetTable()
         {
-            for (int neighborhoodIndex = 7, binRepIndex = 0; 
-                neighborhoodIndex >= 0; 
+            for (int neighborhoodIndex = 7, binRepIndex = 0;
+                neighborhoodIndex >= 0;
                 neighborhoodIndex--, binRepIndex++)
             {
                 Table.Add(new CellsNeighborhood(neighborhoodIndex), _binaryRepresentation[binRepIndex] == '1');

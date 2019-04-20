@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ElementaryCellularAutomaton.Models
+﻿namespace ElementaryCellularAutomaton.Models
 {
     class CellModel
     {
+        public int Id { get; private set; }
+        public bool IsAlive { get; set; }
+
+        public CellModel(int id, bool isAlive)
+        {
+            Id = id;
+            IsAlive = isAlive;
+        }
     }
 }
