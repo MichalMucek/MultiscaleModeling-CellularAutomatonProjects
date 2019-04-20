@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellularAutomatonGUI", "Cellular Automaton GUI\CellularAutomatonGUI.csproj", "{744B3FD9-D970-4C60-97F6-5A8B59E5E75B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellularAutomatonGUI", "CellularAutomatonGUI\CellularAutomatonGUI.csproj", "{744B3FD9-D970-4C60-97F6-5A8B59E5E75B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
