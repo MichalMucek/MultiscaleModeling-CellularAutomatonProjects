@@ -1,13 +1,10 @@
-﻿using Caliburn.Micro;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ElementaryCellularAutomaton;
+using Caliburn.Micro;
 
 namespace CellularAutomatonGUI.ViewModels
 {
     public class ShellViewModel : Screen
     {
+        
     }
 }
