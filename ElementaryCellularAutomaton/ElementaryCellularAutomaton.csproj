@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CellsNeighborhood.cs" />
     <Compile Include="Models\CellGrid1DModel.cs" />
     <Compile Include="Models\CellModel.cs" />
     <Compile Include="Models\RuleModel.cs" />
