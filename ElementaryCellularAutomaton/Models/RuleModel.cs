@@ -1,29 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ElementaryCellularAutomaton.Models
 {
     public class RuleModel
     {
-        private readonly string _binaryRepresentation;
-        private readonly string _decimalRepresentation;
-        public readonly Dictionary<CellsNeighborhood, bool> Table;
-
-        private const int DECIMAL_NUMERAL_SYSTEM = 10;
         private const int BINARY_NUMERAL_SYSTEM = 2;
+        private const int DECIMAL_NUMERAL_SYSTEM = 10;
+        private const int MAX_BINARY_REPRESENTATION_LENGTH = 8;
 
-        public RuleModel(int base10)
+        private string _binaryRepresentation;
+        private int _decimalRepresentation;
+        public readonly Dictionary<CellsNeighborhood, bool> Table = new Dictionary<CellsNeighborhood, bool>();
+
+        public int Value
         {
-            _binaryRepresentation = Convert.ToString(base10, BINARY_NUMERAL_SYSTEM);
-            _decimalRepresentation = base10.ToString();
+            get => _decimalRepresentation;
+            set
+            {
+                _decimalRepresentation = value;
+                BinaryRepresentation = Convert.ToString(value, BINARY_NUMERAL_SYSTEM);
+
+                ResetTable();
+            }
+        }
+
+        private void ResetTable()
+        {
+            Table.Clear();
+            SetTable();
+        }
+
+        private string BinaryRepresentation
+        {
+            get => _binaryRepresentation;
+            set
+            {
+                _binaryRepresentation = value;
+                if (_binaryRepresentation.Length != 8)
+                    InsertMissingZerosInBinaryRepresentation();
+            }
+        }
+
+        private void InsertMissingZerosInBinaryRepresentation()
+        {
+            StringBuilder stringBuilder = new StringBuilder(_binaryRepresentation);
+
+            stringBuilder.Insert(0, "0", MAX_BINARY_REPRESENTATION_LENGTH - _binaryRepresentation.Length);
+            _binaryRepresentation += "0";
+
+            _binaryRepresentation = stringBuilder.ToString();
+        }
+
+        public RuleModel(int ruleNumberBase10)
+        {
+            BinaryRepresentation = Convert.ToString(ruleNumberBase10, BINARY_NUMERAL_SYSTEM);
+            _decimalRepresentation = ruleNumberBase10;
 
             SetTable();
         }
 
-        public RuleModel(string base2)
+        public RuleModel(string ruleNumberBase2)
         {
-            _binaryRepresentation = base2;
-            _decimalRepresentation = Convert.ToString(Convert.ToInt32(base2, BINARY_NUMERAL_SYSTEM), DECIMAL_NUMERAL_SYSTEM);
+            BinaryRepresentation = ruleNumberBase2;
+            _decimalRepresentation = Convert.ToInt32(Convert.ToString(Convert.ToInt32(ruleNumberBase2, BINARY_NUMERAL_SYSTEM), DECIMAL_NUMERAL_SYSTEM));
 
             SetTable();
         }
@@ -34,7 +75,7 @@ namespace ElementaryCellularAutomaton.Models
                 neighborhoodIndex >= 0;
                 neighborhoodIndex--, binRepIndex++)
             {
-                Table.Add(new CellsNeighborhood(neighborhoodIndex), _binaryRepresentation[binRepIndex] == '1');
+                Table.Add(new CellsNeighborhood(neighborhoodIndex), BinaryRepresentation[binRepIndex] == '1');
             }
         }
     }

@@ -10,5 +10,11 @@
             Id = id;
             IsAlive = isAlive;
         }
+
+        public CellModel(CellModel obj)
+        {
+            this.Id = obj.Id;
+            this.IsAlive = obj.IsAlive;
+        }
     }
 }
