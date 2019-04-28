@@ -5,7 +5,7 @@ using System.Windows.Media.Imaging;
 
 namespace CellularAutomatonGUI
 {
-    public class PathStringToImageConverter : IValueConverter
+    public class RelativePathStringToImageSourceConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

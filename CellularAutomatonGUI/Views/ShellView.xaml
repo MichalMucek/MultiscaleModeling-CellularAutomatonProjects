@@ -87,7 +87,7 @@
 
         <GroupBox Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" Margin="3" Header="View">
             <GroupBox.Resources>
-                <cag:PathStringToImageConverter x:Key="pathStringToImageConverter"/>
+                <cag:RelativePathStringToImageSourceConverter x:Key="pathStringToImageConverter"/>
             </GroupBox.Resources>
             <ScrollViewer>
                 <Image VerticalAlignment="Top" HorizontalAlignment="Center" Stretch="None"
