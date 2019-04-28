@@ -1,9 +1,14 @@
-﻿namespace ElementaryCellularAutomaton.Models
+﻿using System.ComponentModel;
+
+namespace ElementaryCellularAutomaton.Models
 {
     public enum BoundaryConditionModel
     {
-        FalseOutside,
-        TrueOutside,
+        [Description("Outside is dead")]
+        OutsideIsDead,
+        [Description("Outside is alive")]
+        OutsideIsAlive,
+        [Description("Periodical")]
         Periodical
     }
 }

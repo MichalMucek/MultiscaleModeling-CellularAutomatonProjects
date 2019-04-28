@@ -47,10 +47,10 @@ namespace ElementaryCellularAutomaton.Models
                 {
                     switch (BoundaryCondition)
                     {
-                        case BoundaryConditionModel.FalseOutside:
+                        case BoundaryConditionModel.OutsideIsDead:
                             cellsNeighborhood = GetCellsNeighborhoodForFalseOutsideBc(evolvingCell);
                             break;
-                        case BoundaryConditionModel.TrueOutside:
+                        case BoundaryConditionModel.OutsideIsAlive:
                             cellsNeighborhood = GetCellsNeighborhoodForTrueOutsideBc(evolvingCell);
                             break;
                         case BoundaryConditionModel.Periodical:
@@ -129,60 +129,59 @@ namespace ElementaryCellularAutomaton.Models
             return cellsNeighborhood;
         }
 
-        public Image Image
+        public string GenerateImageFileAndGetFilename()
         {
-            get
+            const int CELL_WIDTH = 5;
+            const int CELL_HEIGHT = 5;
+            const string IMAGE_FILENAME = "eca.png";
+
+            int imageWidth = Size * CELL_WIDTH;
+            int imageHeight = GenerationCount * CELL_HEIGHT;
+
+            Point cellLocation = new Point();
+            Size cellSize = new Size(CELL_WIDTH, CELL_HEIGHT);
+
+            var image = new Bitmap(imageWidth, imageHeight);
+            SolidBrush blackSolidBrush = new SolidBrush(Color.Black);
+
+            using (var imageGraphics = Graphics.FromImage(image))
             {
-                const int CELL_WIDTH = 5;
-                const int CELL_HEIGHT = 5;
+                imageGraphics.Clear(Color.White);
 
-                int imageWidth = Size * CELL_WIDTH;
-                int imageHeight = GenerationCount * CELL_HEIGHT;
-
-                Point cellLocation = new Point();
-                Size cellSize = new Size(CELL_WIDTH, CELL_HEIGHT);
-
-                Image gridImage = new Bitmap(imageWidth, imageHeight);
-                SolidBrush blackSolidBrush = new SolidBrush(Color.Black);
-
-                using (var image = Graphics.FromImage(gridImage))
+                if (PreviousStates.Any())
                 {
-                    image.Clear(Color.White);
-
-                    if (PreviousStates.Any())
+                    for (int prevStateIndex = 0; prevStateIndex < PreviousStates.Count; prevStateIndex++)
                     {
-                        for (int prevStateIndex = 0; prevStateIndex < PreviousStates.Count; prevStateIndex++)
+                        var previousState = PreviousStates[prevStateIndex];
+
+                        for (int cellIndex = 0; cellIndex < previousState.Count; cellIndex++)
                         {
-                            var previousState = PreviousStates[prevStateIndex];
+                            cellLocation.X = cellIndex * CELL_WIDTH;
+                            cellLocation.Y = prevStateIndex * CELL_HEIGHT;
 
-                            for (int cellIndex = 0; cellIndex < previousState.Count; cellIndex++)
-                            {
-                                cellLocation.X = cellIndex * CELL_WIDTH;
-                                cellLocation.Y = prevStateIndex * CELL_HEIGHT;
-
-                                if (previousState[cellIndex].IsAlive)
-                                    image.FillRectangle(blackSolidBrush, new Rectangle(cellLocation, cellSize));
-                            }
-
-                            System.Console.WriteLine();
+                            if (previousState[cellIndex].IsAlive)
+                                imageGraphics.FillRectangle(blackSolidBrush, new Rectangle(cellLocation, cellSize));
                         }
                     }
-
-                    for (int cellIndex = 0; cellIndex < CurrentState.Count; cellIndex++)
-                    {
-                        cellLocation.X = cellIndex * CELL_WIDTH;
-                        cellLocation.Y = (GenerationCount - 1) * CELL_HEIGHT;
-
-                        if (CurrentState[cellIndex].IsAlive)
-                            image.FillRectangle(blackSolidBrush, new Rectangle(cellLocation, cellSize));
-                    }
-
-                    image.Dispose();
-                    blackSolidBrush.Dispose();
                 }
 
-                return gridImage;
+                for (int cellIndex = 0; cellIndex < CurrentState.Count; cellIndex++)
+                {
+                    cellLocation.X = cellIndex * CELL_WIDTH;
+                    cellLocation.Y = (GenerationCount - 1) * CELL_HEIGHT;
+
+                    if (CurrentState[cellIndex].IsAlive)
+                        imageGraphics.FillRectangle(blackSolidBrush, new Rectangle(cellLocation, cellSize));
+                }
+
+                imageGraphics.Dispose();
+                blackSolidBrush.Dispose();
             }
+
+            image.Save(IMAGE_FILENAME, System.Drawing.Imaging.ImageFormat.Png);
+            image.Dispose();
+
+            return IMAGE_FILENAME;
         }
     }
 }

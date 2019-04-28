@@ -1,6 +1,5 @@
 ﻿using Caliburn.Micro;
 using ElementaryCellularAutomaton.Models;
-using System.Drawing;
 using System.Threading.Tasks;
 
 namespace CellularAutomatonGUI.ViewModels
@@ -11,15 +10,15 @@ namespace CellularAutomatonGUI.ViewModels
         private RuleModel _rule = new RuleModel(30);
         private int _generations = 300;
         private BindableCollection<BoundaryConditionModel> _boundaryConditions = new BindableCollection<BoundaryConditionModel>();
-        private BoundaryConditionModel _selectedBoundaryCondition = BoundaryConditionModel.FalseOutside;
-        private Image _cellGridImage;
+        private BoundaryConditionModel _selectedBoundaryCondition = BoundaryConditionModel.OutsideIsDead;
+        private string _cellGridImageFilename;
         private bool _canStart = true;
 
 
         public ShellViewModel()
         {
-            _boundaryConditions.Add(BoundaryConditionModel.FalseOutside);
-            _boundaryConditions.Add(BoundaryConditionModel.TrueOutside);
+            _boundaryConditions.Add(BoundaryConditionModel.OutsideIsDead);
+            _boundaryConditions.Add(BoundaryConditionModel.OutsideIsAlive);
             _boundaryConditions.Add(BoundaryConditionModel.Periodical);
         }
 
@@ -82,19 +81,19 @@ namespace CellularAutomatonGUI.ViewModels
                 for (int i = 2; i <= Generations; i++)
                     cellGrid.Evolve();
 
-                CellGridImage = cellGrid.Image;
+                CellGridImageFilename = cellGrid.GenerateImageFileAndGetFilename();
             });
 
             CanStart = true;
         }
 
-        public Image CellGridImage
+        public string CellGridImageFilename
         {
-            get => _cellGridImage;
+            get => _cellGridImageFilename;
             set
             {
-                _cellGridImage = value;
-                NotifyOfPropertyChange(() => CellGridImage);
+                _cellGridImageFilename = value;
+                NotifyOfPropertyChange(() => CellGridImageFilename);
             }
         }
     }
