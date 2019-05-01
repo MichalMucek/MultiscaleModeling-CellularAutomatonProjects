@@ -1,7 +1,7 @@
 ﻿using Caliburn.Micro;
-using BoundaryConditionModel = ElementaryCellularAutomaton.Models.BoundaryConditionModel;
 using GameOfLife.Models;
 using System.Linq;
+using BoundaryConditionModel = ElementaryCellularAutomaton.Models.BoundaryConditionModel;
 
 namespace CellularAutomatonGUI.ViewModels
 {
@@ -24,8 +24,8 @@ namespace CellularAutomatonGUI.ViewModels
         private int timeInterval = 500;
         private ShellViewModel shellViewModel;
 
-        RuleModel vonNeumannRule = new RuleModel(CellsNeighborhoodTypeModel.VonNeumann);
-        RuleModel mooreRule = new RuleModel(CellsNeighborhoodTypeModel.Moore);
+        private RuleModel vonNeumannRule = new RuleModel(CellsNeighborhoodTypeModel.VonNeumann);
+        private RuleModel mooreRule = new RuleModel(CellsNeighborhoodTypeModel.Moore);
 
         public GameOfLifeViewModel(ShellViewModel shellViewModel)
         {
@@ -90,10 +90,12 @@ namespace CellularAutomatonGUI.ViewModels
                         BirthRules = birthVonNeumannRulesSafe;
                         SurvivalRules = survivalVonNeumannRulesSafe;
                         break;
+
                     case CellsNeighborhoodTypeModel.Moore:
                         BirthRules = birthMooreRulesSafe;
                         SurvivalRules = survivalMooreRulesSafe;
                         break;
+
                     default:
                         break;
                 }
@@ -105,7 +107,7 @@ namespace CellularAutomatonGUI.ViewModels
 
         public BindableCollection<NumberOfCellsForRulesModel> BirthRules
         {
-            get  => birthRules;
+            get => birthRules;
             set
             {
                 birthRules = value;
