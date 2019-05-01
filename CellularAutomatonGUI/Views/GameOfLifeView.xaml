@@ -25,30 +25,67 @@
         </Grid.ColumnDefinitions>
 
         <!--Game of Life Tab Row 0-->
-        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="3">Width:</TextBlock>
-        <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="3"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="3">Columns:</TextBlock>
+        <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="3"
+                            Value="{Binding Path=ColumnCount}" Minimum="3" Maximum="1000"
+                            DefaultValue="{Binding Path=ColumnCount}" DisplayDefaultValueOnEmptyText="True"/>
 
         <!--Game of Life Tab Row 1-->
-        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="3">Height:</TextBlock>
-        <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="3"/>
+        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="3">Rows:</TextBlock>
+        <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="3"
+                            Value="{Binding Path=RowCount}" Minimum="3" Maximum="1000"
+                            DefaultValue="{Binding Path=RowCount}" DisplayDefaultValueOnEmptyText="True"/>
 
         <!--Game of Life Tab Row 2-->
         <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="3">Neighborhood:</TextBlock>
-        <ComboBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="3"/>
+        <ComboBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="3"
+                  ItemsSource="{Binding Path=CellsNeighborhoods}"
+                  SelectedItem="{Binding Path=SelectedCellsNeighborhood, Mode=TwoWay}">
+            <ComboBox.Resources>
+                <cag:EnumDescriptionConverter x:Key="enumDescriptionConverter"/>
+            </ComboBox.Resources>
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Converter={StaticResource enumDescriptionConverter}}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
 
         <!--Game of Life Tab Row 3-->
         <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="3">Birth:</TextBlock>
-        <ComboBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Margin="3"/>
+        <ComboBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Margin="3"
+                  ItemsSource="{Binding BirthRules}"
+                  SelectedItem="{Binding SelectedBirthRule, Mode=OneWay}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox VerticalAlignment="Center" Margin="3, 0" IsChecked="{Binding Chosen}"/>
+                        <TextBlock VerticalAlignment="Center" Margin="3, 0" Text="{Binding Text}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
 
         <!--Game of Life Tab Row 4-->
         <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="3">Survival:</TextBlock>
-        <ComboBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Margin="3"/>
+        <ComboBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Margin="3" 
+                  ItemsSource="{Binding SurvivalRules}"
+                  SelectedItem="{Binding SelectedSurvivalRule, Mode=OneWay}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox VerticalAlignment="Center" Margin="3, 0" IsChecked="{Binding Chosen}"/>
+                        <TextBlock VerticalAlignment="Center" Margin="3, 0" Text="{Binding Text}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
 
-        <!--Elementary Tab Row 5-->
+        <!--Game of Life Tab Row 5-->
         <TextBlock Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="3">BC:</TextBlock>
-        <ComboBox Grid.Row="5" Grid.Column="1" Margin="3"
-                          ItemsSource="{Binding Path=BoundaryConditions}" 
-                          SelectedItem="{Binding Path=SelectedBoundaryCondition, Mode=TwoWay}">
+        <ComboBox Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" Margin="3"
+                  ItemsSource="{Binding BoundaryConditions}" 
+                  SelectedItem="{Binding SelectedBoundaryCondition, Mode=TwoWay}">
             <ComboBox.Resources>
                 <cag:EnumDescriptionConverter x:Key="enumDescriptionConverter"/>
             </ComboBox.Resources>
@@ -61,11 +98,13 @@
 
         <!--Game of Life Tab Row 6-->
         <TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="3">Time interval [ms]:</TextBlock>
-        <xctk:IntegerUpDown Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" Margin="3"/>
+        <xctk:IntegerUpDown Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" Margin="3"
+                            Value="{Binding TimeInterval}" Minimum="10" Maximum="5000"
+                            DefaultValue="{Binding TimeInterval}" DisplayDefaultValueOnEmptyText="True"/>
 
         <!--Game of Life Tab Row 7-->
         <StackPanel Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal"
-                                HorizontalAlignment="Center">
+                    HorizontalAlignment="Center">
             <Button VerticalAlignment="Center" Margin="3" Content="Start" Width="60"/>
             <Button VerticalAlignment="Center" Margin="3" Content="Continue" Width="60"/>
             <Button VerticalAlignment="Center" Margin="3" Content="Next" Width="60"/>

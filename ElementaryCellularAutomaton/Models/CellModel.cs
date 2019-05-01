@@ -1,6 +1,6 @@
 ﻿namespace ElementaryCellularAutomaton.Models
 {
-    class CellModel
+    public class CellModel
     {
         public int Id { get; private set; }
         public bool IsAlive { get; set; }
