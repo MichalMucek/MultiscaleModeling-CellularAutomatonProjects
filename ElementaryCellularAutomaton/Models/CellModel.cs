@@ -13,8 +13,8 @@
 
         public CellModel(CellModel obj)
         {
-            this.Id = obj.Id;
-            this.IsAlive = obj.IsAlive;
+            Id = obj.Id;
+            IsAlive = obj.IsAlive;
         }
     }
 }

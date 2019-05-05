@@ -16,5 +16,29 @@
                 Survival[i] = new NumberOfCellsForRulesModel(i);
             }
         }
+
+        public bool WillBeBorn(int neighboursCount)
+        {
+            try
+            {
+                return Birth[neighboursCount].Chosen;
+            }
+            catch (System.ArgumentOutOfRangeException)
+            {
+                return false;
+            }
+        }
+
+        public bool WillSurvive(int neighboursCount)
+        {
+            try
+            {
+                return Survival[neighboursCount].Chosen;
+            }
+            catch (System.ArgumentOutOfRangeException)
+            {
+                return false;
+            }
+        }
     }
 }

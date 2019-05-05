@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using System.ComponentModel.Composition;
+using System.Windows.Media.Imaging;
 
 namespace CellularAutomatonGUI.ViewModels
 {
@@ -24,6 +25,16 @@ namespace CellularAutomatonGUI.ViewModels
             {
                 CellGridImageViewModel.CellGridImageFilename = value;
                 NotifyOfPropertyChange(() => CellGridImageFilename);
+            }
+        }
+
+        public BitmapImage CellGridBitmapImage
+        {
+            get => CellGridImageViewModel.BitmapImage;
+            set
+            {
+                CellGridImageViewModel.BitmapImage = value;
+                NotifyOfPropertyChange(() => CellGridBitmapImage);
             }
         }
     }

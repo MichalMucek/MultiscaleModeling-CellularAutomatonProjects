@@ -1,20 +1,32 @@
 ﻿using Caliburn.Micro;
 using System.ComponentModel.Composition;
+using System.Windows.Media.Imaging;
 
 namespace CellularAutomatonGUI.ViewModels
 {
     [Export(typeof(CellGridImageViewModel))]
     public class CellGridImageViewModel : Screen
     {
-        private static string _cellGridImageFilename;
+        private BitmapImage bitmapImage;
+        private static string cellGridImageFilename;
 
         public string CellGridImageFilename
         {
-            get => _cellGridImageFilename;
+            get => cellGridImageFilename;
             set
             {
-                _cellGridImageFilename = value;
+                cellGridImageFilename = value;
                 NotifyOfPropertyChange(() => CellGridImageFilename);
+            }
+        }
+
+        public BitmapImage BitmapImage
+        {
+            get => bitmapImage;
+            set
+            {
+                bitmapImage = value;
+                NotifyOfPropertyChange(() => BitmapImage);
             }
         }
     }
