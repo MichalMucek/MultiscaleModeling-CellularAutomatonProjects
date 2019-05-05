@@ -1,6 +1,6 @@
 ﻿namespace ElementaryCellularAutomaton.Models
 {
-    class CellModel
+    public class CellModel
     {
         public int Id { get; private set; }
         public bool IsAlive { get; set; }
@@ -13,8 +13,8 @@
 
         public CellModel(CellModel obj)
         {
-            this.Id = obj.Id;
-            this.IsAlive = obj.IsAlive;
+            Id = obj.Id;
+            IsAlive = obj.IsAlive;
         }
     }
 }

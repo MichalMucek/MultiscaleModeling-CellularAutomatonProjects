@@ -1,11 +1,9 @@
 ﻿<Window x:Class="CellularAutomatonGUI.Views.ShellView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:cal="http://www.caliburnproject.org"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:cag="clr-namespace:CellularAutomatonGUI"
-        xmlns:local="clr-namespace:CellularAutomatonGUI.Views"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         FontFamily="Segoe UI"
         FontSize="13"
@@ -13,7 +11,6 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="3"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="3"/>
         </Grid.RowDefinitions>
@@ -25,74 +22,19 @@
             <ColumnDefinition Width="3"/>
         </Grid.ColumnDefinitions>
 
-        <!--Row 1-->
-        <GroupBox Grid.Row="1" Grid.Column="1" Margin="3"
-                  Header="Elementary">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+        <!--Column 1-->
+        <TabControl Grid.Row="1" Grid.Column="1" Margin="3" Width="240">
+            <TabItem Header="Elementary">
+                <ContentControl cal:View.Model="{Binding Path=ElementaryCellularAutomatonViewModel}"/>
+            </TabItem>
+            <TabItem Header="Game of Life">
+                <ContentControl cal:View.Model="{Binding Path=GameOfLifeViewModel}"/>
+            </TabItem>
+        </TabControl>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <!--Configuration GroupBox Row 0-->
-                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="3">Size:</TextBlock>
-                <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1"
-                                    Width="120" Margin="3"
-                                    Value="{Binding Path=Size}" Minimum="3" Maximum="300" 
-                                    DefaultValue="{Binding Path=Size}" DisplayDefaultValueOnEmptyText="True"/>
-
-                <!--Configuration GroupBox Row 1-->
-                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="3">Rule:</TextBlock>
-                <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1"
-                                    Width="120" Margin="3"
-                                    Value="{Binding Path=Rule}" Minimum="0" Maximum="255" 
-                                    DefaultValue="{Binding Path=Rule}" DisplayDefaultValueOnEmptyText="True"/>
-
-                <!--Configuration GroupBox Row 2-->
-                <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="3">Generations:</TextBlock>
-                <xctk:IntegerUpDown Grid.Row="2" Grid.Column="1" 
-                                    Width="120" Margin="3"
-                                    Value="{Binding Path=Generations}" Minimum="1" Maximum="2147483647" 
-                                    DefaultValue="{Binding Path=Generations}" DisplayDefaultValueOnEmptyText="True"/>
-
-                <!--Configuration GroupBox Row 3-->
-                <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="3">BC:</TextBlock>
-                <ComboBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left"
-                          Width="120" Margin="3"
-                          ItemsSource="{Binding Path=BoundaryConditions}" 
-                          SelectedItem="{Binding Path=SelectedBoundaryCondition, Mode=TwoWay}">
-                    <ComboBox.Resources>
-                        <cag:EnumDescriptionConverter x:Key="enumDescriptionConverter"/>
-                    </ComboBox.Resources>
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Converter={StaticResource enumDescriptionConverter}}"/>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-
-                <!--Configuration GroupBox Row 4-->
-                <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="40, 3"
-                        x:Name="Start" Content="Start"/>
-            </Grid>
-        </GroupBox>
-
+        <!--Column 2-->
         <GroupBox Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" Margin="3" Header="View">
-            <GroupBox.Resources>
-                <cag:RelativePathStringToImageSourceConverter x:Key="pathStringToImageConverter"/>
-            </GroupBox.Resources>
-            <ScrollViewer>
-                <Image VerticalAlignment="Top" HorizontalAlignment="Center" Stretch="None"
-                       Source="{Binding Path=CellGridImageFilename, Mode=OneWay, Converter={StaticResource pathStringToImageConverter}}"/>
-            </ScrollViewer>
+            <ContentControl cal:View.Model="{Binding Path=CellGridImageViewModel}"/>
         </GroupBox>
     </Grid>
 </Window>

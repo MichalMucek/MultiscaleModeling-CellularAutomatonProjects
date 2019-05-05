@@ -45,6 +45,7 @@
       <HintPath>..\packages\Caliburn.Micro.3.2.0\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -89,7 +90,19 @@
     </Compile>
     <Compile Include="EnumDescriptionConverter.cs" />
     <Compile Include="RelativePathStringToImageSourceConverter.cs" />
+    <Compile Include="ViewModels\CellGridImageViewModel.cs" />
+    <Compile Include="ViewModels\ElementaryCellularAutomatonViewModel.cs" />
+    <Compile Include="ViewModels\GameOfLifeViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="Views\CellGridImageView.xaml.cs">
+      <DependentUpon>CellGridImageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ElementaryCellularAutomatonView.xaml.cs">
+      <DependentUpon>ElementaryCellularAutomatonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GameOfLifeView.xaml.cs">
+      <DependentUpon>GameOfLifeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
     </Compile>
@@ -126,6 +139,18 @@
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\CellGridImageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ElementaryCellularAutomatonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GameOfLifeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ShellView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -135,6 +160,10 @@
     <ProjectReference Include="..\ElementaryCellularAutomaton\ElementaryCellularAutomaton.csproj">
       <Project>{f54369ee-971d-44a9-b97a-e9ffbfe58dec}</Project>
       <Name>ElementaryCellularAutomaton</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GameOfLife\GameOfLife.csproj">
+      <Project>{a4a4acef-57c8-4ed0-933c-98eaed75d4b6}</Project>
+      <Name>GameOfLife</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
