@@ -10,11 +10,11 @@ namespace CellularAutomatonGUI.ViewModels
         private RuleModel rule = new RuleModel(30);
         private int generations = 100;
         private bool canStart = true;
-        private ShellViewModel shellViewModel;
+        public CellGridImageViewModel CellGridImageViewModel { get; }
 
-        public ElementaryCellularAutomatonViewModel(ShellViewModel shellViewModel)
+        public ElementaryCellularAutomatonViewModel()
         {
-            this.shellViewModel = shellViewModel;
+            CellGridImageViewModel = new CellGridImageViewModel();
 
             BoundaryConditions.Add(BoundaryConditionModel.OutsideIsDead);
             BoundaryConditions.Add(BoundaryConditionModel.OutsideIsAlive);
@@ -66,7 +66,7 @@ namespace CellularAutomatonGUI.ViewModels
                 for (int i = 2; i <= Generations; i++)
                     cellGrid.Evolve();
 
-                shellViewModel.CellGridBitmapImage = cellGrid.GetBitmapImage();
+                CellGridImageViewModel.BitmapImage = cellGrid.GetBitmapImage();
             });
 
             CanStart = true;

@@ -7,34 +7,28 @@
         mc:Ignorable="d"
         FontFamily="Segoe UI"
         FontSize="13"
-        Title="Cellular Automaton" Height="450" Width="800">
+        Title="Cellular Automaton" Height="600" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="3" />
+            <RowDefinition Height="0" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="3" />
+            <RowDefinition Height="0" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3" />
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="0" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="3" />
+            <ColumnDefinition Width="0" />
         </Grid.ColumnDefinitions>
 
         <!--Column 1-->
-        <TabControl Grid.Row="1" Grid.Column="1" Margin="3" Width="240">
+        <TabControl Grid.Row="1" Grid.Column="1" Margin="0" BorderThickness="0, 1, 0, 0">
             <TabItem Header="Elementary">
-                <ContentControl cal:View.Model="{Binding Path=ElementaryCellularAutomatonViewModel}" />
+                <ContentControl cal:View.Model="{Binding ElementaryCellularAutomatonViewModel}" />
             </TabItem>
             <TabItem Header="Game of Life">
-                <ContentControl cal:View.Model="{Binding Path=GameOfLifeViewModel}" />
+                <ContentControl cal:View.Model="{Binding GameOfLifeViewModel}" />
             </TabItem>
         </TabControl>
-
-        <!--Column 2-->
-        <GroupBox Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" Margin="3" Header="View">
-            <ContentControl cal:View.Model="{Binding Path=CellGridImageViewModel}" />
-        </GroupBox>
     </Grid>
 </Window>

@@ -39,15 +39,15 @@ namespace CellularAutomatonGUI.ViewModels
         private DispatcherTimer evolverAndDrawerDispatcherTimer;
         private CancellationTokenSource cancellationTokenSource;
         private CancellationToken cancellationToken;
-        private ShellViewModel shellViewModel;
+        public CellGridImageViewModel CellGridImageViewModel { get; }
 
         private RuleModel vonNeumannRule = new RuleModel(CellsNeighborhoodTypeModel.VonNeumann);
         private RuleModel mooreRule = new RuleModel(CellsNeighborhoodTypeModel.Moore);
         private CellGrid2DModel cellGrid;
 
-        public GameOfLifeViewModel(ShellViewModel shellViewModel)
+        public GameOfLifeViewModel()
         {
-            this.shellViewModel = shellViewModel;
+            CellGridImageViewModel = new CellGridImageViewModel();
 
             cellsNeighborhoods.Add(CellsNeighborhoodTypeModel.Moore);
             cellsNeighborhoods.Add(CellsNeighborhoodTypeModel.VonNeumann);
@@ -101,7 +101,7 @@ namespace CellularAutomatonGUI.ViewModels
                 cellGrid.Evolve();
 
                 Application.Current.Dispatcher.Invoke(() =>
-                        shellViewModel.CellGridBitmapImage = cellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth)
+                        CellGridImageViewModel.BitmapImage = cellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth)
                     );
             }, cancellationToken);
         }
@@ -390,7 +390,7 @@ namespace CellularAutomatonGUI.ViewModels
         {
             await Task.Run(() =>
                 Application.Current.Dispatcher.Invoke(() =>
-                    shellViewModel.CellGridBitmapImage = cellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth)
+                    CellGridImageViewModel.BitmapImage = cellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth)
                 )
             );
         }
