@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using System.Windows.Media.Imaging;
 
 namespace ElementaryCellularAutomaton.Models
 {
@@ -15,6 +18,9 @@ namespace ElementaryCellularAutomaton.Models
         public readonly int FirstCellId = 0;
         public readonly int LastCellId;
         public int GenerationCount { get; private set; } = 1;
+
+        private MemoryStream imageMemoryStream;
+        private BitmapImage bitmapImage;
 
         public CellGrid1DModel(int size, RuleModel rule, BoundaryConditionModel boundaryCondition)
         {
@@ -50,9 +56,11 @@ namespace ElementaryCellularAutomaton.Models
                         case BoundaryConditionModel.OutsideIsDead:
                             cellsNeighborhood = GetCellsNeighborhoodForFalseOutsideBc(evolvingCell);
                             break;
+
                         case BoundaryConditionModel.OutsideIsAlive:
                             cellsNeighborhood = GetCellsNeighborhoodForTrueOutsideBc(evolvingCell);
                             break;
+
                         case BoundaryConditionModel.Periodical:
                             cellsNeighborhood = GetCellsNeighborhoodForPeriodicalBc(evolvingCell);
                             break;
@@ -129,11 +137,14 @@ namespace ElementaryCellularAutomaton.Models
             return cellsNeighborhood;
         }
 
-        public string GenerateImageFileAndGetFilename()
+        public BitmapImage GetBitmapImage()
         {
+            imageMemoryStream?.Dispose();
+            imageMemoryStream = new MemoryStream();
+            bitmapImage = new BitmapImage();
+
             const int CELL_WIDTH = 5;
             const int CELL_HEIGHT = 5;
-            const string IMAGE_FILENAME = "eca.png";
 
             int imageWidth = Size * CELL_WIDTH;
             int imageHeight = GenerationCount * CELL_HEIGHT;
@@ -141,7 +152,7 @@ namespace ElementaryCellularAutomaton.Models
             Point cellLocation = new Point();
             Size cellSize = new Size(CELL_WIDTH, CELL_HEIGHT);
 
-            var image = new Bitmap(imageWidth, imageHeight);
+            Bitmap image = new Bitmap(imageWidth, imageHeight);
             SolidBrush blackSolidBrush = new SolidBrush(Color.Black);
 
             using (var imageGraphics = Graphics.FromImage(image))
@@ -178,10 +189,14 @@ namespace ElementaryCellularAutomaton.Models
                 blackSolidBrush.Dispose();
             }
 
-            image.Save(IMAGE_FILENAME, System.Drawing.Imaging.ImageFormat.Png);
-            image.Dispose();
+            bitmapImage.BeginInit();
+            image.Save(imageMemoryStream, ImageFormat.Png);
+            imageMemoryStream.Seek(0, SeekOrigin.Begin);
+            bitmapImage.StreamSource = imageMemoryStream;
+            bitmapImage.EndInit();
+            bitmapImage.Freeze();
 
-            return IMAGE_FILENAME;
+            return bitmapImage;
         }
     }
 }

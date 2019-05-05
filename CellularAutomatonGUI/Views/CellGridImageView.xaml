@@ -12,10 +12,6 @@
         <ScrollViewer.Resources>
             <cag:RelativePathStringToImageSourceConverter x:Key="relativePathStringToImageSourceConverter" />
         </ScrollViewer.Resources>
-        <!--<Image VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="None"
-               Source="{Binding Path=CellGridImageFilename,
-                                Mode=OneWay,
-                                Converter={StaticResource relativePathStringToImageSourceConverter}}" />-->
         <Image
             HorizontalAlignment="Center"
             VerticalAlignment="Center"

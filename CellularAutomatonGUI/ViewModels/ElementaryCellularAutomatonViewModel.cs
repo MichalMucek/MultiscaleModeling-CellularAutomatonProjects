@@ -1,22 +1,20 @@
 ﻿using Caliburn.Micro;
 using ElementaryCellularAutomaton.Models;
-using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 
 namespace CellularAutomatonGUI.ViewModels
 {
-    [Export(typeof(ElementaryCellularAutomatonViewModel))]
     public class ElementaryCellularAutomatonViewModel : Screen
     {
-        private int _size = 100;
-        private RuleModel _rule = new RuleModel(30);
-        private int _generations = 100;
-        private bool _canStart = true;
-        private ShellViewModel _shellViewModel;
+        private int size = 100;
+        private RuleModel rule = new RuleModel(30);
+        private int generations = 100;
+        private bool canStart = true;
+        private ShellViewModel shellViewModel;
 
         public ElementaryCellularAutomatonViewModel(ShellViewModel shellViewModel)
         {
-            _shellViewModel = shellViewModel;
+            this.shellViewModel = shellViewModel;
 
             BoundaryConditions.Add(BoundaryConditionModel.OutsideIsDead);
             BoundaryConditions.Add(BoundaryConditionModel.OutsideIsAlive);
@@ -25,30 +23,30 @@ namespace CellularAutomatonGUI.ViewModels
 
         public int Size
         {
-            get => _size;
+            get => size;
             set
             {
-                _size = value;
+                size = value;
                 NotifyOfPropertyChange(() => Size);
             }
         }
 
         public int Rule
         {
-            get => _rule.Value;
+            get => rule.Value;
             set
             {
-                _rule.Value = value;
+                rule.Value = value;
                 NotifyOfPropertyChange(() => Rule);
             }
         }
 
         public int Generations
         {
-            get => _generations;
+            get => generations;
             set
             {
-                _generations = value;
+                generations = value;
                 NotifyOfPropertyChange(() => Generations);
             }
         }
@@ -63,12 +61,12 @@ namespace CellularAutomatonGUI.ViewModels
 
             await Task.Run(() =>
             {
-                var cellGrid = new CellGrid1DModel(_size, _rule, SelectedBoundaryCondition);
+                var cellGrid = new CellGrid1DModel(size, rule, SelectedBoundaryCondition);
 
                 for (int i = 2; i <= Generations; i++)
                     cellGrid.Evolve();
 
-                CellGridImageFilename = cellGrid.GenerateImageFileAndGetFilename();
+                shellViewModel.CellGridBitmapImage = cellGrid.GetBitmapImage();
             });
 
             CanStart = true;
@@ -76,18 +74,12 @@ namespace CellularAutomatonGUI.ViewModels
 
         public bool CanStart
         {
-            get => _canStart;
+            get => canStart;
             private set
             {
-                _canStart = value;
+                canStart = value;
                 NotifyOfPropertyChange(() => CanStart);
             }
-        }
-
-        public string CellGridImageFilename
-        {
-            get => _shellViewModel.CellGridImageFilename;
-            private set => _shellViewModel.CellGridImageFilename = value;
         }
     }
 }
