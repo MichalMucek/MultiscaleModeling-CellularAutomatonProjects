@@ -10,31 +10,31 @@
         Title="Cellular Automaton" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="3"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="3"/>
+            <RowDefinition Height="3" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="3" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="3"/>
+            <ColumnDefinition Width="3" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="3" />
         </Grid.ColumnDefinitions>
 
         <!--Column 1-->
         <TabControl Grid.Row="1" Grid.Column="1" Margin="3" Width="240">
             <TabItem Header="Elementary">
-                <ContentControl cal:View.Model="{Binding Path=ElementaryCellularAutomatonViewModel}"/>
+                <ContentControl cal:View.Model="{Binding Path=ElementaryCellularAutomatonViewModel}" />
             </TabItem>
             <TabItem Header="Game of Life">
-                <ContentControl cal:View.Model="{Binding Path=GameOfLifeViewModel}"/>
+                <ContentControl cal:View.Model="{Binding Path=GameOfLifeViewModel}" />
             </TabItem>
         </TabControl>
 
         <!--Column 2-->
         <GroupBox Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" Margin="3" Header="View">
-            <ContentControl cal:View.Model="{Binding Path=CellGridImageViewModel}"/>
+            <ContentControl cal:View.Model="{Binding Path=CellGridImageViewModel}" />
         </GroupBox>
     </Grid>
 </Window>

@@ -6,8 +6,10 @@ namespace ElementaryCellularAutomaton.Models
     {
         [Description("Outside is dead")]
         OutsideIsDead,
+
         [Description("Outside is alive")]
         OutsideIsAlive,
+
         [Description("Periodical")]
         Periodical
     }

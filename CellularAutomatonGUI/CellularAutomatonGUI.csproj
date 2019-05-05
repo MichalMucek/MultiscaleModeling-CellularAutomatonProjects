@@ -89,7 +89,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EnumDescriptionConverter.cs" />
-    <Compile Include="RelativePathStringToImageSourceConverter.cs" />
     <Compile Include="ViewModels\CellGridImageViewModel.cs" />
     <Compile Include="ViewModels\ElementaryCellularAutomatonViewModel.cs" />
     <Compile Include="ViewModels\GameOfLifeViewModel.cs" />

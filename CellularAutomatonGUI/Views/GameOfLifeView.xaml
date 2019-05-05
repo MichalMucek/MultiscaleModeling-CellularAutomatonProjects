@@ -181,7 +181,7 @@
         </ComboBox>
 
         <!--  Game of Life Tab Row 6  -->
-        <Separator Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" VerticalAlignment="Center"/>
+        <Separator Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" VerticalAlignment="Center" />
 
         <!--  Game of Life Tab Row 7  -->
         <TextBlock
@@ -200,8 +200,8 @@
             DisplayDefaultValueOnEmptyText="True"
             Maximum="5000"
             Minimum="10"
-            Value="{Binding TimeInterval}" 
-            IsEnabled="{Binding CanTimeInterval}"/>
+            Value="{Binding TimeInterval}"
+            IsEnabled="{Binding CanTimeInterval}" />
 
         <!--  Game of Life Tab Row 8  -->
         <TextBlock

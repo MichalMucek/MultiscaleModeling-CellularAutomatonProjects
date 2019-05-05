@@ -1,61 +1,61 @@
 ﻿<UserControl x:Class="CellularAutomatonGUI.Views.ElementaryCellularAutomatonView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:cag="clr-namespace:CellularAutomatonGUI"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-     <Grid>
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <!--Elementary Tab Row 0-->
         <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="3">Size:</TextBlock>
         <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Margin="3"
-                            Value="{Binding Path=Size}" Minimum="3" Maximum="300" 
-                            DefaultValue="{Binding Path=Size}" DisplayDefaultValueOnEmptyText="True"/>
+                            Value="{Binding Path=Size}" Minimum="3" Maximum="300"
+                            DefaultValue="{Binding Path=Size}" DisplayDefaultValueOnEmptyText="True" />
 
         <!--Elementary Tab Row 1-->
         <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="3">Rule:</TextBlock>
         <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Margin="3"
-                            Value="{Binding Path=Rule}" Minimum="0" Maximum="255" 
-                            DefaultValue="{Binding Path=Rule}" DisplayDefaultValueOnEmptyText="True"/>
+                            Value="{Binding Path=Rule}" Minimum="0" Maximum="255"
+                            DefaultValue="{Binding Path=Rule}" DisplayDefaultValueOnEmptyText="True" />
 
         <!--Elementary Tab Row 2-->
         <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="3">Generations:</TextBlock>
         <xctk:IntegerUpDown Grid.Row="2" Grid.Column="1" Margin="3"
-                            Value="{Binding Path=Generations}" Minimum="1" Maximum="2147483647" 
-                            DefaultValue="{Binding Path=Generations}" DisplayDefaultValueOnEmptyText="True"/>
+                            Value="{Binding Path=Generations}" Minimum="1" Maximum="2147483647"
+                            DefaultValue="{Binding Path=Generations}" DisplayDefaultValueOnEmptyText="True" />
 
         <!--Elementary Tab Row 3-->
         <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="3">BC:</TextBlock>
         <ComboBox Grid.Row="3" Grid.Column="1" Margin="3"
-                  ItemsSource="{Binding Path=BoundaryConditions}" 
+                  ItemsSource="{Binding Path=BoundaryConditions}"
                   SelectedItem="{Binding Path=SelectedBoundaryCondition, Mode=TwoWay}">
             <ComboBox.Resources>
-                <cag:EnumDescriptionConverter x:Key="enumDescriptionConverter"/>
+                <cag:EnumDescriptionConverter x:Key="enumDescriptionConverter" />
             </ComboBox.Resources>
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Converter={StaticResource enumDescriptionConverter}}"/>
+                    <TextBlock Text="{Binding Converter={StaticResource enumDescriptionConverter}}" />
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
 
         <!--Elementary Tab Row 4-->
         <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="70, 3"
-                x:Name="Start" Content="OK"/>
+                x:Name="Start" Content="OK" />
     </Grid>
 </UserControl>

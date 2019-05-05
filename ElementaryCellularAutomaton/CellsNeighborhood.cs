@@ -17,16 +17,19 @@ namespace ElementaryCellularAutomaton
                     Center = false;
                     Right = binaryRepresentation[0] == '1';
                     break;
+
                 case 2:
                     Left = false;
                     Center = binaryRepresentation[0] == '1';
                     Right = binaryRepresentation[1] == '1';
                     break;
+
                 case 3:
                     Left = binaryRepresentation[0] == '1';
                     Center = binaryRepresentation[1] == '1';
                     Right = binaryRepresentation[2] == '1';
                     break;
+
                 default:
                     Left = false;
                     Center = false;

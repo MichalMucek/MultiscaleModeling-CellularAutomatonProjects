@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace CellularAutomatonGUI
 {
-    class Bootstrapper : BootstrapperBase
+    internal class Bootstrapper : BootstrapperBase
     {
         public Bootstrapper()
         {
