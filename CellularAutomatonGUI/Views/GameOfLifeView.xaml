@@ -5,6 +5,7 @@
     xmlns:cag="clr-namespace:CellularAutomatonGUI"
     xmlns:cal="http://www.caliburnproject.org"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:CellularAutomatonGUI.ViewModels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     mc:Ignorable="d">
@@ -38,6 +39,9 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
@@ -45,7 +49,7 @@
                     <ColumnDefinition Width="130" />
                 </Grid.ColumnDefinitions>
 
-                <!--  Game of Life Tab Row 0  -->
+                <!--  Game of Life Configuration GroupBox Row 0  -->
                 <TextBlock
                     Grid.Row="0"
                     Grid.Column="0"
@@ -59,11 +63,12 @@
                     VerticalAlignment="Center"
                     DefaultValue="{Binding ColumnCount}"
                     DisplayDefaultValueOnEmptyText="True"
+                    IsEnabled="{Binding IsStopped}"
                     Maximum="1000"
                     Minimum="1"
                     Value="{Binding ColumnCount}" />
 
-                <!--  Game of Life Tab Row 1  -->
+                <!--  Game of Life Configuration GroupBox Row 1  -->
                 <TextBlock
                     Grid.Row="1"
                     Grid.Column="0"
@@ -77,11 +82,12 @@
                     VerticalAlignment="Center"
                     DefaultValue="{Binding RowCount}"
                     DisplayDefaultValueOnEmptyText="True"
+                    IsEnabled="{Binding IsStopped}"
                     Maximum="1000"
                     Minimum="1"
                     Value="{Binding RowCount}" />
 
-                <!--  Game of Life Tab Row 2  -->
+                <!--  Game of Life Configuration GroupBox Row 2  -->
                 <TextBlock
                     Grid.Row="2"
                     Grid.Column="0"
@@ -93,6 +99,7 @@
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
+                    IsEnabled="{Binding IsStopped}"
                     ItemsSource="{Binding CellsNeighborhoods}"
                     SelectedItem="{Binding SelectedCellsNeighborhood, Mode=TwoWay}">
                     <ComboBox.Resources>
@@ -105,7 +112,7 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <!--  Game of Life Tab Row 3  -->
+                <!--  Game of Life Configuration GroupBox Row 3  -->
                 <TextBlock
                     Grid.Row="3"
                     Grid.Column="0"
@@ -135,7 +142,7 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <!--  Game of Life Tab Row 4  -->
+                <!--  Game of Life Configuration GroupBox Row 4  -->
                 <TextBlock
                     Grid.Row="4"
                     Grid.Column="0"
@@ -165,7 +172,7 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <!--  Game of Life Tab Row 5  -->
+                <!--  Game of Life Configuration GroupBox Row 5  -->
                 <TextBlock
                     Grid.Row="5"
                     Grid.Column="0"
@@ -177,6 +184,7 @@
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
+                    IsEnabled="{Binding IsStopped}"
                     ItemsSource="{Binding BoundaryConditions}"
                     SelectedItem="{Binding SelectedBoundaryCondition, Mode=TwoWay}">
                     <ComboBox.Resources>
@@ -189,7 +197,7 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <!--  Game of Life Tab Row 6  -->
+                <!--  Game of Life Configuration GroupBox Row 6  -->
                 <Separator
                     Grid.Row="6"
                     Grid.Column="0"
@@ -197,7 +205,7 @@
                     Margin="3"
                     VerticalAlignment="Center" />
 
-                <!--  Game of Life Tab Row 7  -->
+                <!--  Game of Life Configuration GroupBox Row 7  -->
                 <TextBlock
                     Grid.Row="7"
                     Grid.Column="0"
@@ -211,12 +219,11 @@
                     VerticalAlignment="Center"
                     DefaultValue="{Binding TimeInterval}"
                     DisplayDefaultValueOnEmptyText="True"
-                    IsEnabled="{Binding CanTimeInterval}"
                     Maximum="5000"
                     Minimum="10"
                     Value="{Binding TimeInterval}" />
 
-                <!--  Game of Life Tab Row 8  -->
+                <!--  Game of Life Configuration GroupBox Row 8  -->
                 <TextBlock
                     Grid.Row="8"
                     Grid.Column="0"
@@ -234,7 +241,7 @@
                     Minimum="1"
                     Value="{Binding CellWidth}" />
 
-                <!--  Game of Life Tab Row 9  -->
+                <!--  Game of Life Configuration GroupBox Row 9  -->
                 <TextBlock
                     Grid.Row="9"
                     Grid.Column="0"
@@ -252,7 +259,7 @@
                     Minimum="1"
                     Value="{Binding CellHeight}" />
 
-                <!--  Game of Life Tab Row 10  -->
+                <!--  Game of Life Configuration GroupBox Row 10  -->
                 <TextBlock
                     Grid.Row="10"
                     Grid.Column="0"
@@ -270,7 +277,7 @@
                     Minimum="0"
                     Value="{Binding LineWidth}" />
 
-                <!--  Game of Life Tab Row 11  -->
+                <!--  Game of Life Configuration GroupBox Row 11  -->
                 <StackPanel
                     Grid.Row="11"
                     Grid.Column="0"
@@ -296,6 +303,69 @@
                         VerticalAlignment="Center"
                         Content="Next" />
                 </StackPanel>
+
+                <!--  Game of Life Configuration GroupBox Row 12  -->
+                <Separator
+                    Grid.Row="12"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Margin="3"
+                    VerticalAlignment="Center" />
+
+                <!--  Game of Life Configuration GroupBox Row 13  -->
+                <StackPanel
+                    Grid.Row="13"
+                    Grid.ColumnSpan="2"
+                    HorizontalAlignment="Center"
+                    Orientation="Vertical">
+                    <Button
+                        x:Name="ClearCellGridImage"
+                        Width="60"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Content="Clear"
+                        IsEnabled="{Binding IsStarted}" />
+                    <Button
+                        x:Name="PutBeehiveInTheMiddle"
+                        Width="60"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Content="Beehive"
+                        IsEnabled="{Binding IsStarted}" />
+                    <Button
+                        x:Name="PutGliderInTheMiddle"
+                        Width="60"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Content="Glider"
+                        IsEnabled="{Binding IsStarted}" />
+                    <Button
+                        x:Name="PutBlinkerInTheMiddle"
+                        Width="60"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Content="Blinker"
+                        IsEnabled="{Binding IsStarted}" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button
+                            x:Name="Randomize"
+                            Width="60"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Content="Random"
+                            IsEnabled="{Binding IsStarted}" />
+                        <xctk:IntegerUpDown
+                            Width="60"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding RandomCellsToSetAliveCount}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsStarted}"
+                            Maximum="{Binding CellCount}"
+                            Minimum="1"
+                            Value="{Binding RandomCellsToSetAliveCount}" />
+                    </StackPanel>
+                </StackPanel>
             </Grid>
         </GroupBox>
 
@@ -305,7 +375,14 @@
             Grid.RowSpan="2"
             Grid.Column="1"
             Header="View">
-            <ContentControl cal:View.Model="{Binding CellGridImageViewModel}" />
+            <ScrollViewer>
+                <Image
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    cal:Message.Attach="[Event MouseLeftButtonDown] = [Action NegateCellState($source, $eventArgs)]"
+                    Source="{Binding CellGridBitmapImage, Mode=OneWay}"
+                    Stretch="None" />
+            </ScrollViewer>
         </GroupBox>
     </Grid>
 </UserControl>

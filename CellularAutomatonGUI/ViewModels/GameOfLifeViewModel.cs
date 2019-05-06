@@ -1,12 +1,15 @@
 ﻿using Caliburn.Micro;
 using GameOfLife.Models;
 using System;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using BoundaryConditionModel = ElementaryCellularAutomaton.Models.BoundaryConditionModel;
+using Image = System.Windows.Controls.Image;
 
 namespace CellularAutomatonGUI.ViewModels
 {
@@ -14,7 +17,6 @@ namespace CellularAutomatonGUI.ViewModels
     {
         private int columnCount = 30;
         private int rowCount = 30;
-        private BindableCollection<CellsNeighborhoodTypeModel> cellsNeighborhoods = new BindableCollection<CellsNeighborhoodTypeModel>();
         private CellsNeighborhoodTypeModel selectedCellsNeighborhood = CellsNeighborhoodTypeModel.Moore;
         private BindableCollection<NumberOfCellsForRulesModel> birthRules;
         private NumberOfCellsForRulesModel selectedBirthRule;
@@ -24,22 +26,22 @@ namespace CellularAutomatonGUI.ViewModels
         private NumberOfCellsForRulesModel selectedSurvivalRule;
         private BindableCollection<NumberOfCellsForRulesModel> survivalVonNeumannRulesSafe;
         private BindableCollection<NumberOfCellsForRulesModel> survivalMooreRulesSafe;
-        private BindableCollection<BoundaryConditionModel> boundaryConditions = new BindableCollection<BoundaryConditionModel>();
-        private BoundaryConditionModel selectedBoundaryCondition = BoundaryConditionModel.OutsideIsDead;
         private bool canStartStop = true;
+        private bool isStopped = true;
         private bool canContinuePause = false;
         private string continuePauseContent = "Continue";
         private bool canShowNextStep = false;
         private string startStopContent = "Start";
-        private int timeInterval = 500;
-        private bool canTimeInterval = true;
+        private int timeInterval = 75;
         private int cellWidth = 12;
         private int cellHeight = 12;
         private int lineWidth = 2;
+        private int cellCount = 1;
+        private int randomCellsToSetAliveCount = 1;
+
         private DispatcherTimer evolverAndDrawerDispatcherTimer;
         private CancellationTokenSource cancellationTokenSource;
         private CancellationToken cancellationToken;
-        public CellGridImageViewModel CellGridImageViewModel { get; }
 
         private RuleModel vonNeumannRule = new RuleModel(CellsNeighborhoodTypeModel.VonNeumann);
         private RuleModel mooreRule = new RuleModel(CellsNeighborhoodTypeModel.Moore);
@@ -47,10 +49,8 @@ namespace CellularAutomatonGUI.ViewModels
 
         public GameOfLifeViewModel()
         {
-            CellGridImageViewModel = new CellGridImageViewModel();
-
-            cellsNeighborhoods.Add(CellsNeighborhoodTypeModel.Moore);
-            cellsNeighborhoods.Add(CellsNeighborhoodTypeModel.VonNeumann);
+            CellsNeighborhoods.Add(CellsNeighborhoodTypeModel.Moore);
+            CellsNeighborhoods.Add(CellsNeighborhoodTypeModel.VonNeumann);
 
             birthVonNeumannRulesSafe = new BindableCollection<NumberOfCellsForRulesModel>(vonNeumannRule.Birth.ToList());
             birthMooreRulesSafe = new BindableCollection<NumberOfCellsForRulesModel>(mooreRule.Birth.ToList());
@@ -68,9 +68,9 @@ namespace CellularAutomatonGUI.ViewModels
             SelectedBirthRule = birthRules[0];
             SelectedSurvivalRule = survivalRules[0];
 
-            boundaryConditions.Add(BoundaryConditionModel.OutsideIsDead);
-            boundaryConditions.Add(BoundaryConditionModel.OutsideIsAlive);
-            boundaryConditions.Add(BoundaryConditionModel.Periodical);
+            BoundaryConditions.Add(BoundaryConditionModel.OutsideIsDead);
+            BoundaryConditions.Add(BoundaryConditionModel.OutsideIsAlive);
+            BoundaryConditions.Add(BoundaryConditionModel.Periodical);
 
             evolverAndDrawerDispatcherTimer = new DispatcherTimer();
             evolverAndDrawerDispatcherTimer.Interval = TimeSpan.FromMilliseconds(timeInterval);
@@ -100,8 +100,8 @@ namespace CellularAutomatonGUI.ViewModels
             {
                 cellGrid.Evolve();
 
-                Application.Current.Dispatcher.Invoke(() =>
-                        CellGridImageViewModel.BitmapImage = cellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth)
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        CellGridBitmapImage = cellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth)
                     );
             }, cancellationToken);
         }
@@ -126,7 +126,7 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
-        public BindableCollection<CellsNeighborhoodTypeModel> CellsNeighborhoods => cellsNeighborhoods;
+        public BindableCollection<CellsNeighborhoodTypeModel> CellsNeighborhoods { get; } = new BindableCollection<CellsNeighborhoodTypeModel>();
 
         public CellsNeighborhoodTypeModel SelectedCellsNeighborhood
         {
@@ -196,13 +196,9 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
-        public BindableCollection<BoundaryConditionModel> BoundaryConditions => boundaryConditions;
+        public BindableCollection<BoundaryConditionModel> BoundaryConditions { get; } = new BindableCollection<BoundaryConditionModel>();
 
-        public BoundaryConditionModel SelectedBoundaryCondition
-        {
-            get => selectedBoundaryCondition;
-            set => selectedBoundaryCondition = value;
-        }
+        public BoundaryConditionModel SelectedBoundaryCondition { get; set; } = BoundaryConditionModel.OutsideIsDead;
 
         public async void StartStop()
         {
@@ -210,6 +206,8 @@ namespace CellularAutomatonGUI.ViewModels
 
             if (startStopContent == "Start")
             {
+                IsStopped = false;
+
                 await Task.Run(() =>
                 {
                     switch (SelectedCellsNeighborhood)
@@ -226,6 +224,7 @@ namespace CellularAutomatonGUI.ViewModels
                     RunDrawerTask();
                 });
 
+                CellCount = RowCount * ColumnCount;
                 CanContinuePause = true;
                 CanShowNextStep = true;
                 StartStopContent = "Stop";
@@ -237,7 +236,7 @@ namespace CellularAutomatonGUI.ViewModels
 
                 CancelTasksAndResetCancellationTokenSource();
 
-                CanTimeInterval = true;
+                IsStopped = true;
                 CanContinuePause = false;
                 CanShowNextStep = false;
                 StartStopContent = "Start";
@@ -254,6 +253,23 @@ namespace CellularAutomatonGUI.ViewModels
                 canStartStop = value;
                 NotifyOfPropertyChange(() => CanStartStop);
             }
+        }
+
+        public bool IsStopped
+        {
+            get => isStopped;
+            set
+            {
+                isStopped = value;
+                IsStarted = !value;
+                NotifyOfPropertyChange(() => IsStopped);
+            }
+        }
+
+        public bool IsStarted
+        {
+            get => !isStopped;
+            set => NotifyOfPropertyChange(() => IsStarted);
         }
 
         public string StartStopContent
@@ -279,7 +295,6 @@ namespace CellularAutomatonGUI.ViewModels
             switch (continuePauseContent)
             {
                 case "Continue":
-                    CanTimeInterval = false;
                     evolverAndDrawerDispatcherTimer.Start();
                     ContinuePauseContent = "Pause";
                     break;
@@ -287,7 +302,6 @@ namespace CellularAutomatonGUI.ViewModels
                 case "Pause":
                     evolverAndDrawerDispatcherTimer.Stop();
                     CancelTasksAndResetCancellationTokenSource();
-                    CanTimeInterval = true;
                     ContinuePauseContent = "Continue";
                     break;
             }
@@ -343,16 +357,6 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
-        public bool CanTimeInterval
-        {
-            get => canTimeInterval;
-            set
-            {
-                canTimeInterval = value;
-                NotifyOfPropertyChange(() => CanTimeInterval);
-            }
-        }
-
         public int CellWidth
         {
             get => cellWidth;
@@ -389,10 +393,87 @@ namespace CellularAutomatonGUI.ViewModels
         private async void RunDrawerTask()
         {
             await Task.Run(() =>
-                Application.Current.Dispatcher.Invoke(() =>
-                    CellGridImageViewModel.BitmapImage = cellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth)
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    CellGridBitmapImage = cellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth)
                 )
             );
+        }
+
+        private BitmapImage cellGridBitmapImage;
+
+        public BitmapImage CellGridBitmapImage
+        {
+            get => cellGridBitmapImage;
+            set
+            {
+                cellGridBitmapImage = value;
+                NotifyOfPropertyChange(() => CellGridBitmapImage);
+            }
+        }
+
+        public void NegateCellState(object sender, MouseEventArgs e)
+        {
+            if (!isStopped && cellGrid != null)
+            {
+                Point mousePositionOverCellGridImage = new Point
+                {
+                    X = (int)e.GetPosition((Image)sender).X,
+                    Y = (int)e.GetPosition((Image)sender).Y
+                };
+
+                cellGrid?.NegateCellState(mousePositionOverCellGridImage);
+                RunDrawerTask();
+            }
+        }
+
+        public int CellCount
+        {
+            get => cellCount;
+            set
+            {
+                cellCount = value;
+                NotifyOfPropertyChange(() => CellCount);
+            }
+        }
+
+        public void ClearCellGridImage()
+        {
+            cellGrid?.KillAll();
+            RunDrawerTask();
+        }
+
+        public void Randomize()
+        {
+            cellGrid?.Randomize(randomCellsToSetAliveCount);
+            RunDrawerTask();
+        }
+
+        public int RandomCellsToSetAliveCount
+        {
+            get => randomCellsToSetAliveCount;
+            set
+            {
+                randomCellsToSetAliveCount = value;
+                NotifyOfPropertyChange(() => RandomCellsToSetAliveCount);
+            }
+        }
+
+        public void PutBeehiveInTheMiddle()
+        {
+            cellGrid?.PutBeehiveInTheMiddle();
+            RunDrawerTask();
+        }
+
+        public void PutGliderInTheMiddle()
+        {
+            cellGrid?.PutGliderInTheMiddle();
+            RunDrawerTask();
+        }
+
+        public void PutBlinkerInTheMiddle()
+        {
+            cellGrid?.PutBlinkerInTheMiddle();
+            RunDrawerTask();
         }
     }
 }

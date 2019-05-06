@@ -34,17 +34,6 @@ namespace GameOfLife.Models
             CreateCells();
             PreparePreviousStateLists();
             AddNeighborhoodToCellsState(currentState);
-
-            try
-            {
-                currentState[rowCount / 2 - 1][columnCount / 2].IsAlive = true; currentState[rowCount / 2 - 1][columnCount / 2 + 1].IsAlive = true;
-                currentState[rowCount / 2][columnCount / 2 - 1].IsAlive = true; currentState[rowCount / 2][columnCount / 2].IsAlive = true;
-                currentState[rowCount / 2 + 1][columnCount / 2 + 1].IsAlive = true;
-            }
-            catch (ArgumentOutOfRangeException e)
-            {
-                Console.WriteLine(e.StackTrace);
-            }
         }
 
         private void CreateCells()
@@ -149,7 +138,7 @@ namespace GameOfLife.Models
             int imageWidth = ColumnCount * cellWidth + (ColumnCount + 1) * lineWidth;
             int imageHeight = RowCount * cellHeight + (RowCount + 1) * lineWidth;
 
-            Point cellLocation = new Point();
+            Point cellPosition = new Point();
             Size cellSize = new Size(cellWidth, cellHeight);
             Point lineFirstPoint = new Point();
             Point lineSecondPoint = new Point();
@@ -189,16 +178,17 @@ namespace GameOfLife.Models
 
                 for (int row = 0; row < RowCount; row++)
                 {
-                    cellLocation.Y = row * (cellHeight + lineWidth) + lineWidth;
+                    cellPosition.Y = row * (cellHeight + lineWidth) + lineWidth;
 
                     for (int column = 0; column < ColumnCount; column++)
                     {
-                        if (currentState[row][column].IsAlive)
-                        {
-                            cellLocation.X = column * (cellWidth + lineWidth) + lineWidth;
+                        cellPosition.X = column * (cellWidth + lineWidth) + lineWidth;
 
-                            imageGraphics.FillRectangle(royalBlueSolidBrush, new Rectangle(cellLocation, cellSize));
-                        }
+                        if (currentState[row][column].IsAlive)
+                            imageGraphics.FillRectangle(royalBlueSolidBrush, new Rectangle(cellPosition, cellSize));
+
+                        currentState[row][column].StartPositionOnImage = cellPosition;
+                        currentState[row][column].EndPositionOnImage = cellPosition + cellSize;
                     }
                 }
 
@@ -215,6 +205,115 @@ namespace GameOfLife.Models
             bitmapImage.Freeze();
 
             return bitmapImage;
+        }
+
+        public void NegateCellState(Point mousePositionOverImage)
+        {
+            bool cellIsFound = false;
+
+            foreach (var row in currentState)
+            {
+                foreach (var cell in row)
+                {
+                    if (cell.StartPositionOnImage.X <= mousePositionOverImage.X &&
+                        cell.StartPositionOnImage.Y <= mousePositionOverImage.Y &&
+                        cell.EndPositionOnImage.X >= mousePositionOverImage.X &&
+                        cell.EndPositionOnImage.Y >= mousePositionOverImage.Y)
+                    {
+                        cell.IsAlive = !cell.IsAlive;
+                        cellIsFound = true;
+                        break;
+                    }
+                }
+
+                if (cellIsFound) break;
+            }
+        }
+
+        public void KillAll()
+        {
+            foreach (var row in currentState)
+                foreach (var cell in row)
+                    cell.Kill();
+        }
+
+        public void Randomize(int cellCount)
+        {
+            KillAll();
+
+            Random random = new Random();
+
+            while (cellCount > 0)
+            {
+                int randomRow = random.Next(RowCount);
+                int randomColumn = random.Next(ColumnCount);
+
+                if (!currentState[randomRow][randomColumn].IsAlive)
+                {
+                    currentState[randomRow][randomColumn].Revive();
+                    cellCount--;
+                }
+            }
+        }
+
+        public bool PutBeehiveInTheMiddle()
+        {
+            KillAll();
+
+            try
+            {
+                currentState[RowCount / 2 - 1][ColumnCount / 2].Revive(); currentState[RowCount / 2 - 1][ColumnCount / 2 + 1].Revive();
+                currentState[RowCount / 2][ColumnCount / 2 - 1].Revive(); currentState[RowCount / 2][ColumnCount / 2 + 2].Revive();
+                currentState[RowCount / 2 + 1][ColumnCount / 2].Revive(); currentState[RowCount / 2 + 1][ColumnCount / 2 + 1].Revive();
+
+                return true;
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.WriteLine(e.StackTrace);
+
+                return false;
+            }
+        }
+
+        public bool PutGliderInTheMiddle()
+        {
+            KillAll();
+
+            try
+            {
+                currentState[RowCount / 2 - 1][ColumnCount / 2].Revive(); currentState[RowCount / 2 - 1][ColumnCount / 2 + 1].Revive();
+                currentState[RowCount / 2][ColumnCount / 2 - 1].Revive(); currentState[RowCount / 2][ColumnCount / 2].Revive();
+                currentState[RowCount / 2 + 1][ColumnCount / 2 + 1].Revive();
+
+                return true;
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.WriteLine(e.StackTrace);
+
+                return false;
+            }
+        }
+
+        public bool PutBlinkerInTheMiddle()
+        {
+            KillAll();
+
+            try
+            {
+                currentState[RowCount / 2 - 1][ColumnCount / 2].Revive();
+                currentState[RowCount / 2][ColumnCount / 2].Revive();
+                currentState[RowCount / 2 + 1][ColumnCount / 2].Revive();
+
+                return true;
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.WriteLine(e.StackTrace);
+
+                return false;
+            }
         }
     }
 }
