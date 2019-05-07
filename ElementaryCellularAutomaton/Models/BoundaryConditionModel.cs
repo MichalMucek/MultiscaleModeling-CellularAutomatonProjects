@@ -10,7 +10,7 @@ namespace ElementaryCellularAutomaton.Models
         [Description("Outside is alive")]
         OutsideIsAlive,
 
-        [Description("Periodical")]
-        Periodical
+        [Description("Periodic")]
+        Periodic
     }
 }

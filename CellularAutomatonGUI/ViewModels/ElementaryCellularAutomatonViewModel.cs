@@ -18,7 +18,7 @@ namespace CellularAutomatonGUI.ViewModels
 
             BoundaryConditions.Add(BoundaryConditionModel.OutsideIsDead);
             BoundaryConditions.Add(BoundaryConditionModel.OutsideIsAlive);
-            BoundaryConditions.Add(BoundaryConditionModel.Periodical);
+            BoundaryConditions.Add(BoundaryConditionModel.Periodic);
         }
 
         public int Size

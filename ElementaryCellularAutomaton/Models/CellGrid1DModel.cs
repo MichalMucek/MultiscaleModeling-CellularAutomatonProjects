@@ -61,7 +61,7 @@ namespace ElementaryCellularAutomaton.Models
                             cellsNeighborhood = GetCellsNeighborhoodForTrueOutsideBc(evolvingCell);
                             break;
 
-                        case BoundaryConditionModel.Periodical:
+                        case BoundaryConditionModel.Periodic:
                             cellsNeighborhood = GetCellsNeighborhoodForPeriodicalBc(evolvingCell);
                             break;
                     }

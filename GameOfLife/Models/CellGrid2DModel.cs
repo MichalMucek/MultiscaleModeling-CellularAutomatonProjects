@@ -84,7 +84,7 @@ namespace GameOfLife.Models
 
                             break;
 
-                        case BoundaryConditionModel.Periodical:
+                        case BoundaryConditionModel.Periodic:
                             cellsState[row][column].Neighborhood = new CellsNeighborhood
                             {
                                 Top = cellsState[row == 0 ? RowCount - 1 : row - 1][column],

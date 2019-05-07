@@ -70,7 +70,7 @@ namespace CellularAutomatonGUI.ViewModels
 
             BoundaryConditions.Add(BoundaryConditionModel.OutsideIsDead);
             BoundaryConditions.Add(BoundaryConditionModel.OutsideIsAlive);
-            BoundaryConditions.Add(BoundaryConditionModel.Periodical);
+            BoundaryConditions.Add(BoundaryConditionModel.Periodic);
 
             evolverAndDrawerDispatcherTimer = new DispatcherTimer();
             evolverAndDrawerDispatcherTimer.Interval = TimeSpan.FromMilliseconds(timeInterval);
