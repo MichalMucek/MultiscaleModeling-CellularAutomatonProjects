@@ -16,8 +16,8 @@ namespace CellularAutomatonGUI.ViewModels
         {
             CellGridImageViewModel = new CellGridImageViewModel();
 
-            BoundaryConditions.Add(BoundaryConditionModel.OutsideIsDead);
-            BoundaryConditions.Add(BoundaryConditionModel.OutsideIsAlive);
+            BoundaryConditions.Add(BoundaryConditionModel.Absorbing);
+            BoundaryConditions.Add(BoundaryConditionModel.CounterAbsorbing);
             BoundaryConditions.Add(BoundaryConditionModel.Periodic);
         }
 
@@ -53,7 +53,7 @@ namespace CellularAutomatonGUI.ViewModels
 
         public BindableCollection<BoundaryConditionModel> BoundaryConditions { get; } = new BindableCollection<BoundaryConditionModel>();
 
-        public BoundaryConditionModel SelectedBoundaryCondition { get; set; } = BoundaryConditionModel.OutsideIsDead;
+        public BoundaryConditionModel SelectedBoundaryCondition { get; set; } = BoundaryConditionModel.Absorbing;
 
         public async void Start()
         {

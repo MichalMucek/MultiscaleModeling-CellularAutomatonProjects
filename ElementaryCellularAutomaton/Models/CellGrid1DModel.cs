@@ -53,11 +53,11 @@ namespace ElementaryCellularAutomaton.Models
                 {
                     switch (BoundaryCondition)
                     {
-                        case BoundaryConditionModel.OutsideIsDead:
+                        case BoundaryConditionModel.Absorbing:
                             cellsNeighborhood = GetCellsNeighborhoodForFalseOutsideBc(evolvingCell);
                             break;
 
-                        case BoundaryConditionModel.OutsideIsAlive:
+                        case BoundaryConditionModel.CounterAbsorbing:
                             cellsNeighborhood = GetCellsNeighborhoodForTrueOutsideBc(evolvingCell);
                             break;
 

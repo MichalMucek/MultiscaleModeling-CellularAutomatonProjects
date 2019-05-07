@@ -68,8 +68,8 @@ namespace CellularAutomatonGUI.ViewModels
             SelectedBirthRule = birthRules[0];
             SelectedSurvivalRule = survivalRules[0];
 
-            BoundaryConditions.Add(BoundaryConditionModel.OutsideIsDead);
-            BoundaryConditions.Add(BoundaryConditionModel.OutsideIsAlive);
+            BoundaryConditions.Add(BoundaryConditionModel.Absorbing);
+            BoundaryConditions.Add(BoundaryConditionModel.CounterAbsorbing);
             BoundaryConditions.Add(BoundaryConditionModel.Periodic);
 
             evolverAndDrawerDispatcherTimer = new DispatcherTimer();
@@ -198,7 +198,7 @@ namespace CellularAutomatonGUI.ViewModels
 
         public BindableCollection<BoundaryConditionModel> BoundaryConditions { get; } = new BindableCollection<BoundaryConditionModel>();
 
-        public BoundaryConditionModel SelectedBoundaryCondition { get; set; } = BoundaryConditionModel.OutsideIsDead;
+        public BoundaryConditionModel SelectedBoundaryCondition { get; set; } = BoundaryConditionModel.Absorbing;
 
         public async void StartStop()
         {

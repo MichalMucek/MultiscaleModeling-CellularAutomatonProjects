@@ -65,9 +65,9 @@ namespace GameOfLife.Models
                 {
                     switch (BoundaryCondition)
                     {
-                        case BoundaryConditionModel.OutsideIsDead:
-                        case BoundaryConditionModel.OutsideIsAlive:
-                            CellModel outsideCell = new CellModel(BoundaryCondition == BoundaryConditionModel.OutsideIsAlive ? true : false);
+                        case BoundaryConditionModel.Absorbing:
+                        case BoundaryConditionModel.CounterAbsorbing:
+                            CellModel outsideCell = new CellModel(BoundaryCondition == BoundaryConditionModel.CounterAbsorbing ? true : false);
 
                             cellsState[row][column].Neighborhood = new CellsNeighborhood
                             {

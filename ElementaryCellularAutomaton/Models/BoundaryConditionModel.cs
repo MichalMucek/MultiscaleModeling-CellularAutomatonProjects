@@ -4,11 +4,11 @@ namespace ElementaryCellularAutomaton.Models
 {
     public enum BoundaryConditionModel
     {
-        [Description("Outside is dead")]
-        OutsideIsDead,
+        [Description("Absorbing")]
+        Absorbing,
 
-        [Description("Outside is alive")]
-        OutsideIsAlive,
+        [Description("Counter-Absorbing")]
+        CounterAbsorbing,
 
         [Description("Periodic")]
         Periodic
