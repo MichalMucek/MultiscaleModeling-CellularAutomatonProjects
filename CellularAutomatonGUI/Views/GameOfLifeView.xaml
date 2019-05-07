@@ -375,7 +375,7 @@
             Grid.RowSpan="2"
             Grid.Column="1"
             Header="View">
-            <ScrollViewer>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <Image
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
