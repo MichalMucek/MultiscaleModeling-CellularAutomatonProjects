@@ -40,9 +40,5 @@ namespace GameOfLife.Models
             RowNumber = obj.RowNumber;
             Neighborhood = cellsNeighborhood;
         }
-
-        public void Kill() => IsAlive = false;
-
-        public void Revive() => IsAlive = true;
     }
 }
