@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace GameOfLife
 {
-    internal class CellsNeighborhood
+    public class CellsNeighborhood
     {
         private const int SIDES_COUNT = 8;
 

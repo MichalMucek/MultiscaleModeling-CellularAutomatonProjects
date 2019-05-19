@@ -38,6 +38,9 @@
             <TabItem Header="Game of Life">
                 <ContentControl cal:View.Model="{Binding GameOfLifeViewModel}" />
             </TabItem>
+            <TabItem Header="Grain Growth">
+                <ContentControl cal:View.Model="{Binding GrainGrowthCellularAutomatonViewModel}" />
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

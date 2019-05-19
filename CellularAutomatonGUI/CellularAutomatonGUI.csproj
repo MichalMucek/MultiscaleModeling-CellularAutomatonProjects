@@ -92,6 +92,7 @@
     <Compile Include="ViewModels\CellGridImageViewModel.cs" />
     <Compile Include="ViewModels\ElementaryCellularAutomatonViewModel.cs" />
     <Compile Include="ViewModels\GameOfLifeViewModel.cs" />
+    <Compile Include="ViewModels\GrainGrowthCellularAutomatonViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="Views\CellGridImageView.xaml.cs">
       <DependentUpon>CellGridImageView.xaml</DependentUpon>
@@ -101,6 +102,9 @@
     </Compile>
     <Compile Include="Views\GameOfLifeView.xaml.cs">
       <DependentUpon>GameOfLifeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GrainGrowthCellularAutomatonView.xaml.cs">
+      <DependentUpon>GrainGrowthCellularAutomatonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
@@ -150,6 +154,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\GrainGrowthCellularAutomatonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ShellView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -163,6 +171,10 @@
     <ProjectReference Include="..\GameOfLife\GameOfLife.csproj">
       <Project>{a4a4acef-57c8-4ed0-933c-98eaed75d4b6}</Project>
       <Name>GameOfLife</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GrainGrowthCellularAutomaton\GrainGrowthCellularAutomaton.csproj">
+      <Project>{6ea38677-4fce-4860-8817-f5095f683c3b}</Project>
+      <Name>GrainGrowthCellularAutomaton</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
