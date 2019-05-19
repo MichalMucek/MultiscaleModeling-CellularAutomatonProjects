@@ -2,7 +2,7 @@
 
 namespace GameOfLife.Models
 {
-    internal class CellModel : ElementaryCellularAutomaton.Models.CellModel
+    public class CellModel : ElementaryCellularAutomaton.Models.CellModel
     {
         public int ColumnNumber { get; private set; }
         public int RowNumber { get; private set; }
@@ -20,6 +20,12 @@ namespace GameOfLife.Models
         {
             ColumnNumber = -1;
             RowNumber = -1;
+        }
+
+        public CellModel(int id, int columnNumber, int rowNumber) : base(id, false)
+        {
+            ColumnNumber = columnNumber;
+            RowNumber = rowNumber;
         }
 
         public CellModel(int id, int columnNumber, int rowNumber, bool isAlive) : base(id, isAlive)

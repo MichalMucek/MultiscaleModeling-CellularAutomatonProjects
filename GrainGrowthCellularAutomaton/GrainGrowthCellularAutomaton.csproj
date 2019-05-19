@@ -31,20 +31,36 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\GrainCellGrid2DModel.cs" />
+    <Compile Include="Models\GrainCellModel.cs" />
+    <Compile Include="GrainCellsNeighborhood.cs" />
+    <Compile Include="Models\GrainModel.cs" />
+    <Compile Include="Models\NucleationMethodModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Models\" />
+    <ProjectReference Include="..\ElementaryCellularAutomaton\ElementaryCellularAutomaton.csproj">
+      <Project>{f54369ee-971d-44a9-b97a-e9ffbfe58dec}</Project>
+      <Name>ElementaryCellularAutomaton</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GameOfLife\GameOfLife.csproj">
+      <Project>{a4a4acef-57c8-4ed0-933c-98eaed75d4b6}</Project>
+      <Name>GameOfLife</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
