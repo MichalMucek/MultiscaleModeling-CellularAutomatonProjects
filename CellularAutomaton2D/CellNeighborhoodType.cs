@@ -2,7 +2,7 @@
 
 namespace CellularAutomaton2D
 {
-    internal enum CellNeighborhoodType
+    public enum CellNeighborhoodType
     {
         [Description("von Neumann")]
         VonNeumann = 5,

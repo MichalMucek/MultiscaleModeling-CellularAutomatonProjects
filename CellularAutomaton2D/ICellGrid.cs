@@ -3,7 +3,7 @@ using System.Windows.Media.Imaging;
 
 namespace CellularAutomaton2D
 {
-    internal interface ICellGrid
+    public interface ICellGrid
     {
         List<List<ICell>> CurrentState { get; }
         List<List<ICell>> PreviousState { get; }

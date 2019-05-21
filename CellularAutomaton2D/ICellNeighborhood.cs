@@ -2,7 +2,7 @@
 
 namespace CellularAutomaton2D
 {
-    internal interface ICellNeighborhood
+    public interface ICellNeighborhood
     {
         CellNeighborhoodType Type { get; }
         Dictionary<ICellState, uint> StatesCounts { get; }
