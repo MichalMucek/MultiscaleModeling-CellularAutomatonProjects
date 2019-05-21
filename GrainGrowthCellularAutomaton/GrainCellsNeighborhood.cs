@@ -1,21 +1,22 @@
-﻿using GameOfLife.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using CellularAutomaton2D;
+using CellularAutomaton2D.Models;
 
 namespace GrainGrowthCellularAutomaton.Models
 {
-    internal class GrainCellNeighborhood
+    internal class GrainCellNeighborhood : IEightSidedCellNeighborhood
     {
         private const int SIDES_COUNT = 8;
 
-        public CellsNeighborhoodTypeModel Type { get; set; }
-        public GrainCellModel Top { get => grainCells[0]; set => grainCells[0] = value; }
-        public GrainCellModel TopRight { get => grainCells[1]; set => grainCells[1] = value; }
-        public GrainCellModel Right { get => grainCells[2]; set => grainCells[2] = value; }
-        public GrainCellModel BottomRight { get => grainCells[3]; set => grainCells[3] = value; }
-        public GrainCellModel Bottom { get => grainCells[4]; set => grainCells[4] = value; }
-        public GrainCellModel BottomLeft { get => grainCells[5]; set => grainCells[5] = value; }
-        public GrainCellModel Left { get => grainCells[6]; set => grainCells[6] = value; }
-        public GrainCellModel TopLeft { get => grainCells[7]; set => grainCells[7] = value; }
+        public CellNeighborhoodTypeModel Type { get; set; }
+        public ICell Top { get => grainCells[0]; set => grainCells[0] = (GrainCellModel)value; }
+        public ICell TopRight { get => grainCells[1]; set => grainCells[1] = (GrainCellModel)value; }
+        public ICell Right { get => grainCells[2]; set => grainCells[2] = (GrainCellModel)value; }
+        public ICell BottomRight { get => grainCells[3]; set => grainCells[3] = (GrainCellModel)value; }
+        public ICell Bottom { get => grainCells[4]; set => grainCells[4] = (GrainCellModel)value; }
+        public ICell BottomLeft { get => grainCells[5]; set => grainCells[5] = (GrainCellModel)value; }
+        public ICell Left { get => grainCells[6]; set => grainCells[6] = (GrainCellModel)value; }
+        public ICell TopLeft { get => grainCells[7]; set => grainCells[7] = (GrainCellModel)value; }
         private GrainCellModel[] grainCells = new GrainCellModel[SIDES_COUNT];
 
         public GrainCellNeighborhood()
@@ -30,7 +31,7 @@ namespace GrainGrowthCellularAutomaton.Models
             Right = right;
             Bottom = bottom;
             Left = left;
-            Type = CellsNeighborhoodTypeModel.VonNeumann;
+            Type = CellNeighborhoodTypeModel.VonNeumann;
         }
 
         public GrainCellNeighborhood(GrainCellModel top, GrainCellModel topRight, GrainCellModel right, GrainCellModel bottomRight,
@@ -40,60 +41,60 @@ namespace GrainGrowthCellularAutomaton.Models
             BottomRight = bottomRight;
             BottomLeft = bottomLeft;
             TopLeft = topLeft;
-            Type = CellsNeighborhoodTypeModel.Moore;
+            Type = CellNeighborhoodTypeModel.Moore;
         }
 
         public GrainCellNeighborhood(GrainCellNeighborhood obj) : this()
         {
             switch (obj.Type)
             {
-                case CellsNeighborhoodTypeModel.VonNeumann:
-                    Top = new GrainCellModel(obj.Top);
-                    Right = new GrainCellModel(obj.Right);
-                    Bottom = new GrainCellModel(obj.Bottom);
-                    Left = new GrainCellModel(obj.Left);
+                case CellNeighborhoodTypeModel.VonNeumann:
+                    Top = new GrainCellModel((GrainCellModel)obj.Top);
+                    Right = new GrainCellModel((GrainCellModel)obj.Right);
+                    Bottom = new GrainCellModel((GrainCellModel)obj.Bottom);
+                    Left = new GrainCellModel((GrainCellModel)obj.Left);
                     Type = obj.Type;
                     break;
 
-                case CellsNeighborhoodTypeModel.Moore:
-                    Top = new GrainCellModel(obj.Top);
-                    TopRight = new GrainCellModel(obj.TopRight);
-                    Right = new GrainCellModel(obj.Right);
-                    BottomRight = new GrainCellModel(obj.BottomRight);
-                    Bottom = new GrainCellModel(obj.Bottom);
-                    BottomLeft = new GrainCellModel(obj.BottomLeft);
-                    Left = new GrainCellModel(obj.Left);
-                    TopLeft = new GrainCellModel(obj.TopLeft);
+                case CellNeighborhoodTypeModel.Moore:
+                    Top = new GrainCellModel((GrainCellModel)obj.Top);
+                    TopRight = new GrainCellModel((GrainCellModel)obj.TopRight);
+                    Right = new GrainCellModel((GrainCellModel)obj.Right);
+                    BottomRight = new GrainCellModel((GrainCellModel)obj.BottomRight);
+                    Bottom = new GrainCellModel((GrainCellModel)obj.Bottom);
+                    BottomLeft = new GrainCellModel((GrainCellModel)obj.BottomLeft);
+                    Left = new GrainCellModel((GrainCellModel)obj.Left);
+                    TopLeft = new GrainCellModel((GrainCellModel)obj.TopLeft);
                     Type = obj.Type;
                     break;
             }
         }
 
-        public Dictionary<GrainModel, uint> GrainsCounts
+        public Dictionary<ICellState, int> StatesCounts
         {
             get
             {
-                var grainsCount = new Dictionary<GrainModel, uint>();
+                var grainsCount = new Dictionary<ICellState, int>();
 
                 switch (Type)
                 {
-                    case CellsNeighborhoodTypeModel.VonNeumann:
+                    case CellNeighborhoodTypeModel.VonNeumann:
                         for (int sideIndex = 0; sideIndex < SIDES_COUNT; sideIndex += 2)
                         {
-                            if (grainsCount.ContainsKey(grainCells[sideIndex].Grain))
-                                grainsCount[grainCells[sideIndex].Grain]++;
+                            if (grainsCount.ContainsKey(grainCells[sideIndex].State))
+                                grainsCount[grainCells[sideIndex].State]++;
                             else
-                                grainsCount.Add(grainCells[sideIndex].Grain, 1);
+                                grainsCount.Add(grainCells[sideIndex].State, 1);
                         }
                         break;
 
-                    case CellsNeighborhoodTypeModel.Moore:
+                    case CellNeighborhoodTypeModel.Moore:
                         foreach (var grainCell in grainCells)
                         {
-                            if (grainsCount.ContainsKey(grainCell.Grain))
-                                grainsCount[grainCell.Grain]++;
+                            if (grainsCount.ContainsKey(grainCell.State))
+                                grainsCount[grainCell.State]++;
                             else
-                                grainsCount.Add(grainCell.Grain, 1);
+                                grainsCount.Add(grainCell.State, 1);
                         }
                         break;
                 }

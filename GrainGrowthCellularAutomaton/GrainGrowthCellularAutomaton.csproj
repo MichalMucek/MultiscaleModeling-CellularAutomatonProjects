@@ -53,13 +53,13 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\CellularAutomaton2D\CellularAutomaton2D.csproj">
+      <Project>{192ec281-b811-4b4a-98e6-671811c8b791}</Project>
+      <Name>CellularAutomaton2D</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ElementaryCellularAutomaton\ElementaryCellularAutomaton.csproj">
       <Project>{f54369ee-971d-44a9-b97a-e9ffbfe58dec}</Project>
       <Name>ElementaryCellularAutomaton</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GameOfLife\GameOfLife.csproj">
-      <Project>{a4a4acef-57c8-4ed0-933c-98eaed75d4b6}</Project>
-      <Name>GameOfLife</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

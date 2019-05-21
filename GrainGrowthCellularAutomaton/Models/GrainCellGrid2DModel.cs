@@ -1,5 +1,4 @@
 ﻿using ElementaryCellularAutomaton.Models;
-using GameOfLife.Models;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,22 +6,24 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
+using CellularAutomaton2D;
+using CellularAutomaton2D.Models;
 
 namespace GrainGrowthCellularAutomaton.Models
 {
-    public class GrainCellGrid2DModel
+    public class GrainCellGrid2DModel : ICellGrid
     {
-        private List<List<GrainCellModel>> currentState;
-        private List<List<GrainCellModel>> previousState;
-        private static GrainModel initialGrain = new GrainModel();
-        private List<GrainModel> grains = new List<GrainModel>();
+        public List<List<ICell>> CurrentState { get; private set; }
+        public List<List<ICell>> PreviousState { get; private set; }
+        public ICellState ZeroState { get; private set; } = new GrainModel();
+        private List<ICellState> grains = new List<ICellState>();
         public int ColumnCount { get; private set; }
         public int RowCount { get; private set; }
-        public CellsNeighborhoodTypeModel NeighborhoodType { get; private set; }
+        public CellNeighborhoodTypeModel NeighborhoodType { get; private set; }
         public BoundaryConditionModel BoundaryCondition { get; private set; }
         public int CellCount => ColumnCount * RowCount;
-        public int FilledCellsCount { get; private set; } = 0;
-        public bool GridIsFull => FilledCellsCount == CellCount;
+        public int PopulatedCellsCount { get; private set; } = 0;
+        public bool IsFullyPopulated => PopulatedCellsCount == CellCount;
 
         private static Random random = new Random();
 
@@ -32,7 +33,7 @@ namespace GrainGrowthCellularAutomaton.Models
         public GrainCellGrid2DModel(
             int columnCount,
             int rowCount,
-            CellsNeighborhoodTypeModel neighborhoodType,
+            CellNeighborhoodTypeModel neighborhoodType,
             BoundaryConditionModel boundaryCondition)
         {
             ColumnCount = columnCount;
@@ -40,35 +41,35 @@ namespace GrainGrowthCellularAutomaton.Models
             NeighborhoodType = neighborhoodType;
             BoundaryCondition = boundaryCondition;
 
-            grains.Add(initialGrain);
-            currentState = new List<List<GrainCellModel>>();
-            previousState = new List<List<GrainCellModel>>();
+            grains.Add(ZeroState);
+            CurrentState = new List<List<ICell>>();
+            PreviousState = new List<List<ICell>>();
 
             CreateNewGrainCellsForCurrentState();
             CreateRowsInPreviousState();
-            AddNeighboringCellsToCellsState(currentState);
+            AddNeighboringCellsToCellsState(CurrentState);
         }
 
         private void CreateNewGrainCellsForCurrentState()
         {
             for (int row = 0, cellId = 0; row < RowCount; row++)
             {
-                currentState.Add(new List<GrainCellModel>());
+                CurrentState.Add(new List<ICell>());
 
                 for (int column = 0; column < ColumnCount; column++, cellId++)
-                    currentState[row].Add(new GrainCellModel(cellId, column, row, initialGrain));
+                    CurrentState[row].Add(new GrainCellModel(cellId, column, row, (GrainModel)ZeroState));
             }
         }
 
         private void CreateRowsInPreviousState()
         {
             for (int row = 0; row < RowCount; row++)
-                previousState.Add(new List<GrainCellModel>());
+                PreviousState.Add(new List<ICell>());
         }
 
-        private void AddNeighboringCellsToCellsState(List<List<GrainCellModel>> cellsState)
+        private void AddNeighboringCellsToCellsState(List<List<ICell>> cellsState)
         {
-            GrainCellModel outsideCell = new GrainCellModel(initialGrain);
+            GrainCellModel outsideCell = new GrainCellModel((GrainModel)ZeroState);
 
             for (int row = 0, cellId = 0; row < RowCount; row++)
             {
@@ -77,7 +78,7 @@ namespace GrainGrowthCellularAutomaton.Models
                     switch (BoundaryCondition)
                     {
                         case BoundaryConditionModel.Absorbing:
-                            cellsState[row][column].NeighboringGrainCells = new GrainCellNeighborhood
+                            cellsState[row][column].NeighboringCells = new GrainCellNeighborhood
                             {
                                 Top = row == 0 ? outsideCell : cellsState[row - 1][column],
                                 TopRight = row == 0 || column == ColumnCount - 1 ? outsideCell : cellsState[row - 1][column + 1],
@@ -93,7 +94,7 @@ namespace GrainGrowthCellularAutomaton.Models
                             break;
 
                         case BoundaryConditionModel.Periodic:
-                            cellsState[row][column].NeighboringGrainCells = new GrainCellNeighborhood
+                            cellsState[row][column].NeighboringCells = new GrainCellNeighborhood
                             {
                                 Top = cellsState[row == 0 ? RowCount - 1 : row - 1][column],
                                 TopRight = cellsState[row == 0 ? RowCount - 1 : row - 1][column == ColumnCount - 1 ? 0 : column + 1],
@@ -112,31 +113,31 @@ namespace GrainGrowthCellularAutomaton.Models
             }
         }
 
-        public void Grow()
+        public void Evolve()
         {
-            if (!GridIsFull)
+            if (!IsFullyPopulated)
             {
                 CopyCurrentStateToPrevious();
 
-                foreach (var row in currentState)
+                foreach (var row in CurrentState)
                     foreach (var evolvingCell in row)
-                        if (evolvingCell.Grain == initialGrain)
+                        if (evolvingCell.State == ZeroState)
                         {
-                            evolvingCell.Grain = GetGrainToExpand(previousState[evolvingCell.RowNumber][evolvingCell.ColumnNumber]);
+                            evolvingCell.State = GetGrainToExpand((GrainCellModel)PreviousState[evolvingCell.RowNumber][evolvingCell.ColumnNumber]);
 
-                            if (evolvingCell.Grain != initialGrain)
-                                FilledCellsCount++;
+                            if (evolvingCell.State != ZeroState)
+                                PopulatedCellsCount++;
                         }
             }
         }
 
         private void CopyCurrentStateToPrevious()
         {
-            previousState = currentState.ConvertAll(
-                row => new List<GrainCellModel>(row.ConvertAll(grainCell => new GrainCellModel(grainCell)))
+            PreviousState = CurrentState.ConvertAll(
+                row => new List<ICell>(row.ConvertAll(grainCell => new GrainCellModel((GrainCellModel)grainCell)))
             );
 
-            AddNeighboringCellsToCellsState(previousState);
+            AddNeighboringCellsToCellsState(PreviousState);
         }
 
         private GrainModel GetGrainToExpand(GrainCellModel grainCell)
@@ -151,23 +152,23 @@ namespace GrainGrowthCellularAutomaton.Models
                     return grainsWithMaxCount.ElementAt(random.Next(grainsWithMaxCount.Count()));
             }
             else
-                return initialGrain;
+                return (GrainModel)ZeroState;
         }
 
         private List<GrainModel> GetNonInitialGrainsWithMaxCount(GrainCellModel grainCell)
         {
-            var grainsCounts = grainCell.NeighboringGrainCells.GrainsCounts;
+            var grainsCounts = grainCell.NeighboringCells.StatesCounts;
             var grainsWithMaxCount = new List<GrainModel>();
 
-            uint maxCount = 0;
+            int maxCount = 0;
 
             foreach (var grainCount in grainsCounts)
-                if (grainCount.Value > maxCount && grainCount.Key != initialGrain)
+                if (grainCount.Value > maxCount && grainCount.Key != ZeroState)
                     maxCount = grainCount.Value;
 
             foreach (var grainCount in grainsCounts)
-                if (grainCount.Value == maxCount && grainCount.Key != initialGrain)
-                    grainsWithMaxCount.Add(grainCount.Key);
+                if (grainCount.Value == maxCount && grainCount.Key != ZeroState)
+                    grainsWithMaxCount.Add((GrainModel)grainCount.Key);
 
             return grainsWithMaxCount;
         }
@@ -223,23 +224,23 @@ namespace GrainGrowthCellularAutomaton.Models
                         Point cellPosition = new Point();
                         Size cellSize = new Size(cellWidth, cellHeight);
 
-                        foreach (var row in currentState)
+                        foreach (var row in CurrentState)
                         {
                             cellPosition.Y = row.First().RowNumber * (cellHeight + lineWidth) + lineWidth;
 
-                            foreach (var cell in row)
+                            foreach (var grainCell in row)
                             {
-                                cellPosition.X = cell.ColumnNumber * (cellWidth + lineWidth) + lineWidth;
+                                cellPosition.X = grainCell.ColumnNumber * (cellWidth + lineWidth) + lineWidth;
 
-                                if (cell.Grain != initialGrain)
+                                if (grainCell.State != ZeroState)
                                 {
-                                    grainColorSolidBrush.Color = Color.FromArgb(cell.Grain.Color.R, cell.Grain.Color.G, cell.Grain.Color.B);
+                                    grainColorSolidBrush.Color = Color.FromArgb(grainCell.State.Color.R, grainCell.State.Color.G, grainCell.State.Color.B);
 
                                     imageGraphics.FillRectangle(grainColorSolidBrush, new Rectangle(cellPosition, cellSize));
                                 }
 
-                                cell.StartPositionOnImage = cellPosition;
-                                cell.EndPositionOnImage = cellPosition + cellSize;
+                                grainCell.StartPositionOnImage = cellPosition;
+                                grainCell.EndPositionOnImage = cellPosition + cellSize;
                             }
                         }
                     }
@@ -260,20 +261,20 @@ namespace GrainGrowthCellularAutomaton.Models
         {
             bool cellIsFound = false;
 
-            foreach (var row in currentState)
+            foreach (var row in CurrentState)
             {
-                foreach (var cell in row)
+                foreach (var grainCell in row)
                 {
-                    if (cell.Grain == initialGrain)
+                    if (grainCell.State == ZeroState)
                     {
-                        if (cell.StartPositionOnImage.X <= mousePositionOverImage.X &&
-                                        cell.StartPositionOnImage.Y <= mousePositionOverImage.Y &&
-                                        cell.EndPositionOnImage.X >= mousePositionOverImage.X &&
-                                        cell.EndPositionOnImage.Y >= mousePositionOverImage.Y)
+                        if (grainCell.StartPositionOnImage.X <= mousePositionOverImage.X &&
+                                        grainCell.StartPositionOnImage.Y <= mousePositionOverImage.Y &&
+                                        grainCell.EndPositionOnImage.X >= mousePositionOverImage.X &&
+                                        grainCell.EndPositionOnImage.Y >= mousePositionOverImage.Y)
                         {
                             AddNewGrain();
-                            cell.Grain = grains.Last();
-                            FilledCellsCount++;
+                            grainCell.State = grains.Last();
+                            PopulatedCellsCount++;
 
                             cellIsFound = true;
                             break;
@@ -305,8 +306,8 @@ namespace GrainGrowthCellularAutomaton.Models
                         column += stepInRow, putedInRowCount++)
                     {
                         AddNewGrain();
-                        currentState[(int)row][(int)column].Grain = grains.Last();
-                        FilledCellsCount++;
+                        CurrentState[(int)row][(int)column].State = grains.Last();
+                        PopulatedCellsCount++;
                     }
                 }
             }
@@ -323,11 +324,11 @@ namespace GrainGrowthCellularAutomaton.Models
                 int randomRow = random.Next(RowCount);
                 int randomColumn = random.Next(ColumnCount);
 
-                if (currentState[randomRow][randomColumn].Grain == initialGrain)
+                if (CurrentState[randomRow][randomColumn].State == ZeroState)
                 {
                     AddNewGrain();
-                    currentState[randomRow][randomColumn].Grain = grains.Last();
-                    FilledCellsCount++;
+                    CurrentState[randomRow][randomColumn].State = grains.Last();
+                    PopulatedCellsCount++;
                     grainCount--;
                 }
             }
@@ -355,13 +356,13 @@ namespace GrainGrowthCellularAutomaton.Models
                     int randomRow = random.Next(RowCount);
                     int randomColumn = random.Next(ColumnCount);
 
-                    if (currentState[randomRow][randomColumn].Grain == initialGrain)
+                    if (CurrentState[randomRow][randomColumn].State == ZeroState)
                     {
-                        if (IsNoGrainWithinARadius(currentState[randomRow][randomColumn], radius))
+                        if (IsNoGrainWithinARadius((GrainCellModel)CurrentState[randomRow][randomColumn], radius))
                         {
                             AddNewGrain();
-                            currentState[randomRow][randomColumn].Grain = grains.Last();
-                            FilledCellsCount++;
+                            CurrentState[randomRow][randomColumn].State = grains.Last();
+                            PopulatedCellsCount++;
                             grainCount--;
 
                             probablyPossibleToPutANucleus = false;
@@ -372,7 +373,7 @@ namespace GrainGrowthCellularAutomaton.Models
                     }
                 }
 
-                return (uint)FilledCellsCount;
+                return (uint)PopulatedCellsCount;
             }
             else
             {
@@ -382,9 +383,9 @@ namespace GrainGrowthCellularAutomaton.Models
 
         private bool IsPossibleToPutGrainNucleuseWithRadiusAnywhere(uint radius)
         {
-            foreach (var row in currentState)
+            foreach (var row in CurrentState)
                 foreach (var grainCell in row)
-                    if (IsNoGrainWithinARadius(grainCell, radius))
+                    if (IsNoGrainWithinARadius((GrainCellModel)grainCell, radius))
                         return true;
 
             return false;
@@ -413,7 +414,7 @@ namespace GrainGrowthCellularAutomaton.Models
                     var cellInSquare = upperLeftGrainCell;
 
                     for (int i = 0; i < movesToNextRowCount; i++)
-                        cellInSquare = cellInSquare.NeighboringGrainCells.Bottom;
+                        cellInSquare = (GrainCellModel)cellInSquare.NeighboringCells.Bottom;
 
                     for (int movesToNextColumnCount = 0, x = -1 * (int)radius;
                         movesToNextColumnCount < 2 * radius + 1;
@@ -422,10 +423,10 @@ namespace GrainGrowthCellularAutomaton.Models
                         double distanceFromCenter = Math.Pow(x, 2) + Math.Pow(y, 2);
 
                         if (distanceFromCenter <= Math.Pow(radius + 0.5, 2))
-                            if (cellInSquare.Grain != initialGrain)
+                            if (cellInSquare.State != ZeroState)
                                 return false;
 
-                        cellInSquare = cellInSquare.NeighboringGrainCells.Right;
+                        cellInSquare = (GrainCellModel)cellInSquare.NeighboringCells.Right;
                     }
                 }
 
@@ -442,7 +443,7 @@ namespace GrainGrowthCellularAutomaton.Models
             upperLeftGrainCell = centerCell;
 
             for (int movesToMakeCount = 0; movesToMakeCount < radius; movesToMakeCount++)
-                upperLeftGrainCell = upperLeftGrainCell.NeighboringGrainCells.TopLeft;
+                upperLeftGrainCell = (GrainCellModel)upperLeftGrainCell.NeighboringCells.TopLeft;
         }
 
         private bool IsNoGrainWithinARadiusForAbsorbingBc(GrainCellModel centerCell, uint radius)
@@ -465,7 +466,7 @@ namespace GrainGrowthCellularAutomaton.Models
                             double distanceFromCenter = Math.Pow(x, 2) + Math.Pow(y, 2);
 
                             if (distanceFromCenter <= Math.Pow(radius + 0.5, 2))
-                                if (currentState[row][column].Grain != initialGrain)
+                                if (CurrentState[row][column].State != ZeroState)
                                     return false;
                         }
                     }
@@ -483,13 +484,13 @@ namespace GrainGrowthCellularAutomaton.Models
 
         private void SetGridToInitialState()
         {
-            foreach (var row in currentState)
+            foreach (var row in CurrentState)
                 foreach (var grainCell in row)
                 {
-                    if (grainCell.Grain != initialGrain)
+                    if (grainCell.State != ZeroState)
                     {
-                        grainCell.Grain = initialGrain;
-                        FilledCellsCount--;
+                        grainCell.State = ZeroState;
+                        PopulatedCellsCount--;
                     }
                 }
         }
@@ -519,7 +520,7 @@ namespace GrainGrowthCellularAutomaton.Models
                     {
                         if (grain.Color == grains.Last().Color)
                         {
-                            grains.Last().NewColor();
+                            grains.Last().SetRandomColor();
                             break;
                         }
                     }

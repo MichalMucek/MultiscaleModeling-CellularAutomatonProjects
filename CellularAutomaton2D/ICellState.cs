@@ -2,7 +2,7 @@
 
 namespace CellularAutomaton2D
 {
-    internal interface ICellState
+    public interface ICellState
     {
         int Id { get; }
         Color Color { get; }
@@ -11,6 +11,6 @@ namespace CellularAutomaton2D
 
         void SetColor(byte red, byte green, byte blue);
 
-        void SetNewRandomColor();
+        void SetRandomColor();
     }
 }

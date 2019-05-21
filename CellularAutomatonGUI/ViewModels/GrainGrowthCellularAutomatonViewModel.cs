@@ -1,6 +1,6 @@
 ﻿using Caliburn.Micro;
+using CellularAutomaton2D.Models;
 using ElementaryCellularAutomaton.Models;
-using GameOfLife.Models;
 using GrainGrowthCellularAutomaton.Models;
 using System;
 using System.Drawing;
@@ -23,7 +23,6 @@ namespace CellularAutomatonGUI.ViewModels
         private uint nucleusesInRowCount = 1;
         private bool isUniformMethodSelected = true;
         private uint randomNucleusesCount = 1;
-        private int grainCellCount;
         private bool isRandomMethodSelected = false;
         private bool isRandomWithRadiusMethodSelected = false;
         private uint nucleusRadius = 1;
@@ -49,8 +48,8 @@ namespace CellularAutomatonGUI.ViewModels
 
         public GrainGrowthCellularAutomatonViewModel()
         {
-            CellsNeighborhoods.Add(CellsNeighborhoodTypeModel.Moore);
-            CellsNeighborhoods.Add(CellsNeighborhoodTypeModel.VonNeumann);
+            CellsNeighborhoods.Add(CellNeighborhoodTypeModel.Moore);
+            CellsNeighborhoods.Add(CellNeighborhoodTypeModel.VonNeumann);
 
             BoundaryConditions.Add(BoundaryConditionModel.Absorbing);
             BoundaryConditions.Add(BoundaryConditionModel.Periodic);
@@ -85,8 +84,8 @@ namespace CellularAutomatonGUI.ViewModels
         {
             return Task.Run(() =>
             {
-                grainCellGrid.Grow();
-                GrowthIsDone = grainCellGrid.GridIsFull;
+                grainCellGrid.Evolve();
+                GrowthIsDone = grainCellGrid.IsFullyPopulated;
 
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                         GrainCellGridBitmapImage = grainCellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth)
@@ -132,13 +131,15 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
+        public int GrainCellCount => rowCount * columnCount;
+
         public BindableCollection<BoundaryConditionModel> BoundaryConditions { get; } = new BindableCollection<BoundaryConditionModel>();
 
         public BoundaryConditionModel SelectedBoundaryCondition { get; set; } = BoundaryConditionModel.Absorbing;
 
-        public BindableCollection<CellsNeighborhoodTypeModel> CellsNeighborhoods { get; } = new BindableCollection<CellsNeighborhoodTypeModel>();
+        public BindableCollection<CellNeighborhoodTypeModel> CellsNeighborhoods { get; } = new BindableCollection<CellNeighborhoodTypeModel>();
 
-        public CellsNeighborhoodTypeModel SelectedCellsNeighborhood { get; set; } = CellsNeighborhoodTypeModel.VonNeumann;
+        public CellNeighborhoodTypeModel SelectedCellsNeighborhood { get; set; } = CellNeighborhoodTypeModel.VonNeumann;
 
         public BindableCollection<NucleationMethodModel> NucleationMethods { get; } = new BindableCollection<NucleationMethodModel>();
 
@@ -229,16 +230,6 @@ namespace CellularAutomatonGUI.ViewModels
             {
                 isRandomWithRadiusMethodSelected = value;
                 NotifyOfPropertyChange(() => IsRandomWithRadiusMethodSelected);
-            }
-        }
-
-        public int GrainCellCount
-        {
-            get => rowCount * columnCount;
-            set
-            {
-                grainCellCount = value;
-                NotifyOfPropertyChange(() => GrainCellCount);
             }
         }
 
