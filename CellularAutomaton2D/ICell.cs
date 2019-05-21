@@ -2,7 +2,7 @@
 
 namespace CellularAutomaton2D
 {
-    internal interface ICell
+    public interface ICell
     {
         int Id { get; }
         int ColumnNumber { get; }

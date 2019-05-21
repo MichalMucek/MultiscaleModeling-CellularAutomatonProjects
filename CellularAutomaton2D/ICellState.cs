@@ -2,7 +2,7 @@
 
 namespace CellularAutomaton2D
 {
-    internal interface ICellState
+    public interface ICellState
     {
         int Id { get; }
         Color Color { get; }
