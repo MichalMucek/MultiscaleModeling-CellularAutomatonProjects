@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 
-namespace CellularAutomaton2D
+namespace CellularAutomaton2D.Models
 {
-    public enum CellNeighborhoodType
+    public enum CellNeighborhoodTypeModel
     {
         [Description("von Neumann")]
         VonNeumann = 5,

@@ -11,6 +11,6 @@ namespace CellularAutomaton2D
 
         void SetColor(byte red, byte green, byte blue);
 
-        void SetNewRandomColor();
+        void SetRandomColor();
     }
 }

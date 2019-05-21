@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Windows.Media;
+using CellularAutomaton2D;
 
 namespace GrainGrowthCellularAutomaton.Models
 {
-    internal class GrainModel
+    internal class GrainModel : ICellState
     {
         public int Id { get; private set; }
         public Color Color { get; private set; }
@@ -16,43 +17,42 @@ namespace GrainGrowthCellularAutomaton.Models
             if (randomRgb == null)
                 randomRgb = new Random();
 
-            byte red = byte.MaxValue, green = byte.MaxValue, blue = byte.MaxValue;
-
-            SetRgb(ref red, ref green, ref blue, id);
-
             Id = id;
             Color = new Color();
-            Color = Color.FromRgb(red, green, blue);
-        }
-
-        private void SetRgb(ref byte red, ref byte green, ref byte blue, int id)
-        {
-            if (id != 0)
-            {
-                byte[] rgb = new byte[3];
-
-                while (red == byte.MaxValue && green == byte.MaxValue && blue == byte.MaxValue)
-                {
-                    randomRgb.NextBytes(rgb);
-
-                    red = rgb[0];
-                    green = rgb[1];
-                    blue = rgb[2];
-                }
-            }
+            SetRandomColor();
         }
 
         public GrainModel(GrainModel obj)
         {
+            if (randomRgb == null)
+                randomRgb = new Random();
+
             Id = obj.Id;
             Color = obj.Color;
         }
 
-        public void NewColor()
-        {
-            byte red = byte.MaxValue, green = byte.MaxValue, blue = byte.MaxValue;
+        public void SetColor(Color color)
+            => Color = color;
 
-            SetRgb(ref red, ref green, ref blue, Id);
+        public void SetColor(byte red, byte green, byte blue)
+            => Color = Color.FromRgb(red, green, blue);
+
+        public void SetRandomColor()
+        {
+            byte[] rgb = new byte[]
+            {
+                byte.MaxValue,
+                byte.MaxValue,
+                byte.MaxValue
+            };
+
+            if (Id != 0)
+            {
+                while (rgb[0] == byte.MaxValue && rgb[1] == byte.MaxValue && rgb[2] == byte.MaxValue)
+                    randomRgb.NextBytes(rgb);
+            }
+
+            Color = Color.FromRgb(rgb[0], rgb[1], rgb[2]);
         }
     }
 }

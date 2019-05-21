@@ -43,10 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CellNeighborhoodType.cs" />
+    <Compile Include="Models\CellNeighborhoodTypeModel.cs" />
     <Compile Include="ICell.cs" />
     <Compile Include="ICellGrid.cs" />
-    <Compile Include="ICellNeighborhood.cs" />
+    <Compile Include="IEightSidedCellNeighborhood.cs" />
     <Compile Include="ICellState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
