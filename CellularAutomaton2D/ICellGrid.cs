@@ -14,15 +14,7 @@ namespace CellularAutomaton2D
         int PopulatedCellsCount { get; }
         bool IsFullyPopulated { get; }
 
-        void CreateNewGrainCellsForCurrentState();
-
-        void CreateRowsInPreviousState();
-
-        void AddNeighboringCellsToCellsState(List<List<ICell>> cellsState);
-
         void Evolve();
-
-        void CopyCurrentStateToPrevious();
 
         BitmapImage GetBitmapImage(int cellWidth, int cellHeightm, int lineWidth);
     }
