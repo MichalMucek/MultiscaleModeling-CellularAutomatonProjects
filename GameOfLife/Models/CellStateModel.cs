@@ -4,7 +4,7 @@ using CellularAutomaton2D;
 
 namespace GameOfLife.Models
 {
-    internal class CellStateModel : ICellState
+    public class CellStateModel : ICellState
     {
         public int Id { get; private set; }
         public Color Color { get; private set; }

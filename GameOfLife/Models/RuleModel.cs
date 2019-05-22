@@ -1,11 +1,13 @@
-﻿namespace GameOfLife.Models
+﻿using CellularAutomaton2D.Models;
+
+namespace GameOfLife.Models
 {
     public class RuleModel
     {
         public NumberOfCellsForRulesModel[] Birth { get; private set; }
         public NumberOfCellsForRulesModel[] Survival { get; private set; }
 
-        public RuleModel(CellsNeighborhoodTypeModel neighborhoodType)
+        public RuleModel(CellNeighborhoodTypeModel neighborhoodType)
         {
             Birth = new NumberOfCellsForRulesModel[(int)neighborhoodType];
             Survival = new NumberOfCellsForRulesModel[(int)neighborhoodType];

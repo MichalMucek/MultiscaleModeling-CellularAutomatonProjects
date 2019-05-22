@@ -1,50 +1,94 @@
-﻿using System.Drawing;
+﻿using CellularAutomaton2D;
+using System.Drawing;
 
 namespace GameOfLife.Models
 {
-    public class CellModel : ElementaryCellularAutomaton.Models.CellModel
+    public class CellModel : ICell
     {
+        public int Id { get; private set; }
         public int ColumnNumber { get; private set; }
         public int RowNumber { get; private set; }
-        public CellsNeighborhood Neighborhood { get; set; }
+        public ICellState State { get; set; }
+        public CellStateModel AliveState { get; private set; }
+        public CellStateModel DeadState { get; private set; }
+        public IEightSidedCellNeighborhood NeighboringCells { get; set; }
         public Point StartPositionOnImage { get; set; }
         public Point EndPositionOnImage { get; set; }
 
-        public CellModel() : base(-1, false)
+        public CellModel()
         {
+            Id = -1;
             ColumnNumber = -1;
             RowNumber = -1;
+            State = null;
+            AliveState = null;
+            DeadState = null;
         }
 
-        public CellModel(bool isAlive) : base(-1, isAlive)
+        public CellModel(bool isAlive, CellStateModel aliveState, CellStateModel deadState)
+            : this()
         {
-            ColumnNumber = -1;
-            RowNumber = -1;
+            AliveState = aliveState;
+            DeadState = deadState;
+
+            State = isAlive ? AliveState : DeadState;
         }
 
-        public CellModel(int id, int columnNumber, int rowNumber) : base(id, false)
+        public CellModel(CellStateModel cellState, CellStateModel aliveState, CellStateModel deadState)
+            : this()
         {
+            State = cellState;
+            AliveState = aliveState;
+            DeadState = deadState;
+        }
+
+        public CellModel(int id, int columnNumber, int rowNumber,
+            CellStateModel cellState, CellStateModel aliveState, CellStateModel deadState)
+            : this(cellState, aliveState, deadState)
+        {
+            Id = id;
             ColumnNumber = columnNumber;
             RowNumber = rowNumber;
         }
 
-        public CellModel(int id, int columnNumber, int rowNumber, bool isAlive) : base(id, isAlive)
+        public CellModel(CellModel obj)
         {
-            ColumnNumber = columnNumber;
-            RowNumber = rowNumber;
-        }
-
-        public CellModel(CellModel obj) : base(obj)
-        {
+            Id = obj.Id;
             ColumnNumber = obj.ColumnNumber;
             RowNumber = obj.RowNumber;
+            State = obj.State;
+            AliveState = obj.AliveState;
+            DeadState = obj.DeadState;
         }
 
-        public CellModel(CellModel obj, CellsNeighborhood cellsNeighborhood) : base(obj)
+        public void Kill()
+            => State = DeadState;
+
+        public void Revive()
+            => State = AliveState;
+
+        public bool IsAlive
         {
-            ColumnNumber = obj.ColumnNumber;
-            RowNumber = obj.RowNumber;
-            Neighborhood = cellsNeighborhood;
+            get => State == AliveState;
+            set
+            {
+                if (value == true)
+                    State = AliveState;
+                else
+                    State = DeadState;
+            }
+        }
+
+        public bool IsDead
+        {
+            get => State == DeadState;
+            set
+            {
+                if (value == true)
+                    State = DeadState;
+                else
+                    State = AliveState;
+            }
         }
     }
 }
