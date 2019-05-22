@@ -17,7 +17,7 @@ namespace CellularAutomatonGUI.ViewModels
     {
         private int columnCount = 30;
         private int rowCount = 30;
-        private CellNeighborhoodTypeModel selectedCellsNeighborhood = CellNeighborhoodTypeModel.Moore;
+        private CellNeighborhoodTypeModel selectedCellNeighborhood = CellNeighborhoodTypeModel.Moore;
         private BindableCollection<NumberOfCellsForRulesModel> birthRules;
         private NumberOfCellsForRulesModel selectedBirthRule;
         private BindableCollection<NumberOfCellsForRulesModel> birthVonNeumannRulesSafe;
@@ -128,14 +128,14 @@ namespace CellularAutomatonGUI.ViewModels
 
         public BindableCollection<CellNeighborhoodTypeModel> CellNeighborhoods { get; } = new BindableCollection<CellNeighborhoodTypeModel>();
 
-        public CellNeighborhoodTypeModel SelectedCellsNeighborhood
+        public CellNeighborhoodTypeModel SelectedCellNeighborhood
         {
-            get => selectedCellsNeighborhood;
+            get => selectedCellNeighborhood;
             set
             {
-                selectedCellsNeighborhood = value;
+                selectedCellNeighborhood = value;
 
-                switch (selectedCellsNeighborhood)
+                switch (selectedCellNeighborhood)
                 {
                     case CellNeighborhoodTypeModel.VonNeumann:
                         BirthRules = birthVonNeumannRulesSafe;
@@ -210,14 +210,14 @@ namespace CellularAutomatonGUI.ViewModels
 
                 await Task.Run(() =>
                 {
-                    switch (SelectedCellsNeighborhood)
+                    switch (SelectedCellNeighborhood)
                     {
                         case CellNeighborhoodTypeModel.VonNeumann:
-                            cellGrid = new CellGrid2DModel(ColumnCount, RowCount, SelectedCellsNeighborhood, vonNeumannRule, SelectedBoundaryCondition);
+                            cellGrid = new CellGrid2DModel(ColumnCount, RowCount, SelectedCellNeighborhood, vonNeumannRule, SelectedBoundaryCondition);
                             break;
 
                         case CellNeighborhoodTypeModel.Moore:
-                            cellGrid = new CellGrid2DModel(ColumnCount, RowCount, SelectedCellsNeighborhood, mooreRule, SelectedBoundaryCondition);
+                            cellGrid = new CellGrid2DModel(ColumnCount, RowCount, SelectedCellNeighborhood, mooreRule, SelectedBoundaryCondition);
                             break;
                     }
 
