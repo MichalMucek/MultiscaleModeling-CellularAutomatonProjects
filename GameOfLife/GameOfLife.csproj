@@ -45,15 +45,19 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CellsNeighborhood.cs" />
+    <Compile Include="CellNeighborhood.cs" />
     <Compile Include="Models\CellGrid2DModel.cs" />
     <Compile Include="Models\CellModel.cs" />
-    <Compile Include="Models\CellsNeighborhoodTypeModel.cs" />
+    <Compile Include="Models\CellStateModel.cs" />
     <Compile Include="Models\NumberOfCellsForRulesModel.cs" />
     <Compile Include="Models\RuleModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CellularAutomaton2D\CellularAutomaton2D.csproj">
+      <Project>{192ec281-b811-4b4a-98e6-671811c8b791}</Project>
+      <Name>CellularAutomaton2D</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ElementaryCellularAutomaton\ElementaryCellularAutomaton.csproj">
       <Project>{f54369ee-971d-44a9-b97a-e9ffbfe58dec}</Project>
       <Name>ElementaryCellularAutomaton</Name>

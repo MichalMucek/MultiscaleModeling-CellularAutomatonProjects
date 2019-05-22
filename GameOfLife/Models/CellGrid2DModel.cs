@@ -4,60 +4,67 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Media.Imaging;
-using BoundaryConditionModel = ElementaryCellularAutomaton.Models.BoundaryConditionModel;
+using CellularAutomaton2D;
+using CellularAutomaton2D.Models;
 
 namespace GameOfLife.Models
 {
-    public class CellGrid2DModel
+    public class CellGrid2DModel : ICellGrid
     {
-        private List<List<CellModel>> currentState;
-        private List<List<CellModel>> previousState;
+        public List<List<ICell>> CurrentState { get; private set; }
+        public List<List<ICell>> PreviousState { get; private set; }
+        public ICellState ZeroState { get; private set; }
+        public CellStateModel AliveState { get; private set; }
         public int ColumnCount { get; private set; }
         public int RowCount { get; private set; }
-        public CellsNeighborhoodTypeModel NeighborhoodType { get; private set; }
+        public CellNeighborhoodTypeModel NeighborhoodType { get; private set; }
         public RuleModel Rule { get; private set; }
         public BoundaryConditionModel BoundaryCondition { get; private set; }
+        public int CellCount => ColumnCount * RowCount;
+        public int PopulatedCellsCount { get; private set; } = 0;
+        public bool IsFullyPopulated => PopulatedCellsCount == CellCount;
 
         private MemoryStream imageMemoryStream;
         private BitmapImage bitmapImage;
 
-        public CellGrid2DModel(int columnCount, int rowCount, CellsNeighborhoodTypeModel neighborhoodType, RuleModel rule, BoundaryConditionModel boundaryCondition)
+        public CellGrid2DModel(int columnCount, int rowCount, CellNeighborhoodTypeModel neighborhoodType,
+            RuleModel rule, BoundaryConditionModel boundaryCondition)
         {
             ColumnCount = columnCount;
             RowCount = rowCount;
+            ZeroState = new CellStateModel();
+            AliveState = new CellStateModel(1);
+            AliveState.SetColor(System.Windows.Media.Colors.RoyalBlue);
             NeighborhoodType = neighborhoodType;
             Rule = rule;
             BoundaryCondition = boundaryCondition;
 
-            currentState = new List<List<CellModel>>();
-            previousState = new List<List<CellModel>>();
-            CreateCells();
-            PreparePreviousStateLists();
-            AddNeighborhoodToCellsState(currentState);
+            CurrentState = new List<List<ICell>>();
+            PreviousState = new List<List<ICell>>();
+            CreateNewCellsForCurrentState();
+            CreateRowsInPreviousState();
+            AddNeighboringCellsToCellsState(CurrentState);
         }
 
-        private void CreateCells()
+        private void CreateNewCellsForCurrentState()
         {
             for (int row = 0, cellId = 0; row < RowCount; row++)
             {
-                currentState.Add(new List<CellModel>());
+                CurrentState.Add(new List<ICell>());
 
                 for (int column = 0; column < ColumnCount; column++, cellId++)
-                {
-                    currentState[row].Add(new CellModel(cellId, column, row, false));
-                }
+                    CurrentState[row].Add(new CellModel(cellId, column, row, (CellStateModel)ZeroState,
+                        AliveState, (CellStateModel)ZeroState));
             }
         }
 
-        private void PreparePreviousStateLists()
+        private void CreateRowsInPreviousState()
         {
             for (int row = 0; row < RowCount; row++)
-            {
-                previousState.Add(new List<CellModel>());
-            }
+                PreviousState.Add(new List<ICell>());
         }
 
-        private void AddNeighborhoodToCellsState(List<List<CellModel>> cellsState)
+        private void AddNeighboringCellsToCellsState(List<List<ICell>> cellsState)
         {
             for (int row = 0, cellId = 0; row < RowCount; row++)
             {
@@ -67,9 +74,10 @@ namespace GameOfLife.Models
                     {
                         case BoundaryConditionModel.Absorbing:
                         case BoundaryConditionModel.CounterAbsorbing:
-                            CellModel outsideCell = new CellModel(BoundaryCondition == BoundaryConditionModel.CounterAbsorbing ? true : false);
+                            CellModel outsideCell = new CellModel(BoundaryCondition == BoundaryConditionModel.CounterAbsorbing,
+                                AliveState, (CellStateModel)ZeroState);
 
-                            cellsState[row][column].Neighborhood = new CellsNeighborhood
+                            cellsState[row][column].NeighboringCells = new CellNeighborhood
                             {
                                 Top = row == 0 ? outsideCell : cellsState[row - 1][column],
                                 TopRight = row == 0 || column == ColumnCount - 1 ? outsideCell : cellsState[row - 1][column + 1],
@@ -85,7 +93,7 @@ namespace GameOfLife.Models
                             break;
 
                         case BoundaryConditionModel.Periodic:
-                            cellsState[row][column].Neighborhood = new CellsNeighborhood
+                            cellsState[row][column].NeighboringCells = new CellNeighborhood
                             {
                                 Top = cellsState[row == 0 ? RowCount - 1 : row - 1][column],
                                 TopRight = cellsState[row == 0 ? RowCount - 1 : row - 1][column == ColumnCount - 1 ? 0 : column + 1],
@@ -108,25 +116,27 @@ namespace GameOfLife.Models
         {
             CopyCurrentStateToPrevious();
 
-            foreach (var row in currentState)
+            foreach (var row in CurrentState)
             {
-                foreach (var evolvingCell in row)
+                foreach (CellModel evolvingCell in row)
                 {
-                    CellModel oldCell = previousState[evolvingCell.RowNumber][evolvingCell.ColumnNumber];
+                    CellModel oldCell = (CellModel)PreviousState[evolvingCell.RowNumber][evolvingCell.ColumnNumber];
 
                     if (evolvingCell.IsAlive)
-                        evolvingCell.IsAlive = Rule.WillSurvive(oldCell.Neighborhood.AliveNeighboursCount);
+                        evolvingCell.IsAlive = Rule.WillSurvive(oldCell.NeighboringCells.StatesCounts[AliveState]);
                     else
-                        evolvingCell.IsAlive = Rule.WillBeBorn(oldCell.Neighborhood.AliveNeighboursCount);
+                        evolvingCell.IsAlive = Rule.WillBeBorn(oldCell.NeighboringCells.StatesCounts[AliveState]);
                 }
             }
         }
 
         private void CopyCurrentStateToPrevious()
         {
-            previousState = currentState.ConvertAll(row => new List<CellModel>(row.ConvertAll(cell => new CellModel(cell))));
+            PreviousState = CurrentState.ConvertAll(
+                row => new List<ICell>(row.ConvertAll(cell => new CellModel((CellModel)cell)))
+            );
 
-            AddNeighborhoodToCellsState(previousState);
+            AddNeighboringCellsToCellsState(PreviousState);
         }
 
         public BitmapImage GetBitmapImage(int cellWidth, int cellHeight, int lineWidth)
@@ -143,66 +153,69 @@ namespace GameOfLife.Models
             Point lineFirstPoint = new Point();
             Point lineSecondPoint = new Point();
 
-            Bitmap image = new Bitmap(imageWidth, imageHeight);
-            SolidBrush royalBlueSolidBrush = new SolidBrush(Color.RoyalBlue);
-            Pen blackPen = new Pen(Color.Black, lineWidth);
-
+            using (var image = new Bitmap(imageWidth, imageHeight))
             using (var imageGraphics = Graphics.FromImage(image))
             {
-                imageGraphics.Clear(Color.White);
+                imageGraphics.Clear(Color.FromArgb(ZeroState.Color.R, ZeroState.Color.G, ZeroState.Color.B));
 
                 if (lineWidth > 0)
                 {
-                    lineFirstPoint.X = 0;
-                    lineSecondPoint.X = imageWidth;
-
-                    for (int row = 0; row < RowCount + 1; row++)
+                    using (var blackPen = new Pen(Color.Black, lineWidth))
                     {
-                        lineFirstPoint.Y = row * (cellHeight + lineWidth) + lineWidth / 2;
-                        lineSecondPoint.Y = lineFirstPoint.Y;
+                        lineFirstPoint.X = 0;
+                        lineSecondPoint.X = imageWidth;
 
-                        imageGraphics.DrawLine(blackPen, lineFirstPoint, lineSecondPoint);
-                    }
+                        for (int row = 0; row < RowCount + 1; row++)
+                        {
+                            lineFirstPoint.Y = row * (cellHeight + lineWidth) + lineWidth / 2;
+                            lineSecondPoint.Y = lineFirstPoint.Y;
 
-                    lineFirstPoint.Y = 0;
-                    lineSecondPoint.Y = imageHeight;
+                            imageGraphics.DrawLine(blackPen, lineFirstPoint, lineSecondPoint);
+                        }
 
-                    for (int column = 0; column < ColumnCount + 1; column++)
-                    {
-                        lineFirstPoint.X = column * (cellWidth + lineWidth) + lineWidth / 2;
-                        lineSecondPoint.X = lineFirstPoint.X;
+                        lineFirstPoint.Y = 0;
+                        lineSecondPoint.Y = imageHeight;
 
-                        imageGraphics.DrawLine(blackPen, lineFirstPoint, lineSecondPoint);
+                        for (int column = 0; column < ColumnCount + 1; column++)
+                        {
+                            lineFirstPoint.X = column * (cellWidth + lineWidth) + lineWidth / 2;
+                            lineSecondPoint.X = lineFirstPoint.X;
+
+                            imageGraphics.DrawLine(blackPen, lineFirstPoint, lineSecondPoint);
+                        }
                     }
                 }
 
-                for (int row = 0; row < RowCount; row++)
+                Color aliveCellColor = Color.FromArgb(AliveState.Color.R, AliveState.Color.G, AliveState.Color.B);
+
+                using (var aliveCellColorSolidBrush = new SolidBrush(aliveCellColor))
                 {
-                    cellPosition.Y = row * (cellHeight + lineWidth) + lineWidth;
-
-                    for (int column = 0; column < ColumnCount; column++)
+                    for (int row = 0; row < RowCount; row++)
                     {
-                        cellPosition.X = column * (cellWidth + lineWidth) + lineWidth;
+                        cellPosition.Y = row * (cellHeight + lineWidth) + lineWidth;
 
-                        if (currentState[row][column].IsAlive)
-                            imageGraphics.FillRectangle(royalBlueSolidBrush, new Rectangle(cellPosition, cellSize));
+                        for (int column = 0; column < ColumnCount; column++)
+                        {
+                            cellPosition.X = column * (cellWidth + lineWidth) + lineWidth;
 
-                        currentState[row][column].StartPositionOnImage = cellPosition;
-                        currentState[row][column].EndPositionOnImage = cellPosition + cellSize;
+                            CellModel cell = (CellModel)CurrentState[row][column];
+
+                            if (cell.IsAlive)
+                                imageGraphics.FillRectangle(aliveCellColorSolidBrush, new Rectangle(cellPosition, cellSize));
+
+                            CurrentState[row][column].StartPositionOnImage = cellPosition;
+                            CurrentState[row][column].EndPositionOnImage = cellPosition + cellSize;
+                        }
                     }
                 }
 
-                imageGraphics.Dispose();
-                royalBlueSolidBrush.Dispose();
-                blackPen.Dispose();
+                bitmapImage.BeginInit();
+                image.Save(imageMemoryStream, ImageFormat.Png);
+                imageMemoryStream.Seek(0, SeekOrigin.Begin);
+                bitmapImage.StreamSource = imageMemoryStream;
+                bitmapImage.EndInit();
+                bitmapImage.Freeze();
             }
-
-            bitmapImage.BeginInit();
-            image.Save(imageMemoryStream, ImageFormat.Png);
-            imageMemoryStream.Seek(0, SeekOrigin.Begin);
-            bitmapImage.StreamSource = imageMemoryStream;
-            bitmapImage.EndInit();
-            bitmapImage.Freeze();
 
             return bitmapImage;
         }
@@ -211,9 +224,9 @@ namespace GameOfLife.Models
         {
             bool cellIsFound = false;
 
-            foreach (var row in currentState)
+            foreach (var row in CurrentState)
             {
-                foreach (var cell in row)
+                foreach (CellModel cell in row)
                 {
                     if (cell.StartPositionOnImage.X <= mousePositionOverImage.X &&
                         cell.StartPositionOnImage.Y <= mousePositionOverImage.Y &&
@@ -232,8 +245,8 @@ namespace GameOfLife.Models
 
         public void KillAll()
         {
-            foreach (var row in currentState)
-                foreach (var cell in row)
+            foreach (var row in CurrentState)
+                foreach (CellModel cell in row)
                     cell.Kill();
         }
 
@@ -248,9 +261,11 @@ namespace GameOfLife.Models
                 int randomRow = random.Next(RowCount);
                 int randomColumn = random.Next(ColumnCount);
 
-                if (!currentState[randomRow][randomColumn].IsAlive)
+                CellModel cell = (CellModel)CurrentState[randomRow][randomColumn];
+
+                if (cell.IsDead)
                 {
-                    currentState[randomRow][randomColumn].Revive();
+                    cell.Revive();
                     cellCount--;
                 }
             }
@@ -262,9 +277,9 @@ namespace GameOfLife.Models
 
             try
             {
-                currentState[RowCount / 2 - 1][ColumnCount / 2].Revive(); currentState[RowCount / 2 - 1][ColumnCount / 2 + 1].Revive();
-                currentState[RowCount / 2][ColumnCount / 2 - 1].Revive(); currentState[RowCount / 2][ColumnCount / 2 + 2].Revive();
-                currentState[RowCount / 2 + 1][ColumnCount / 2].Revive(); currentState[RowCount / 2 + 1][ColumnCount / 2 + 1].Revive();
+                CurrentState[RowCount / 2 - 1][ColumnCount / 2].State = AliveState; CurrentState[RowCount / 2 - 1][ColumnCount / 2 + 1].State = AliveState;
+                CurrentState[RowCount / 2][ColumnCount / 2 - 1].State = AliveState; CurrentState[RowCount / 2][ColumnCount / 2 + 2].State = AliveState;
+                CurrentState[RowCount / 2 + 1][ColumnCount / 2].State = AliveState; CurrentState[RowCount / 2 + 1][ColumnCount / 2 + 1].State = AliveState;
 
                 return true;
             }
@@ -282,9 +297,9 @@ namespace GameOfLife.Models
 
             try
             {
-                currentState[RowCount / 2 - 1][ColumnCount / 2].Revive(); currentState[RowCount / 2 - 1][ColumnCount / 2 + 1].Revive();
-                currentState[RowCount / 2][ColumnCount / 2 - 1].Revive(); currentState[RowCount / 2][ColumnCount / 2].Revive();
-                currentState[RowCount / 2 + 1][ColumnCount / 2 + 1].Revive();
+                CurrentState[RowCount / 2 - 1][ColumnCount / 2].State = AliveState; CurrentState[RowCount / 2 - 1][ColumnCount / 2 + 1].State = AliveState;
+                CurrentState[RowCount / 2][ColumnCount / 2 - 1].State = AliveState; CurrentState[RowCount / 2][ColumnCount / 2].State = AliveState;
+                CurrentState[RowCount / 2 + 1][ColumnCount / 2 + 1].State = AliveState;
 
                 return true;
             }
@@ -302,9 +317,9 @@ namespace GameOfLife.Models
 
             try
             {
-                currentState[RowCount / 2 - 1][ColumnCount / 2].Revive();
-                currentState[RowCount / 2][ColumnCount / 2].Revive();
-                currentState[RowCount / 2 + 1][ColumnCount / 2].Revive();
+                CurrentState[RowCount / 2 - 1][ColumnCount / 2].State = AliveState;
+                CurrentState[RowCount / 2][ColumnCount / 2].State = AliveState;
+                CurrentState[RowCount / 2 + 1][ColumnCount / 2].State = AliveState;
 
                 return true;
             }
