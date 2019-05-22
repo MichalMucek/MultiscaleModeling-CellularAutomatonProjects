@@ -74,32 +74,32 @@ namespace GrainGrowthCellularAutomaton.Models
         {
             get
             {
-                var grainsCount = new Dictionary<ICellState, int>();
+                var grainsCounts = new Dictionary<ICellState, int>();
 
                 switch (Type)
                 {
                     case CellNeighborhoodTypeModel.VonNeumann:
                         for (int sideIndex = 0; sideIndex < SIDES_COUNT; sideIndex += 2)
                         {
-                            if (grainsCount.ContainsKey(grainCells[sideIndex].State))
-                                grainsCount[grainCells[sideIndex].State]++;
+                            if (grainsCounts.ContainsKey(grainCells[sideIndex].State))
+                                grainsCounts[grainCells[sideIndex].State]++;
                             else
-                                grainsCount.Add(grainCells[sideIndex].State, 1);
+                                grainsCounts.Add(grainCells[sideIndex].State, 1);
                         }
                         break;
 
                     case CellNeighborhoodTypeModel.Moore:
                         foreach (var grainCell in grainCells)
                         {
-                            if (grainsCount.ContainsKey(grainCell.State))
-                                grainsCount[grainCell.State]++;
+                            if (grainsCounts.ContainsKey(grainCell.State))
+                                grainsCounts[grainCell.State]++;
                             else
-                                grainsCount.Add(grainCell.State, 1);
+                                grainsCounts.Add(grainCell.State, 1);
                         }
                         break;
                 }
 
-                return grainsCount;
+                return grainsCounts;
             }
         }
     }

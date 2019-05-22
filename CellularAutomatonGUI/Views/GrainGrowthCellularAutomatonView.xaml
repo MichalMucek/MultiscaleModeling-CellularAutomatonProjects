@@ -417,14 +417,12 @@
             Grid.RowSpan="2"
             Grid.Column="1"
             Header="View">
-            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                <Image
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    cal:Message.Attach="[Event MouseLeftButtonDown] = [Action PutGrainNucleus($source, $eventArgs)]"
-                    Source="{Binding GrainCellGridBitmapImage, Mode=OneWay}"
-                    Stretch="None" />
-            </ScrollViewer>
+            <Image
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                cal:Message.Attach="[Event MouseLeftButtonDown] = [Action PutGrainNucleus($source, $eventArgs)]"
+                Source="{Binding GrainCellGridBitmapImage, Mode=OneWay}"
+                Stretch="Uniform" />
         </GroupBox>
     </Grid>
 </UserControl>
