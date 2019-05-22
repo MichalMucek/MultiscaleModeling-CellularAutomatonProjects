@@ -1,6 +1,5 @@
 ﻿using Caliburn.Micro;
 using CellularAutomaton2D.Models;
-using ElementaryCellularAutomaton.Models;
 using GrainGrowthCellularAutomaton.Models;
 using System;
 using System.Drawing;
