@@ -75,32 +75,32 @@ namespace GameOfLife
         {
             get
             {
-                var grainsCount = new Dictionary<ICellState, int>();
+                var statesCounts = new Dictionary<ICellState, int>();
 
                 switch (Type)
                 {
                     case CellNeighborhoodTypeModel.VonNeumann:
                         for (int sideIndex = 0; sideIndex < SIDES_COUNT; sideIndex += 2)
                         {
-                            if (grainsCount.ContainsKey(cells[sideIndex].State))
-                                grainsCount[cells[sideIndex].State]++;
+                            if (statesCounts.ContainsKey(cells[sideIndex].State))
+                                statesCounts[cells[sideIndex].State]++;
                             else
-                                grainsCount.Add(cells[sideIndex].State, 1);
+                                statesCounts.Add(cells[sideIndex].State, 1);
                         }
                         break;
 
                     case CellNeighborhoodTypeModel.Moore:
                         foreach (var cell in cells)
                         {
-                            if (grainsCount.ContainsKey(cell.State))
-                                grainsCount[cell.State]++;
+                            if (statesCounts.ContainsKey(cell.State))
+                                statesCounts[cell.State]++;
                             else
-                                grainsCount.Add(cell.State, 1);
+                                statesCounts.Add(cell.State, 1);
                         }
                         break;
                 }
 
-                return grainsCount;
+                return statesCounts;
             }
         }
     }

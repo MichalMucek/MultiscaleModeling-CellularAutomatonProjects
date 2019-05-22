@@ -121,11 +121,22 @@ namespace GameOfLife.Models
                 foreach (CellModel evolvingCell in row)
                 {
                     CellModel oldCell = (CellModel)PreviousState[evolvingCell.RowNumber][evolvingCell.ColumnNumber];
+                    int aliveCellsCount;
 
                     if (evolvingCell.IsAlive)
-                        evolvingCell.IsAlive = Rule.WillSurvive(oldCell.NeighboringCells.StatesCounts[AliveState]);
+                    {
+                        if (oldCell.NeighboringCells.StatesCounts.TryGetValue(AliveState, out aliveCellsCount))
+                            evolvingCell.IsAlive = Rule.WillSurvive(aliveCellsCount);
+                        else
+                            evolvingCell.IsAlive = Rule.WillSurvive(0);
+                    }
                     else
-                        evolvingCell.IsAlive = Rule.WillBeBorn(oldCell.NeighboringCells.StatesCounts[AliveState]);
+                    {
+                        if (oldCell.NeighboringCells.StatesCounts.TryGetValue(AliveState, out aliveCellsCount))
+                            evolvingCell.IsAlive = Rule.WillBeBorn(aliveCellsCount);
+                        else
+                            evolvingCell.IsAlive = Rule.WillBeBorn(0);
+                    }
                 }
             }
         }
@@ -220,7 +231,7 @@ namespace GameOfLife.Models
             return bitmapImage;
         }
 
-        public void NegateCellState(Point mousePositionOverImage)
+        public void NegateCellState(Point mousePositionOverBitmapImage)
         {
             bool cellIsFound = false;
 
@@ -228,10 +239,10 @@ namespace GameOfLife.Models
             {
                 foreach (CellModel cell in row)
                 {
-                    if (cell.StartPositionOnImage.X <= mousePositionOverImage.X &&
-                        cell.StartPositionOnImage.Y <= mousePositionOverImage.Y &&
-                        cell.EndPositionOnImage.X >= mousePositionOverImage.X &&
-                        cell.EndPositionOnImage.Y >= mousePositionOverImage.Y)
+                    if (cell.StartPositionOnImage.X <= mousePositionOverBitmapImage.X &&
+                        cell.StartPositionOnImage.Y <= mousePositionOverBitmapImage.Y &&
+                        cell.EndPositionOnImage.X >= mousePositionOverBitmapImage.X &&
+                        cell.EndPositionOnImage.Y >= mousePositionOverBitmapImage.Y)
                     {
                         cell.IsAlive = !cell.IsAlive;
                         cellIsFound = true;

@@ -17,7 +17,7 @@ namespace CellularAutomatonGUI.ViewModels
     {
         private int columnCount = 30;
         private int rowCount = 30;
-        private CellNeighborhoodTypeModel selectedCellsNeighborhood = CellNeighborhoodTypeModel.Moore;
+        private CellNeighborhoodTypeModel selectedCellNeighborhood = CellNeighborhoodTypeModel.Moore;
         private BindableCollection<NumberOfCellsForRulesModel> birthRules;
         private NumberOfCellsForRulesModel selectedBirthRule;
         private BindableCollection<NumberOfCellsForRulesModel> birthVonNeumannRulesSafe;
@@ -128,14 +128,14 @@ namespace CellularAutomatonGUI.ViewModels
 
         public BindableCollection<CellNeighborhoodTypeModel> CellNeighborhoods { get; } = new BindableCollection<CellNeighborhoodTypeModel>();
 
-        public CellNeighborhoodTypeModel SelectedCellsNeighborhood
+        public CellNeighborhoodTypeModel SelectedCellNeighborhood
         {
-            get => selectedCellsNeighborhood;
+            get => selectedCellNeighborhood;
             set
             {
-                selectedCellsNeighborhood = value;
+                selectedCellNeighborhood = value;
 
-                switch (selectedCellsNeighborhood)
+                switch (selectedCellNeighborhood)
                 {
                     case CellNeighborhoodTypeModel.VonNeumann:
                         BirthRules = birthVonNeumannRulesSafe;
@@ -210,14 +210,14 @@ namespace CellularAutomatonGUI.ViewModels
 
                 await Task.Run(() =>
                 {
-                    switch (SelectedCellsNeighborhood)
+                    switch (SelectedCellNeighborhood)
                     {
                         case CellNeighborhoodTypeModel.VonNeumann:
-                            cellGrid = new CellGrid2DModel(ColumnCount, RowCount, SelectedCellsNeighborhood, vonNeumannRule, SelectedBoundaryCondition);
+                            cellGrid = new CellGrid2DModel(ColumnCount, RowCount, SelectedCellNeighborhood, vonNeumannRule, SelectedBoundaryCondition);
                             break;
 
                         case CellNeighborhoodTypeModel.Moore:
-                            cellGrid = new CellGrid2DModel(ColumnCount, RowCount, SelectedCellsNeighborhood, mooreRule, SelectedBoundaryCondition);
+                            cellGrid = new CellGrid2DModel(ColumnCount, RowCount, SelectedCellNeighborhood, mooreRule, SelectedBoundaryCondition);
                             break;
                     }
 
@@ -411,19 +411,40 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
-        public void NegateCellState(object sender, MouseEventArgs e)
+        public async void NegateCellState(object sender, MouseEventArgs e)
         {
-            if (!isStopped && cellGrid != null)
-            {
-                Point mousePositionOverCellGridImage = new Point
-                {
-                    X = (int)e.GetPosition((Image)sender).X,
-                    Y = (int)e.GetPosition((Image)sender).Y
-                };
+            var imageControl = (Image)sender;
 
-                cellGrid?.NegateCellState(mousePositionOverCellGridImage);
-                RunDrawerTask();
-            }
+            await Task.Run(() =>
+            {
+                if (!isStopped && cellGrid != null)
+                {
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        Size imageControlSize = new Size
+                        {
+                            Width = (int)imageControl.ActualWidth,
+                            Height = (int)imageControl.ActualHeight
+                        };
+
+                        Point mousePositionOverCellGridImageControl = new Point
+                        {
+                            X = (int)e.GetPosition(imageControl).X,
+                            Y = (int)e.GetPosition(imageControl).Y
+                        };
+
+                        Point mousePositionOverCellGridBitmapImage = new Point
+                        {
+                            X = (int)((cellGridBitmapImage.PixelWidth / (double)imageControlSize.Width) * mousePositionOverCellGridImageControl.X),
+                            Y = (int)((cellGridBitmapImage.PixelHeight / (double)imageControlSize.Height) * mousePositionOverCellGridImageControl.Y)
+                        };
+
+                        cellGrid.NegateCellState(mousePositionOverCellGridBitmapImage);
+                    });
+                }
+            });
+
+            RunDrawerTask();
         }
 
         public int CellCount

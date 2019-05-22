@@ -5,7 +5,6 @@
     xmlns:cag="clr-namespace:CellularAutomatonGUI"
     xmlns:cal="http://www.caliburnproject.org"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:CellularAutomatonGUI.ViewModels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     mc:Ignorable="d">
@@ -100,8 +99,8 @@
                     Margin="3"
                     VerticalAlignment="Center"
                     IsEnabled="{Binding IsStopped}"
-                    ItemsSource="{Binding CellsNeighborhoods}"
-                    SelectedItem="{Binding SelectedCellsNeighborhood, Mode=TwoWay}">
+                    ItemsSource="{Binding CellNeighborhoods}"
+                    SelectedItem="{Binding SelectedCellNeighborhood, Mode=TwoWay}">
                     <ComboBox.Resources>
                         <cag:EnumDescriptionConverter x:Key="enumDescriptionConverter" />
                     </ComboBox.Resources>
@@ -375,14 +374,12 @@
             Grid.RowSpan="2"
             Grid.Column="1"
             Header="View">
-            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                <Image
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    cal:Message.Attach="[Event MouseLeftButtonDown] = [Action NegateCellState($source, $eventArgs)]"
-                    Source="{Binding CellGridBitmapImage, Mode=OneWay}"
-                    Stretch="None" />
-            </ScrollViewer>
+            <Image
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                cal:Message.Attach="[Event MouseLeftButtonDown] = [Action NegateCellState($source, $eventArgs)]"
+                Source="{Binding CellGridBitmapImage, Mode=OneWay}"
+                Stretch="Uniform" />
         </GroupBox>
     </Grid>
 </UserControl>
