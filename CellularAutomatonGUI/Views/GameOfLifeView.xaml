@@ -374,14 +374,12 @@
             Grid.RowSpan="2"
             Grid.Column="1"
             Header="View">
-            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                <Image
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    cal:Message.Attach="[Event MouseLeftButtonDown] = [Action NegateCellState($source, $eventArgs)]"
-                    Source="{Binding CellGridBitmapImage, Mode=OneWay}"
-                    Stretch="None" />
-            </ScrollViewer>
+            <Image
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                cal:Message.Attach="[Event MouseLeftButtonDown] = [Action NegateCellState($source, $eventArgs)]"
+                Source="{Binding CellGridBitmapImage, Mode=OneWay}"
+                Stretch="Uniform" />
         </GroupBox>
     </Grid>
 </UserControl>

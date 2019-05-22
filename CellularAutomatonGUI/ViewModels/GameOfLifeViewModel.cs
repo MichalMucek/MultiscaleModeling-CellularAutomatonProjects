@@ -411,19 +411,40 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
-        public void NegateCellState(object sender, MouseEventArgs e)
+        public async void NegateCellState(object sender, MouseEventArgs e)
         {
-            if (!isStopped && cellGrid != null)
-            {
-                Point mousePositionOverCellGridImage = new Point
-                {
-                    X = (int)e.GetPosition((Image)sender).X,
-                    Y = (int)e.GetPosition((Image)sender).Y
-                };
+            var imageControl = (Image)sender;
 
-                cellGrid?.NegateCellState(mousePositionOverCellGridImage);
-                RunDrawerTask();
-            }
+            await Task.Run(() =>
+            {
+                if (!isStopped && cellGrid != null)
+                {
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        Size imageControlSize = new Size
+                        {
+                            Width = (int)imageControl.ActualWidth,
+                            Height = (int)imageControl.ActualHeight
+                        };
+
+                        Point mousePositionOverCellGridImageControl = new Point
+                        {
+                            X = (int)e.GetPosition(imageControl).X,
+                            Y = (int)e.GetPosition(imageControl).Y
+                        };
+
+                        Point mousePositionOverCellGridBitmapImage = new Point
+                        {
+                            X = (int)((cellGridBitmapImage.PixelWidth / (double)imageControlSize.Width) * mousePositionOverCellGridImageControl.X),
+                            Y = (int)((cellGridBitmapImage.PixelHeight / (double)imageControlSize.Height) * mousePositionOverCellGridImageControl.Y)
+                        };
+
+                        cellGrid.NegateCellState(mousePositionOverCellGridBitmapImage);
+                    });
+                }
+            });
+
+            RunDrawerTask();
         }
 
         public int CellCount

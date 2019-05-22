@@ -231,7 +231,7 @@ namespace GameOfLife.Models
             return bitmapImage;
         }
 
-        public void NegateCellState(Point mousePositionOverImage)
+        public void NegateCellState(Point mousePositionOverBitmapImage)
         {
             bool cellIsFound = false;
 
@@ -239,10 +239,10 @@ namespace GameOfLife.Models
             {
                 foreach (CellModel cell in row)
                 {
-                    if (cell.StartPositionOnImage.X <= mousePositionOverImage.X &&
-                        cell.StartPositionOnImage.Y <= mousePositionOverImage.Y &&
-                        cell.EndPositionOnImage.X >= mousePositionOverImage.X &&
-                        cell.EndPositionOnImage.Y >= mousePositionOverImage.Y)
+                    if (cell.StartPositionOnImage.X <= mousePositionOverBitmapImage.X &&
+                        cell.StartPositionOnImage.Y <= mousePositionOverBitmapImage.Y &&
+                        cell.EndPositionOnImage.X >= mousePositionOverBitmapImage.X &&
+                        cell.EndPositionOnImage.Y >= mousePositionOverBitmapImage.Y)
                     {
                         cell.IsAlive = !cell.IsAlive;
                         cellIsFound = true;
