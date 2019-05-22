@@ -528,8 +528,8 @@ namespace CellularAutomatonGUI.ViewModels
                     {
                         Size imageControlSize = new Size
                         {
-                            Width = (int)imageControl.Width,
-                            Height = (int)imageControl.Height
+                            Width = (int)imageControl.ActualWidth,
+                            Height = (int)imageControl.ActualHeight
                         };
 
                         Point mousePositionOverCellGridImageControl = new Point
@@ -540,11 +540,11 @@ namespace CellularAutomatonGUI.ViewModels
 
                         Point mousePositionOverCellGridBitmapImage = new Point
                         {
-                            X = (grainCellGridBitmapImage.PixelWidth / imageControlSize.Width) * mousePositionOverCellGridImageControl.X,
-                            Y = (grainCellGridBitmapImage.PixelHeight / imageControlSize.Height) * mousePositionOverCellGridImageControl.Y
+                            X = (int)((grainCellGridBitmapImage.PixelWidth / (double)imageControlSize.Width) * mousePositionOverCellGridImageControl.X),
+                            Y = (int)((grainCellGridBitmapImage.PixelHeight / (double)imageControlSize.Height) * mousePositionOverCellGridImageControl.Y)
                         };
 
-                        grainCellGrid?.PutGrainNucleus(mousePositionOverCellGridImageControl);
+                        grainCellGrid?.PutGrainNucleus(mousePositionOverCellGridBitmapImage);
                     });
                 }
             });

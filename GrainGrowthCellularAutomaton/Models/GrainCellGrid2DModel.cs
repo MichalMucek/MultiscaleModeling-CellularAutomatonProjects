@@ -267,9 +267,9 @@ namespace GrainGrowthCellularAutomaton.Models
                     if (grainCell.State == ZeroState)
                     {
                         if (grainCell.StartPositionOnImage.X <= mousePositionOverImage.X &&
-                                        grainCell.StartPositionOnImage.Y <= mousePositionOverImage.Y &&
-                                        grainCell.EndPositionOnImage.X >= mousePositionOverImage.X &&
-                                        grainCell.EndPositionOnImage.Y >= mousePositionOverImage.Y)
+                            grainCell.StartPositionOnImage.Y <= mousePositionOverImage.Y &&
+                            grainCell.EndPositionOnImage.X >= mousePositionOverImage.X &&
+                            grainCell.EndPositionOnImage.Y >= mousePositionOverImage.Y)
                         {
                             AddNewGrain();
                             grainCell.State = grains.Last();
