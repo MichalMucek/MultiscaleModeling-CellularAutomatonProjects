@@ -121,11 +121,22 @@ namespace GameOfLife.Models
                 foreach (CellModel evolvingCell in row)
                 {
                     CellModel oldCell = (CellModel)PreviousState[evolvingCell.RowNumber][evolvingCell.ColumnNumber];
+                    int aliveCellsCount;
 
                     if (evolvingCell.IsAlive)
-                        evolvingCell.IsAlive = Rule.WillSurvive(oldCell.NeighboringCells.StatesCounts[AliveState]);
+                    {
+                        if (oldCell.NeighboringCells.StatesCounts.TryGetValue(AliveState, out aliveCellsCount))
+                            evolvingCell.IsAlive = Rule.WillSurvive(aliveCellsCount);
+                        else
+                            evolvingCell.IsAlive = Rule.WillSurvive(0);
+                    }
                     else
-                        evolvingCell.IsAlive = Rule.WillBeBorn(oldCell.NeighboringCells.StatesCounts[AliveState]);
+                    {
+                        if (oldCell.NeighboringCells.StatesCounts.TryGetValue(AliveState, out aliveCellsCount))
+                            evolvingCell.IsAlive = Rule.WillBeBorn(aliveCellsCount);
+                        else
+                            evolvingCell.IsAlive = Rule.WillBeBorn(0);
+                    }
                 }
             }
         }
