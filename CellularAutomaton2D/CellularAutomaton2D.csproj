@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ICellNeighborhood.cs" />
     <Compile Include="IRadialCellNeighborhood.cs" />
     <Compile Include="Models\BoundaryConditionModel.cs" />
     <Compile Include="Models\CellNeighborhoodTypeModel.cs" />
