@@ -7,6 +7,6 @@ namespace CellularAutomaton2D
     {
         CellNeighborhoodTypeModel Type { get; }
         List<ICell> Cells { get; }
-        Dictionary<ICell, int> StatesCount { get; }
+        Dictionary<ICellState, int> StatesCount { get; }
     }
 }
