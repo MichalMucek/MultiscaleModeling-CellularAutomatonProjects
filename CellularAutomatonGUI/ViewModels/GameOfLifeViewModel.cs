@@ -32,10 +32,10 @@ namespace CellularAutomatonGUI.ViewModels
         private string continuePauseContent = "Continue";
         private bool canShowNextStep = false;
         private string startStopContent = "Start";
-        private int timeInterval = 75;
+        private int timeIntervalInMilliseconds = 100;
         private int cellWidth = 12;
         private int cellHeight = 12;
-        private int lineWidth = 2;
+        private int lineWidth = 1;
         private int cellCount = 1;
         private int randomCellsToSetAliveCount = 1;
 
@@ -73,7 +73,7 @@ namespace CellularAutomatonGUI.ViewModels
             BoundaryConditions.Add(BoundaryConditionModel.Periodic);
 
             evolverAndDrawerDispatcherTimer = new DispatcherTimer();
-            evolverAndDrawerDispatcherTimer.Interval = TimeSpan.FromMilliseconds(timeInterval);
+            evolverAndDrawerDispatcherTimer.Interval = TimeSpan.FromMilliseconds(timeIntervalInMilliseconds);
             evolverAndDrawerDispatcherTimer.Tick += EvolverAndDrawer_Tick;
 
             cancellationTokenSource = new CancellationTokenSource();
@@ -346,14 +346,14 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
-        public int TimeInterval
+        public int TimeIntervalInMilliseconds
         {
-            get => timeInterval;
+            get => timeIntervalInMilliseconds;
             set
             {
-                timeInterval = value;
+                timeIntervalInMilliseconds = value;
                 evolverAndDrawerDispatcherTimer.Interval = TimeSpan.FromMilliseconds(value);
-                NotifyOfPropertyChange(() => TimeInterval);
+                NotifyOfPropertyChange(() => TimeIntervalInMilliseconds);
             }
         }
 
@@ -457,15 +457,15 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
-        public void ClearCellGridImage()
+        public async void ClearCellGridImage()
         {
-            cellGrid?.KillAll();
+            await Task.Run(() => cellGrid?.KillAll());
             RunDrawerTask();
         }
 
-        public void Randomize()
+        public async void Randomize()
         {
-            cellGrid?.Randomize(randomCellsToSetAliveCount);
+            await Task.Run(() => cellGrid?.Randomize(randomCellsToSetAliveCount));
             RunDrawerTask();
         }
 
@@ -479,21 +479,21 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
-        public void PutBeehiveInTheMiddle()
+        public async void PutBeehiveInTheMiddle()
         {
-            cellGrid?.PutBeehiveInTheMiddle();
+            await Task.Run(() => cellGrid?.PutBeehiveInTheMiddle());
             RunDrawerTask();
         }
 
-        public void PutGliderInTheMiddle()
+        public async void PutGliderInTheMiddle()
         {
-            cellGrid?.PutGliderInTheMiddle();
+            await Task.Run(() => cellGrid?.PutGliderInTheMiddle());
             RunDrawerTask();
         }
 
-        public void PutBlinkerInTheMiddle()
+        public async void PutBlinkerInTheMiddle()
         {
-            cellGrid?.PutBlinkerInTheMiddle();
+            await Task.Run(() => cellGrid?.PutBlinkerInTheMiddle());
             RunDrawerTask();
         }
     }
