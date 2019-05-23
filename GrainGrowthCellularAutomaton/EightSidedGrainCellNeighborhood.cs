@@ -64,7 +64,7 @@ namespace GrainGrowthCellularAutomaton.Models
                     Type = obj.Type;
                     break;
 
-                case CellNeighborhoodTypeModel.Moore:
+                default:
                     Top = new GrainCellModel((GrainCellModel)obj.Top);
                     TopRight = new GrainCellModel((GrainCellModel)obj.TopRight);
                     Right = new GrainCellModel((GrainCellModel)obj.Right);
