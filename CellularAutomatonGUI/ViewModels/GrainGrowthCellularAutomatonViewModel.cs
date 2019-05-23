@@ -53,7 +53,7 @@ namespace CellularAutomatonGUI.ViewModels
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.LeftHexagonal);
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.RightHexagonal);
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.RandomHexagonal);
-            CellNeighborhoods.Add(CellNeighborhoodTypeModel.CellsWithinRadius);
+            CellNeighborhoods.Add(CellNeighborhoodTypeModel.Radial);
 
             BoundaryConditions.Add(BoundaryConditionModel.Absorbing);
             BoundaryConditions.Add(BoundaryConditionModel.Periodic);

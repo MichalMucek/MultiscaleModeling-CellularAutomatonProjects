@@ -121,7 +121,7 @@ namespace GrainGrowthCellularAutomaton.Models
                             }
                             break;
 
-                        case CellNeighborhoodTypeModel.CellsWithinRadius:
+                        case CellNeighborhoodTypeModel.Radial:
                             switch (BoundaryCondition)
                             {
                                 case BoundaryConditionModel.Absorbing:
@@ -129,7 +129,7 @@ namespace GrainGrowthCellularAutomaton.Models
                                         GetCellsWithinARadiusForAbsorbingBc(
                                             (GrainCellModel)CurrentState[row][column],
                                             CellNeighborhoodRadius),
-                                        CellNeighborhoodTypeModel.CellsWithinRadius);
+                                        NeighborhoodType);
                                     break;
 
                                 case BoundaryConditionModel.Periodic:
@@ -137,12 +137,9 @@ namespace GrainGrowthCellularAutomaton.Models
                                         GetCellsWithinARadiusForPeriodicBc(
                                             (GrainCellModel)CurrentState[row][column],
                                             CellNeighborhoodRadius),
-                                        CellNeighborhoodTypeModel.CellsWithinRadius);
+                                        NeighborhoodType);
                                     break;
                             }
-                            break;
-
-                        case CellNeighborhoodTypeModel.CellCenterOfMassWithinRadius:
                             break;
                     }
                 }

@@ -24,7 +24,7 @@ namespace GrainGrowthCellularAutomaton
 
                 switch (Type)
                 {
-                    case CellNeighborhoodTypeModel.CellsWithinRadius:
+                    case CellNeighborhoodTypeModel.Radial:
                         foreach (GrainCellModel grainCell in Cells)
                             if (grainsCounts.ContainsKey(grainCell.State))
                                 grainsCounts[grainCell.State]++;

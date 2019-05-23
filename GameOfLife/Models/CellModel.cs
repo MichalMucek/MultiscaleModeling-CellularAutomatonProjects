@@ -11,7 +11,7 @@ namespace GameOfLife.Models
         public ICellState State { get; set; }
         public CellStateModel AliveState { get; private set; }
         public CellStateModel DeadState { get; private set; }
-        public IEightSidedCellNeighborhood NeighboringCells { get; set; }
+        public ICellNeighborhood NeighboringCells { get; set; }
         public Point StartPositionOnImage { get; set; }
         public Point EndPositionOnImage { get; set; }
 
