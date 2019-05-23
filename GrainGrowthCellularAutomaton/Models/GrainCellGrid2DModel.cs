@@ -77,7 +77,7 @@ namespace GrainGrowthCellularAutomaton.Models
                     switch (BoundaryCondition)
                     {
                         case BoundaryConditionModel.Absorbing:
-                            cellsState[row][column].NeighboringCells = new GrainCellNeighborhood
+                            cellsState[row][column].NeighboringCells = new EightSidedGrainCellNeighborhood
                             {
                                 Top = row == 0 ? outsideCell : cellsState[row - 1][column],
                                 TopRight = row == 0 || column == ColumnCount - 1 ? outsideCell : cellsState[row - 1][column + 1],
@@ -93,7 +93,7 @@ namespace GrainGrowthCellularAutomaton.Models
                             break;
 
                         case BoundaryConditionModel.Periodic:
-                            cellsState[row][column].NeighboringCells = new GrainCellNeighborhood
+                            cellsState[row][column].NeighboringCells = new EightSidedGrainCellNeighborhood
                             {
                                 Top = cellsState[row == 0 ? RowCount - 1 : row - 1][column],
                                 TopRight = cellsState[row == 0 ? RowCount - 1 : row - 1][column == ColumnCount - 1 ? 0 : column + 1],

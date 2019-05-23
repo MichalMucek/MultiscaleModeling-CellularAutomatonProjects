@@ -5,7 +5,7 @@ using CellularAutomaton2D.Models;
 
 namespace GrainGrowthCellularAutomaton.Models
 {
-    internal class GrainCellNeighborhood : IEightSidedCellNeighborhood
+    internal class EightSidedGrainCellNeighborhood : IEightSidedCellNeighborhood
     {
         private const int SIDES_COUNT = 8;
 
@@ -24,7 +24,7 @@ namespace GrainGrowthCellularAutomaton.Models
         [ThreadStatic]
         private static Random random;
 
-        public GrainCellNeighborhood()
+        public EightSidedGrainCellNeighborhood()
         {
             if (random == null)
                 random = new Random();
@@ -33,7 +33,7 @@ namespace GrainGrowthCellularAutomaton.Models
                 grainCells[sideIndex] = new GrainCellModel();
         }
 
-        public GrainCellNeighborhood(GrainCellModel top, GrainCellModel right, GrainCellModel bottom, GrainCellModel left) : this()
+        public EightSidedGrainCellNeighborhood(GrainCellModel top, GrainCellModel right, GrainCellModel bottom, GrainCellModel left) : this()
         {
             Top = top;
             Right = right;
@@ -42,7 +42,7 @@ namespace GrainGrowthCellularAutomaton.Models
             Type = CellNeighborhoodTypeModel.VonNeumann;
         }
 
-        public GrainCellNeighborhood(GrainCellModel top, GrainCellModel topRight, GrainCellModel right, GrainCellModel bottomRight,
+        public EightSidedGrainCellNeighborhood(GrainCellModel top, GrainCellModel topRight, GrainCellModel right, GrainCellModel bottomRight,
             GrainCellModel bottom, GrainCellModel bottomLeft, GrainCellModel left, GrainCellModel topLeft) : this(top, right, bottom, left)
         {
             TopRight = topRight;
@@ -52,7 +52,7 @@ namespace GrainGrowthCellularAutomaton.Models
             Type = CellNeighborhoodTypeModel.Moore;
         }
 
-        public GrainCellNeighborhood(GrainCellNeighborhood obj) : this()
+        public EightSidedGrainCellNeighborhood(EightSidedGrainCellNeighborhood obj) : this()
         {
             switch (obj.Type)
             {
