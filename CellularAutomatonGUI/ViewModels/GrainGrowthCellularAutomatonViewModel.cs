@@ -47,8 +47,9 @@ namespace CellularAutomatonGUI.ViewModels
 
         public GrainGrowthCellularAutomatonViewModel()
         {
-            CellsNeighborhoods.Add(CellNeighborhoodTypeModel.Moore);
-            CellsNeighborhoods.Add(CellNeighborhoodTypeModel.VonNeumann);
+            CellNeighborhoods.Add(CellNeighborhoodTypeModel.Moore);
+            CellNeighborhoods.Add(CellNeighborhoodTypeModel.VonNeumann);
+            CellNeighborhoods.Add(CellNeighborhoodTypeModel.RandomPentagonal);
 
             BoundaryConditions.Add(BoundaryConditionModel.Absorbing);
             BoundaryConditions.Add(BoundaryConditionModel.Periodic);
@@ -136,9 +137,9 @@ namespace CellularAutomatonGUI.ViewModels
 
         public BoundaryConditionModel SelectedBoundaryCondition { get; set; } = BoundaryConditionModel.Absorbing;
 
-        public BindableCollection<CellNeighborhoodTypeModel> CellsNeighborhoods { get; } = new BindableCollection<CellNeighborhoodTypeModel>();
+        public BindableCollection<CellNeighborhoodTypeModel> CellNeighborhoods { get; } = new BindableCollection<CellNeighborhoodTypeModel>();
 
-        public CellNeighborhoodTypeModel SelectedCellsNeighborhood { get; set; } = CellNeighborhoodTypeModel.VonNeumann;
+        public CellNeighborhoodTypeModel SelectedCellNeighborhood { get; set; } = CellNeighborhoodTypeModel.VonNeumann;
 
         public BindableCollection<NucleationMethodModel> NucleationMethods { get; } = new BindableCollection<NucleationMethodModel>();
 
@@ -317,7 +318,7 @@ namespace CellularAutomatonGUI.ViewModels
 
                 await Task.Run(() =>
                 {
-                    grainCellGrid = new GrainCellGrid2DModel(columnCount, rowCount, SelectedCellsNeighborhood, SelectedBoundaryCondition);
+                    grainCellGrid = new GrainCellGrid2DModel(columnCount, rowCount, SelectedCellNeighborhood, SelectedBoundaryCondition);
 
                     RunDrawerTask();
                 });

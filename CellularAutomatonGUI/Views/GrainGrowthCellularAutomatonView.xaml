@@ -116,8 +116,8 @@
                     Margin="3"
                     VerticalAlignment="Center"
                     IsEnabled="{Binding IsStopped}"
-                    ItemsSource="{Binding CellsNeighborhoods}"
-                    SelectedItem="{Binding SelectedCellsNeighborhood, Mode=TwoWay}">
+                    ItemsSource="{Binding CellNeighborhoods}"
+                    SelectedItem="{Binding SelectedCellNeighborhood, Mode=TwoWay}">
                     <ComboBox.Resources>
                         <cag:EnumDescriptionConverter x:Key="enumDescriptionConverter" />
                     </ComboBox.Resources>

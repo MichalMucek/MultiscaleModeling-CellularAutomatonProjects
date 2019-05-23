@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CellularAutomaton2D;
 using CellularAutomaton2D.Models;
 
@@ -19,8 +20,14 @@ namespace GrainGrowthCellularAutomaton.Models
         public ICell TopLeft { get => grainCells[7]; set => grainCells[7] = (GrainCellModel)value; }
         private GrainCellModel[] grainCells = new GrainCellModel[SIDES_COUNT];
 
+        [ThreadStatic]
+        private static Random random;
+
         public GrainCellNeighborhood()
         {
+            if (random == null)
+                random = new Random();
+
             for (int sideIndex = 0; sideIndex < SIDES_COUNT; sideIndex++)
                 grainCells[sideIndex] = new GrainCellModel();
         }
@@ -80,12 +87,8 @@ namespace GrainGrowthCellularAutomaton.Models
                 {
                     case CellNeighborhoodTypeModel.VonNeumann:
                         for (int sideIndex = 0; sideIndex < SIDES_COUNT; sideIndex += 2)
-                        {
-                            if (grainsCounts.ContainsKey(grainCells[sideIndex].State))
-                                grainsCounts[grainCells[sideIndex].State]++;
-                            else
-                                grainsCounts.Add(grainCells[sideIndex].State, 1);
-                        }
+                            CountGrain(grainsCounts, sideIndex);
+
                         break;
 
                     case CellNeighborhoodTypeModel.Moore:
@@ -97,10 +100,56 @@ namespace GrainGrowthCellularAutomaton.Models
                                 grainsCounts.Add(grainCell.State, 1);
                         }
                         break;
+
+                    case CellNeighborhoodTypeModel.RandomPentagonal:
+                        const int TopPentagonal = 0;
+                        const int RightPentagonal = 1;
+                        const int BottomPentagonal = 2;
+                        const int LeftPentagonal = 3;
+                        int randomSide = random.Next(4);
+
+                        switch (randomSide)
+                        {
+                            case TopPentagonal:
+                                CountGrainsForPentagonalNeighborhood(6, grainsCounts);
+                                break;
+
+                            case RightPentagonal:
+                                CountGrainsForPentagonalNeighborhood(0, grainsCounts);
+                                break;
+
+                            case BottomPentagonal:
+                                CountGrainsForPentagonalNeighborhood(2, grainsCounts);
+                                break;
+
+                            case LeftPentagonal:
+                                CountGrainsForPentagonalNeighborhood(4, grainsCounts);
+                                break;
+                        }
+                        break;
                 }
 
                 return grainsCounts;
             }
+        }
+
+        private void CountGrainsForPentagonalNeighborhood(int startingIndex, Dictionary<ICellState, int> grainsCounts)
+        {
+            for (int sideIndex = startingIndex, checkedCells = 0; checkedCells < 5; sideIndex++, checkedCells++)
+            {
+                if (sideIndex == 8)
+                    sideIndex = 0;
+
+                CountGrain(grainsCounts, sideIndex);
+            }
+        }
+
+        private void CountGrain(Dictionary<ICellState, int> grainsCounts, int sideIndex)
+        {
+            if (grainsCounts.ContainsKey(grainCells[sideIndex].State))
+                grainsCounts[grainCells[sideIndex].State]++;
+            else
+                grainsCounts.Add(grainCells[sideIndex].State, 1);
         }
     }
 }
