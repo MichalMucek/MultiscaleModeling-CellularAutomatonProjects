@@ -50,6 +50,9 @@ namespace CellularAutomatonGUI.ViewModels
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.Moore);
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.VonNeumann);
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.RandomPentagonal);
+            CellNeighborhoods.Add(CellNeighborhoodTypeModel.LeftHexagonal);
+            CellNeighborhoods.Add(CellNeighborhoodTypeModel.RightHexagonal);
+            CellNeighborhoods.Add(CellNeighborhoodTypeModel.RandomHexagonal);
 
             BoundaryConditions.Add(BoundaryConditionModel.Absorbing);
             BoundaryConditions.Add(BoundaryConditionModel.Periodic);

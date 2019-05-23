@@ -7,20 +7,20 @@ namespace CellularAutomaton2D.Models
         [Description("von Neumann")]
         VonNeumann = 5,
 
-        [Description("Random pentagonal")]
-        RandomPentagonal = 6,
-
-        [Description("Left hexagonal")]
-        LeftHexagonal = 7,
-
-        [Description("Right hexagonal")]
-        Rightexagonal = 7,
-
-        [Description("Random hexagonal")]
-        RandomHexagonal = 7,
-
         [Description("Moore")]
         Moore = 9,
+
+        [Description("Random pentagonal")]
+        RandomPentagonal,
+
+        [Description("Left hexagonal")]
+        LeftHexagonal,
+
+        [Description("Right hexagonal")]
+        RightHexagonal,
+
+        [Description("Random hexagonal")]
+        RandomHexagonal,
 
         [Description("Cells within radius")]
         CellsWithinRadius,
