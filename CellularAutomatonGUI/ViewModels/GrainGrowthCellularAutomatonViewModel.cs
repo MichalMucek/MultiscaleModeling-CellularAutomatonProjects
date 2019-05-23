@@ -18,13 +18,13 @@ namespace CellularAutomatonGUI.ViewModels
         private int columnCount = 11;
         private int rowCount = 11;
         private NucleationMethodModel selectedNucleationMethod = NucleationMethodModel.Uniform;
-        private uint nucleusesInColumnCount = 1;
-        private uint nucleusesInRowCount = 1;
+        private int nucleusesInColumnCount = 1;
+        private int nucleusesInRowCount = 1;
         private bool isUniformMethodSelected = true;
-        private uint randomNucleusesCount = 1;
+        private int randomNucleusesCount = 1;
         private bool isRandomMethodSelected = false;
         private bool isRandomWithRadiusMethodSelected = false;
-        private uint nucleusRadius = 1;
+        private int nucleusRadius = 1;
         private bool canNucleate = false;
         private bool canStartStop = true;
         private bool isStopped = true;
@@ -53,6 +53,7 @@ namespace CellularAutomatonGUI.ViewModels
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.LeftHexagonal);
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.RightHexagonal);
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.RandomHexagonal);
+            CellNeighborhoods.Add(CellNeighborhoodTypeModel.CellsWithinRadius);
 
             BoundaryConditions.Add(BoundaryConditionModel.Absorbing);
             BoundaryConditions.Add(BoundaryConditionModel.Periodic);
@@ -176,7 +177,7 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
-        public uint NucleusesInColumnCount
+        public int NucleusesInColumnCount
         {
             get => nucleusesInColumnCount;
             set
@@ -186,7 +187,7 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
-        public uint NucleusesInRowCount
+        public int NucleusesInRowCount
         {
             get => nucleusesInRowCount;
             set
@@ -206,7 +207,7 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
-        public uint RandomNucleusesCount
+        public int RandomNucleusesCount
         {
             get => randomNucleusesCount;
             set
@@ -236,7 +237,7 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
-        public uint NucleusRadius
+        public int NucleusRadius
         {
             get => nucleusRadius;
             set

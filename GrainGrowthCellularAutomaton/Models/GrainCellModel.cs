@@ -10,7 +10,7 @@ namespace GrainGrowthCellularAutomaton
         public int ColumnNumber { get; private set; }
         public int RowNumber { get; private set; }
         public ICellState State { get; set; }
-        public IEightSidedCellNeighborhood NeighboringCells { get; set; }
+        public ICellNeighborhood NeighboringCells { get; set; }
         public Point StartPositionOnImage { get; set; }
         public Point EndPositionOnImage { get; set; }
 

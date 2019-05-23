@@ -5,7 +5,7 @@ using CellularAutomaton2D.Models;
 
 namespace GrainGrowthCellularAutomaton.Models
 {
-    internal class EightSidedGrainCellNeighborhood : IEightSidedCellNeighborhood
+    internal class EightSidedGrainCellNeighborhood : ICellNeighborhood
     {
         private const int SIDES_COUNT = 8;
 

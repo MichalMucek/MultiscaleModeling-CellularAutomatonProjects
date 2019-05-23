@@ -4,13 +4,19 @@ using CellularAutomaton2D.Models;
 
 namespace GrainGrowthCellularAutomaton
 {
-    internal class RadialGrainCellNeighborhood : IRadialCellNeighborhood
+    internal class RadialGrainCellNeighborhood : ICellNeighborhood
     {
-        public CellNeighborhoodTypeModel Type { get; set; }
-        public List<ICell> Cells { get; private set; }
+        public CellNeighborhoodTypeModel Type { get; private set; }
+        public List<ICell> Cells { get; private set; } = new List<ICell>();
         private Dictionary<ICellState, int> grainsCounts;
 
-        public Dictionary<ICellState, int> StatesCount
+        public RadialGrainCellNeighborhood(List<ICell> cells, CellNeighborhoodTypeModel type)
+        {
+            Type = type;
+            Cells = cells;
+        }
+
+        public Dictionary<ICellState, int> StatesCounts
         {
             get
             {
