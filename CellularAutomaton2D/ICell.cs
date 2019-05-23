@@ -8,7 +8,7 @@ namespace CellularAutomaton2D
         int ColumnNumber { get; }
         int RowNumber { get; }
         ICellState State { get; set; }
-        IEightSidedCellNeighborhood NeighboringCells { get; set; }
+        ICellNeighborhood NeighboringCells { get; set; }
         Point StartPositionOnImage { get; set; }
         Point EndPositionOnImage { get; set; }
     }
