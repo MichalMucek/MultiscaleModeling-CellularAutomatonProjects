@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace GameOfLife
 {
-    public class CellNeighborhood : IEightSidedCellNeighborhood
+    public class CellNeighborhood : ICellNeighborhood
     {
         private const int SIDES_COUNT = 8;
 

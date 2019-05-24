@@ -20,6 +20,7 @@ namespace GrainGrowthCellularAutomaton.Models
         public int RowCount { get; private set; }
         public CellNeighborhoodTypeModel NeighborhoodType { get; private set; }
         public BoundaryConditionModel BoundaryCondition { get; private set; }
+        public int CellNeighborhoodRadius { get; private set; } = 0;
         public int CellCount => ColumnCount * RowCount;
         public int PopulatedCellsCount { get; private set; } = 0;
         public bool IsFullyPopulated => PopulatedCellsCount == CellCount;
@@ -33,12 +34,14 @@ namespace GrainGrowthCellularAutomaton.Models
             int columnCount,
             int rowCount,
             CellNeighborhoodTypeModel neighborhoodType,
-            BoundaryConditionModel boundaryCondition)
+            BoundaryConditionModel boundaryCondition,
+            int cellNeighborhoodRadius = 0)
         {
             ColumnCount = columnCount;
             RowCount = rowCount;
             NeighborhoodType = neighborhoodType;
             BoundaryCondition = boundaryCondition;
+            CellNeighborhoodRadius = cellNeighborhoodRadius;
 
             grains.Add(ZeroState);
             CurrentState = new List<List<ICell>>();
@@ -74,42 +77,179 @@ namespace GrainGrowthCellularAutomaton.Models
             {
                 for (int column = 0; column < ColumnCount; column++, cellId++)
                 {
-                    switch (BoundaryCondition)
+                    if (cellsState[row][column].State == ZeroState)
                     {
-                        case BoundaryConditionModel.Absorbing:
-                            cellsState[row][column].NeighboringCells = new GrainCellNeighborhood
-                            {
-                                Top = row == 0 ? outsideCell : cellsState[row - 1][column],
-                                TopRight = row == 0 || column == ColumnCount - 1 ? outsideCell : cellsState[row - 1][column + 1],
-                                Right = column == ColumnCount - 1 ? outsideCell : cellsState[row][column + 1],
-                                BottomRight = row == RowCount - 1 || column == ColumnCount - 1 ? outsideCell : cellsState[row + 1][column + 1],
-                                Bottom = row == RowCount - 1 ? outsideCell : cellsState[row + 1][column],
-                                BottomLeft = row == RowCount - 1 || column == 0 ? outsideCell : cellsState[row + 1][column - 1],
-                                Left = column == 0 ? outsideCell : cellsState[row][column - 1],
-                                TopLeft = row == 0 || column == 0 ? outsideCell : cellsState[row - 1][column - 1],
-                                Type = NeighborhoodType
-                            };
+                        switch (NeighborhoodType)
+                        {
+                            case CellNeighborhoodTypeModel.VonNeumann:
+                            case CellNeighborhoodTypeModel.Moore:
+                            case CellNeighborhoodTypeModel.RandomPentagonal:
+                            case CellNeighborhoodTypeModel.LeftHexagonal:
+                            case CellNeighborhoodTypeModel.RightHexagonal:
+                            case CellNeighborhoodTypeModel.RandomHexagonal:
+                                switch (BoundaryCondition)
+                                {
+                                    case BoundaryConditionModel.Absorbing:
+                                        cellsState[row][column].NeighboringCells = new EightSidedGrainCellNeighborhood
+                                        {
+                                            Top = row == 0 ? outsideCell : cellsState[row - 1][column],
+                                            TopRight = row == 0 || column == ColumnCount - 1 ? outsideCell : cellsState[row - 1][column + 1],
+                                            Right = column == ColumnCount - 1 ? outsideCell : cellsState[row][column + 1],
+                                            BottomRight = row == RowCount - 1 || column == ColumnCount - 1 ? outsideCell : cellsState[row + 1][column + 1],
+                                            Bottom = row == RowCount - 1 ? outsideCell : cellsState[row + 1][column],
+                                            BottomLeft = row == RowCount - 1 || column == 0 ? outsideCell : cellsState[row + 1][column - 1],
+                                            Left = column == 0 ? outsideCell : cellsState[row][column - 1],
+                                            TopLeft = row == 0 || column == 0 ? outsideCell : cellsState[row - 1][column - 1],
+                                            Type = NeighborhoodType
+                                        };
 
-                            break;
+                                        break;
 
-                        case BoundaryConditionModel.Periodic:
-                            cellsState[row][column].NeighboringCells = new GrainCellNeighborhood
-                            {
-                                Top = cellsState[row == 0 ? RowCount - 1 : row - 1][column],
-                                TopRight = cellsState[row == 0 ? RowCount - 1 : row - 1][column == ColumnCount - 1 ? 0 : column + 1],
-                                Right = cellsState[row][column == ColumnCount - 1 ? 0 : column + 1],
-                                BottomRight = cellsState[row == RowCount - 1 ? 0 : row + 1][column == ColumnCount - 1 ? 0 : column + 1],
-                                Bottom = cellsState[row == RowCount - 1 ? 0 : row + 1][column],
-                                BottomLeft = cellsState[row == RowCount - 1 ? 0 : row + 1][column == 0 ? ColumnCount - 1 : column - 1],
-                                Left = cellsState[row][column == 0 ? ColumnCount - 1 : column - 1],
-                                TopLeft = cellsState[row == 0 ? RowCount - 1 : row - 1][column == 0 ? ColumnCount - 1 : column - 1],
-                                Type = NeighborhoodType
-                            };
+                                    case BoundaryConditionModel.Periodic:
+                                        cellsState[row][column].NeighboringCells = new EightSidedGrainCellNeighborhood
+                                        {
+                                            Top = cellsState[row == 0 ? RowCount - 1 : row - 1][column],
+                                            TopRight = cellsState[row == 0 ? RowCount - 1 : row - 1][column == ColumnCount - 1 ? 0 : column + 1],
+                                            Right = cellsState[row][column == ColumnCount - 1 ? 0 : column + 1],
+                                            BottomRight = cellsState[row == RowCount - 1 ? 0 : row + 1][column == ColumnCount - 1 ? 0 : column + 1],
+                                            Bottom = cellsState[row == RowCount - 1 ? 0 : row + 1][column],
+                                            BottomLeft = cellsState[row == RowCount - 1 ? 0 : row + 1][column == 0 ? ColumnCount - 1 : column - 1],
+                                            Left = cellsState[row][column == 0 ? ColumnCount - 1 : column - 1],
+                                            TopLeft = cellsState[row == 0 ? RowCount - 1 : row - 1][column == 0 ? ColumnCount - 1 : column - 1],
+                                            Type = NeighborhoodType
+                                        };
 
-                            break;
+                                        break;
+                                }
+                                break;
+
+                            case CellNeighborhoodTypeModel.Radial:
+                                switch (BoundaryCondition)
+                                {
+                                    case BoundaryConditionModel.Absorbing:
+                                        cellsState[row][column].NeighboringCells = new RadialGrainCellNeighborhood(
+                                            GetCellsWithinARadiusForAbsorbingBc(
+                                                (GrainCellModel)cellsState[row][column],
+                                                CellNeighborhoodRadius,
+                                                cellsState),
+                                            NeighborhoodType);
+                                        break;
+
+                                    case BoundaryConditionModel.Periodic:
+                                        cellsState[row][column].NeighboringCells = new RadialGrainCellNeighborhood(
+                                            GetCellsWithinARadiusForPeriodicBc(
+                                                (GrainCellModel)cellsState[row][column],
+                                                CellNeighborhoodRadius,
+                                                cellsState),
+                                            NeighborhoodType);
+                                        break;
+                                }
+                                break;
+                        }
                     }
                 }
             }
+        }
+
+        private List<ICell> GetCellsWithinARadiusForPeriodicBc(GrainCellModel centerCell, int radius, List<List<ICell>> cellsState)
+        {
+            if (radius <= 0)
+                throw new ArgumentException("Radius must be grater than 0");
+
+            if (radius > RowCount / 2 || radius > ColumnCount / 2)
+                throw new ArgumentException("Radius must be smaller than grid size");
+
+            List<ICell> cellsWithinARadius = new List<ICell>();
+
+            var upperLeftGrainCell = GetUpperLeftGrainCellFromSquarePerimiter(centerCell, radius);
+
+            for (int movesMadeToNextRowCount = 0, row = upperLeftGrainCell.RowNumber, y = radius;
+                movesMadeToNextRowCount < 2 * radius + 1;
+                movesMadeToNextRowCount++, row++, y--)
+            {
+                if (row >= ColumnCount)
+                    row = 0;
+
+                for (int movesMadeToNextColumnCount = 0, column = upperLeftGrainCell.ColumnNumber, x = -1 * radius;
+                    movesMadeToNextColumnCount < 2 * radius + 1;
+                    movesMadeToNextColumnCount++, column++, x++)
+                {
+                    if (column >= ColumnCount)
+                        column = 0;
+
+                    var cellInSquare = cellsState[row][column];
+
+                    double distanceFromCenter = Math.Pow(x, 2) + Math.Pow(y, 2);
+
+                    if (distanceFromCenter <= Math.Pow(radius + 0.5, 2))
+                        if (cellInSquare != centerCell)
+                            cellsWithinARadius.Add(cellInSquare);
+                }
+            }
+
+            return cellsWithinARadius;
+        }
+
+        private ICell GetUpperLeftGrainCellFromSquarePerimiter(GrainCellModel centerCell, int radius)
+        {
+            if (radius <= 0)
+                throw new ArgumentException("Radius must be grater than 0");
+
+            int upperLeftGrainCellRow = centerCell.RowNumber - radius;
+            int upperLeftGrainCellColumn = centerCell.ColumnNumber - radius;
+
+            if (upperLeftGrainCellRow < 0)
+                upperLeftGrainCellRow += RowCount;
+
+            if (upperLeftGrainCellColumn < 0)
+                upperLeftGrainCellColumn += ColumnCount;
+
+            return CurrentState[upperLeftGrainCellRow][upperLeftGrainCellColumn];
+        }
+
+        private List<ICell> GetCellsWithinARadiusForAbsorbingBc(GrainCellModel centerCell, int radius, List<List<ICell>> cellsState)
+        {
+            if (radius <= 0)
+                throw new ArgumentException("Radius must be grater than 0");
+
+            if (radius > RowCount / 2 || radius > ColumnCount / 2)
+                throw new ArgumentException("Radius must be smaller than grid size");
+
+            List<ICell> cellsWithinARadius = new List<ICell>();
+            GrainCellModel outsideCell = new GrainCellModel((GrainModel)ZeroState);
+            ICell cellInSquare;
+
+            int upperLeftGrainCellRow = centerCell.RowNumber - radius;
+            int upperLeftGrainCellColumn = centerCell.ColumnNumber - radius;
+
+            for (int row = upperLeftGrainCellRow, y = radius;
+                    row <= upperLeftGrainCellRow + 2 * radius;
+                    row++, y--)
+            {
+                if (row >= -1 && row <= RowCount)
+                {
+                    for (int column = upperLeftGrainCellColumn, x = -1 * radius;
+                        column <= upperLeftGrainCellColumn + 2 * radius;
+                        column++, x++)
+                    {
+                        if (column >= -1 && column <= ColumnCount)
+                        {
+                            if (row == -1 || row == RowCount || column == -1 || column == ColumnCount)
+                                cellInSquare = outsideCell;
+                            else
+                                cellInSquare = cellsState[row][column];
+
+                            double distanceFromCenter = Math.Pow(x, 2) + Math.Pow(y, 2);
+
+                            if (distanceFromCenter <= Math.Pow(radius + 0.5, 2))
+                                if (cellInSquare != centerCell)
+                                    cellsWithinARadius.Add(cellInSquare);
+                        }
+                    }
+                }
+            }
+
+            return cellsWithinARadius;
         }
 
         public void Evolve()
@@ -287,7 +427,7 @@ namespace GrainGrowthCellularAutomaton.Models
             return cellIsFound;
         }
 
-        public void PutGrainNucleusesUniformly(uint countInColumn, uint countInRow)
+        public void PutGrainNucleusesUniformly(int countInColumn, int countInRow)
         {
             ClearGrid();
 
@@ -314,7 +454,7 @@ namespace GrainGrowthCellularAutomaton.Models
                 throw new ArgumentException("countInColumn and countInRow must be grater that or equal to 1");
         }
 
-        public void PutGrainNucleusesRandomly(uint grainCount)
+        public void PutGrainNucleusesRandomly(int grainCount)
         {
             ClearGrid();
 
@@ -333,139 +473,157 @@ namespace GrainGrowthCellularAutomaton.Models
             }
         }
 
-        public uint PutGrainNucleusesRandomlyWithRadius(uint grainCount, uint radius)
+        public uint PutGrainNucleusesRandomlyWithRadius(int grainCount, int radius)
         {
-            if (radius <= RowCount / 2 && radius <= ColumnCount / 2)
+            if (radius > 0)
             {
-                ClearGrid();
-
-                int failsCount = 0;
-                bool probablyPossibleToPutANucleus = true;
-
-                while (grainCount > 0)
+                if (radius <= RowCount / 2 && radius <= ColumnCount / 2)
                 {
-                    if (failsCount > 10 && !probablyPossibleToPutANucleus)
-                    {
-                        if (IsPossibleToPutGrainNucleuseWithRadiusAnywhere(radius))
-                            probablyPossibleToPutANucleus = true;
-                        else
-                            break;
-                    }
+                    ClearGrid();
 
-                    int randomRow = random.Next(RowCount);
-                    int randomColumn = random.Next(ColumnCount);
+                    int failsCount = 0;
+                    bool probablyPossibleToPutANucleus = true;
 
-                    if (CurrentState[randomRow][randomColumn].State == ZeroState)
+                    while (grainCount > 0)
                     {
-                        if (IsNoGrainWithinARadius((GrainCellModel)CurrentState[randomRow][randomColumn], radius))
+                        if (failsCount > 10 && !probablyPossibleToPutANucleus)
                         {
-                            AddNewGrain();
-                            CurrentState[randomRow][randomColumn].State = grains.Last();
-                            PopulatedCellsCount++;
-                            grainCount--;
-
-                            probablyPossibleToPutANucleus = false;
-                            failsCount = 0;
+                            if (IsPossibleToPutGrainNucleusWithRadiusAnywhere(radius))
+                                probablyPossibleToPutANucleus = true;
+                            else
+                                break;
                         }
-                        else
-                            failsCount++;
-                    }
-                }
 
-                return (uint)PopulatedCellsCount;
+                        int randomRow = random.Next(RowCount);
+                        int randomColumn = random.Next(ColumnCount);
+
+                        if (CurrentState[randomRow][randomColumn].State == ZeroState)
+                        {
+                            if (IsNoGrainWithinARadius((GrainCellModel)CurrentState[randomRow][randomColumn], radius))
+                            {
+                                AddNewGrain();
+                                CurrentState[randomRow][randomColumn].State = grains.Last();
+                                PopulatedCellsCount++;
+                                grainCount--;
+
+                                probablyPossibleToPutANucleus = false;
+                                failsCount = 0;
+                            }
+                            else
+                                failsCount++;
+                        }
+                    }
+
+                    return (uint)PopulatedCellsCount;
+                }
+                else
+                {
+                    throw new ArgumentException("Radius can't be grater than grid size");
+                }
             }
             else
+                throw new ArgumentException("Radius must be grater than 0");
+        }
+
+        private bool IsPossibleToPutGrainNucleusWithRadiusAnywhere(int radius)
+        {
+            if (radius > 0)
             {
-                throw new ArgumentException("Radius can't be grater than grid size");
+                foreach (var row in CurrentState)
+                    foreach (var grainCell in row)
+                        if (IsNoGrainWithinARadius((GrainCellModel)grainCell, radius))
+                            return true;
+
+                return false;
             }
+            else
+                throw new ArgumentException("Radius must be grater than 0");
         }
 
-        private bool IsPossibleToPutGrainNucleuseWithRadiusAnywhere(uint radius)
+        private bool IsNoGrainWithinARadius(GrainCellModel centerCell, int radius)
         {
-            foreach (var row in CurrentState)
-                foreach (var grainCell in row)
-                    if (IsNoGrainWithinARadius((GrainCellModel)grainCell, radius))
-                        return true;
+            if (radius <= 0)
+                throw new ArgumentException("Radius must be grater than 0");
 
-            return false;
-        }
-
-        private bool IsNoGrainWithinARadius(GrainCellModel centerCell, uint radius)
-        {
             if (BoundaryCondition == BoundaryConditionModel.Periodic)
                 return IsNoGrainWithinARadiusForPeriodicBc(centerCell, radius);
             else
                 return IsNoGrainWithinARadiusForAbsorbingBc(centerCell, radius);
         }
 
-        private bool IsNoGrainWithinARadiusForPeriodicBc(GrainCellModel centerCell, uint radius)
+        private bool IsNoGrainWithinARadiusForPeriodicBc(GrainCellModel centerCell, int radius)
         {
-            if (radius <= RowCount / 2 && radius <= ColumnCount / 2)
-            {
-                GrainCellModel upperLeftGrainCell;
+            if (radius <= 0)
+                throw new ArgumentException("Radius must be grater than 0");
 
-                SetUpperLeftCell(centerCell, out upperLeftGrainCell, radius);
-
-                for (int movesToNextRowCount = 0, y = (int)radius;
-                    movesToNextRowCount < 2 * radius + 1;
-                    movesToNextRowCount++, y--)
-                {
-                    var cellInSquare = upperLeftGrainCell;
-
-                    for (int i = 0; i < movesToNextRowCount; i++)
-                        cellInSquare = (GrainCellModel)cellInSquare.NeighboringCells.Bottom;
-
-                    for (int movesToNextColumnCount = 0, x = -1 * (int)radius;
-                        movesToNextColumnCount < 2 * radius + 1;
-                        movesToNextColumnCount++, x++)
-                    {
-                        double distanceFromCenter = Math.Pow(x, 2) + Math.Pow(y, 2);
-
-                        if (distanceFromCenter <= Math.Pow(radius + 0.5, 2))
-                            if (cellInSquare.State != ZeroState)
-                                return false;
-
-                        cellInSquare = (GrainCellModel)cellInSquare.NeighboringCells.Right;
-                    }
-                }
-
-                return true;
-            }
-            else
-            {
+            if (radius > RowCount / 2 || radius > ColumnCount / 2)
                 throw new ArgumentException("Radius can't be grater than grid size");
+
+            var upperLeftGrainCell = GetUpperLeftGrainCellFromSquarePerimiter(centerCell, radius);
+
+            for (int rowInSquarePerimiter = 0, y = radius;
+                rowInSquarePerimiter < 2 * radius + 1;
+                rowInSquarePerimiter++, y--)
+            {
+                int rowInGrid = upperLeftGrainCell.RowNumber + rowInSquarePerimiter;
+
+                if (rowInGrid < 0)
+                    rowInGrid += RowCount;
+
+                if (rowInGrid >= RowCount)
+                    rowInGrid -= RowCount;
+
+                for (int columnInSquarePerimiter = 0, x = -1 * radius;
+                    columnInSquarePerimiter < 2 * radius + 1;
+                    columnInSquarePerimiter++, x++)
+                {
+                    int columnInGrid = upperLeftGrainCell.ColumnNumber + columnInSquarePerimiter;
+
+                    if (columnInGrid < 0)
+                        columnInGrid += ColumnCount;
+
+                    if (columnInGrid >= ColumnCount)
+                        columnInGrid -= ColumnCount;
+
+                    var cellInSquare = CurrentState[rowInGrid][columnInGrid];
+
+                    double distanceFromCenter = Math.Pow(x, 2) + Math.Pow(y, 2);
+
+                    if (distanceFromCenter <= Math.Pow(radius + 0.5, 2))
+                        if (cellInSquare.State != ZeroState)
+                            return false;
+                }
             }
+
+            return true;
         }
 
-        private void SetUpperLeftCell(GrainCellModel centerCell, out GrainCellModel upperLeftGrainCell, uint radius)
+        private bool IsNoGrainWithinARadiusForAbsorbingBc(GrainCellModel centerCell, int radius)
         {
-            upperLeftGrainCell = centerCell;
+            if (radius <= 0)
+                throw new ArgumentException("Radius must be grater than 0");
 
-            for (int movesToMakeCount = 0; movesToMakeCount < radius; movesToMakeCount++)
-                upperLeftGrainCell = (GrainCellModel)upperLeftGrainCell.NeighboringCells.TopLeft;
-        }
+            int upperLeftGrainCellRow = centerCell.RowNumber - radius;
+            int upperLeftGrainCellColumn = centerCell.ColumnNumber - radius;
 
-        private bool IsNoGrainWithinARadiusForAbsorbingBc(GrainCellModel centerCell, uint radius)
-        {
-            int upperLeftCellRow = centerCell.RowNumber - (int)radius;
-            int upperLeftCellColumn = centerCell.ColumnNumber - (int)radius;
-
-            for (int row = upperLeftCellRow, y = (int)radius;
-                    row <= upperLeftCellRow + 2 * radius;
+            for (int row = upperLeftGrainCellRow, y = radius;
+                    row <= upperLeftGrainCellRow + 2 * radius;
                     row++, y--)
             {
                 if (row >= 0 && row < RowCount)
                 {
-                    for (int column = upperLeftCellColumn, x = -1 * (int)radius;
-                        column <= upperLeftCellColumn + 2 * radius;
+                    for (int column = upperLeftGrainCellColumn, x = -1 * radius;
+                        column <= upperLeftGrainCellColumn + 2 * radius;
                         column++, x++)
                     {
                         if (column >= 0 && column < ColumnCount)
                         {
+                            var cellInSquare = CurrentState[row][column];
+
                             double distanceFromCenter = Math.Pow(x, 2) + Math.Pow(y, 2);
 
                             if (distanceFromCenter <= Math.Pow(radius + 0.5, 2))
-                                if (CurrentState[row][column].State != ZeroState)
+                                if (cellInSquare.State != ZeroState)
                                     return false;
                         }
                     }
@@ -485,13 +643,11 @@ namespace GrainGrowthCellularAutomaton.Models
         {
             foreach (var row in CurrentState)
                 foreach (var grainCell in row)
-                {
                     if (grainCell.State != ZeroState)
                     {
                         grainCell.State = ZeroState;
                         PopulatedCellsCount--;
                     }
-                }
         }
 
         private void RemoveAllGrainsExceptInitial()

@@ -22,10 +22,10 @@ namespace CellularAutomaton2D.Models
         [Description("Random hexagonal")]
         RandomHexagonal,
 
-        [Description("Cells within radius")]
-        CellsWithinRadius,
+        [Description("Radial")]
+        Radial,
 
-        [Description("Cells COM within radius")]
-        CellCenterOfMassWithinRadius,
+        [Description("Radial with COM")]
+        RadialWithCenterOfMass,
     }
 }

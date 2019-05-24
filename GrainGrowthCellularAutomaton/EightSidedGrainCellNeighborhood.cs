@@ -5,7 +5,7 @@ using CellularAutomaton2D.Models;
 
 namespace GrainGrowthCellularAutomaton.Models
 {
-    internal class GrainCellNeighborhood : IEightSidedCellNeighborhood
+    internal class EightSidedGrainCellNeighborhood : ICellNeighborhood
     {
         private const int SIDES_COUNT = 8;
 
@@ -24,7 +24,7 @@ namespace GrainGrowthCellularAutomaton.Models
         [ThreadStatic]
         private static Random random;
 
-        public GrainCellNeighborhood()
+        public EightSidedGrainCellNeighborhood()
         {
             if (random == null)
                 random = new Random();
@@ -33,7 +33,7 @@ namespace GrainGrowthCellularAutomaton.Models
                 grainCells[sideIndex] = new GrainCellModel();
         }
 
-        public GrainCellNeighborhood(GrainCellModel top, GrainCellModel right, GrainCellModel bottom, GrainCellModel left) : this()
+        public EightSidedGrainCellNeighborhood(GrainCellModel top, GrainCellModel right, GrainCellModel bottom, GrainCellModel left) : this()
         {
             Top = top;
             Right = right;
@@ -42,7 +42,7 @@ namespace GrainGrowthCellularAutomaton.Models
             Type = CellNeighborhoodTypeModel.VonNeumann;
         }
 
-        public GrainCellNeighborhood(GrainCellModel top, GrainCellModel topRight, GrainCellModel right, GrainCellModel bottomRight,
+        public EightSidedGrainCellNeighborhood(GrainCellModel top, GrainCellModel topRight, GrainCellModel right, GrainCellModel bottomRight,
             GrainCellModel bottom, GrainCellModel bottomLeft, GrainCellModel left, GrainCellModel topLeft) : this(top, right, bottom, left)
         {
             TopRight = topRight;
@@ -50,32 +50,6 @@ namespace GrainGrowthCellularAutomaton.Models
             BottomLeft = bottomLeft;
             TopLeft = topLeft;
             Type = CellNeighborhoodTypeModel.Moore;
-        }
-
-        public GrainCellNeighborhood(GrainCellNeighborhood obj) : this()
-        {
-            switch (obj.Type)
-            {
-                case CellNeighborhoodTypeModel.VonNeumann:
-                    Top = new GrainCellModel((GrainCellModel)obj.Top);
-                    Right = new GrainCellModel((GrainCellModel)obj.Right);
-                    Bottom = new GrainCellModel((GrainCellModel)obj.Bottom);
-                    Left = new GrainCellModel((GrainCellModel)obj.Left);
-                    Type = obj.Type;
-                    break;
-
-                case CellNeighborhoodTypeModel.Moore:
-                    Top = new GrainCellModel((GrainCellModel)obj.Top);
-                    TopRight = new GrainCellModel((GrainCellModel)obj.TopRight);
-                    Right = new GrainCellModel((GrainCellModel)obj.Right);
-                    BottomRight = new GrainCellModel((GrainCellModel)obj.BottomRight);
-                    Bottom = new GrainCellModel((GrainCellModel)obj.Bottom);
-                    BottomLeft = new GrainCellModel((GrainCellModel)obj.BottomLeft);
-                    Left = new GrainCellModel((GrainCellModel)obj.Left);
-                    TopLeft = new GrainCellModel((GrainCellModel)obj.TopLeft);
-                    Type = obj.Type;
-                    break;
-            }
         }
 
         public Dictionary<ICellState, int> StatesCounts

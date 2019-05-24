@@ -46,10 +46,11 @@
   <ItemGroup>
     <Compile Include="Models\GrainCellGrid2DModel.cs" />
     <Compile Include="Models\GrainCellModel.cs" />
-    <Compile Include="GrainCellsNeighborhood.cs" />
+    <Compile Include="EightSidedGrainCellNeighborhood.cs" />
     <Compile Include="Models\GrainModel.cs" />
     <Compile Include="Models\NucleationMethodModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RadialCellNeighborhood.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
