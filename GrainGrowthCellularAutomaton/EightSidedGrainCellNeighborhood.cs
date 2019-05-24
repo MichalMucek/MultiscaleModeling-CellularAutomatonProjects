@@ -52,32 +52,6 @@ namespace GrainGrowthCellularAutomaton.Models
             Type = CellNeighborhoodTypeModel.Moore;
         }
 
-        public EightSidedGrainCellNeighborhood(EightSidedGrainCellNeighborhood obj) : this()
-        {
-            switch (obj.Type)
-            {
-                case CellNeighborhoodTypeModel.VonNeumann:
-                    Top = new GrainCellModel((GrainCellModel)obj.Top);
-                    Right = new GrainCellModel((GrainCellModel)obj.Right);
-                    Bottom = new GrainCellModel((GrainCellModel)obj.Bottom);
-                    Left = new GrainCellModel((GrainCellModel)obj.Left);
-                    Type = obj.Type;
-                    break;
-
-                default:
-                    Top = new GrainCellModel((GrainCellModel)obj.Top);
-                    TopRight = new GrainCellModel((GrainCellModel)obj.TopRight);
-                    Right = new GrainCellModel((GrainCellModel)obj.Right);
-                    BottomRight = new GrainCellModel((GrainCellModel)obj.BottomRight);
-                    Bottom = new GrainCellModel((GrainCellModel)obj.Bottom);
-                    BottomLeft = new GrainCellModel((GrainCellModel)obj.BottomLeft);
-                    Left = new GrainCellModel((GrainCellModel)obj.Left);
-                    TopLeft = new GrainCellModel((GrainCellModel)obj.TopLeft);
-                    Type = obj.Type;
-                    break;
-            }
-        }
-
         public Dictionary<ICellState, int> StatesCounts
         {
             get
