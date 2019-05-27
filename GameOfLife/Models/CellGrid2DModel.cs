@@ -214,8 +214,11 @@ namespace GameOfLife.Models
                             if (cell.IsAlive)
                                 imageGraphics.FillRectangle(aliveCellColorSolidBrush, new Rectangle(cellPosition, cellSize));
 
-                            CurrentState[row][column].StartPositionOnImage = cellPosition;
-                            CurrentState[row][column].EndPositionOnImage = cellPosition + cellSize;
+                            if (HasGrainCellPositionOnImageChanged(cell, cellPosition, cellSize))
+                            {
+                                cell.StartPositionOnImage = new System.Windows.Point(cellPosition.X, cellPosition.Y);
+                                cell.EndPositionOnImage = cell.StartPositionOnImage + new System.Windows.Vector(cellSize.Width, cellSize.Height);
+                            }
                         }
                     }
                 }
@@ -229,6 +232,14 @@ namespace GameOfLife.Models
             }
 
             return bitmapImage;
+        }
+
+        private bool HasGrainCellPositionOnImageChanged(ICell cell, Point cellPosition, Size cellSize)
+        {
+            return cell.StartPositionOnImage.X != cellPosition.X ||
+                    cell.StartPositionOnImage.Y != cellPosition.Y ||
+                    cell.EndPositionOnImage.X != cellPosition.X + cellSize.Width ||
+                    cell.EndPositionOnImage.Y != cellPosition.Y + cellSize.Height;
         }
 
         public void NegateCellState(Point mousePositionOverBitmapImage)
