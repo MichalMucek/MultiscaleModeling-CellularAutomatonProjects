@@ -50,13 +50,14 @@ namespace CellularAutomatonGUI.ViewModels
 
         public GrainGrowthCellularAutomatonViewModel()
         {
-            CellNeighborhoods.Add(CellNeighborhoodTypeModel.Moore);
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.VonNeumann);
+            CellNeighborhoods.Add(CellNeighborhoodTypeModel.Moore);
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.RandomPentagonal);
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.LeftHexagonal);
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.RightHexagonal);
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.RandomHexagonal);
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.Radial);
+            CellNeighborhoods.Add(CellNeighborhoodTypeModel.RadialWithCenterOfMass);
 
             BoundaryConditions.Add(BoundaryConditionModel.Absorbing);
             BoundaryConditions.Add(BoundaryConditionModel.Periodic);

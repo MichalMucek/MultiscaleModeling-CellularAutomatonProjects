@@ -12,9 +12,12 @@ namespace GrainGrowthCellularAutomaton
         public int RowNumber { get; private set; }
         public ICellState State { get; set; }
         public ICellNeighborhood NeighboringCells { get; set; }
-        public Point CenterOfMass { get; set; }
+        public Point CenterOfMass { get; private set; }
+        public Point GlobalCenterOfMass { get; private set; }
         public Point StartPositionOnImage { get; set; }
         public Point EndPositionOnImage { get; set; }
+        public double Width { get; private set; } = 1;
+        public double Height { get; private set; } = 1;
 
         [ThreadStatic]
         private static Random random;
@@ -28,7 +31,8 @@ namespace GrainGrowthCellularAutomaton
             ColumnNumber = -1;
             RowNumber = -1;
             State = null;
-            RandomizeCenterOfMass();
+            RandomizeNewCenterOfMass();
+            SetGlobalCenterOfMass();
         }
 
         public GrainCellModel(GrainModel grain)
@@ -44,7 +48,8 @@ namespace GrainGrowthCellularAutomaton
             ColumnNumber = columnNumber;
             RowNumber = rowNumber;
             State = grain;
-            RandomizeCenterOfMass();
+            RandomizeNewCenterOfMass();
+            SetGlobalCenterOfMass();
         }
 
         public GrainCellModel(GrainCellModel obj)
@@ -54,17 +59,27 @@ namespace GrainGrowthCellularAutomaton
             RowNumber = obj.RowNumber;
             State = obj.State;
             CenterOfMass = new Point(obj.CenterOfMass.X, obj.CenterOfMass.Y);
+            GlobalCenterOfMass = new Point(obj.GlobalCenterOfMass.X, obj.GlobalCenterOfMass.Y);
         }
 
-        private void RandomizeCenterOfMass()
+        private void RandomizeNewCenterOfMass()
         {
-            double x = GetRandomNumber(-0.5, 0.5);
-            double y = GetRandomNumber(-0.5, 0.5);
+            double x = GetRandomNumber(-Width / 2.0, Height / 2.0);
+            double y = GetRandomNumber(-Width / 2.0, Height / 2.0);
 
             CenterOfMass = new Point(x, y);
         }
 
         private double GetRandomNumber(double minimum, double maximum)
             => random.NextDouble() * (maximum - minimum) + minimum;
+
+        private void SetGlobalCenterOfMass()
+        {
+            GlobalCenterOfMass = new Point
+            {
+                X = CenterOfMass.X + ColumnNumber + Width / 2.0,
+                Y = CenterOfMass.Y - RowNumber - Height / 2.0
+            };
+        }
     }
 }

@@ -25,7 +25,7 @@ namespace CellularAutomaton2D.Models
         [Description("Radial")]
         Radial,
 
-        [Description("Radial with COM")]
+        [Description("Radial with CM")]
         RadialWithCenterOfMass,
     }
 }
