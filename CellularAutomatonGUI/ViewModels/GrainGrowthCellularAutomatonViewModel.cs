@@ -543,7 +543,7 @@ namespace CellularAutomatonGUI.ViewModels
         {
             evolverAndDrawerDispatcherTimer.Stop();
             CancelTasksAndResetCancellationTokenSource();
-            CanShowNextGrowthStep = false;
+            CanShowNextGrowthStep = true;
             CanClearGrainCellGrid = true;
             CanNucleate = true;
             ContinueOrPauseGrowthContent = "Continue";
@@ -575,6 +575,9 @@ namespace CellularAutomatonGUI.ViewModels
             CanContinueOrPauseGrowth = false;
             CanClearGrainCellGrid = false;
             CanNucleate = false;
+
+            if (continueOrPauseGrowthContent == "Start")
+                ContinueOrPauseGrowthContent = "Continue";
 
             await RunEvolverAndDrawerTask();
 
