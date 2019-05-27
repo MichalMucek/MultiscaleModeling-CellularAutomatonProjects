@@ -1,5 +1,5 @@
 ﻿using CellularAutomaton2D;
-using System.Drawing;
+using System.Windows;
 
 namespace GameOfLife.Models
 {

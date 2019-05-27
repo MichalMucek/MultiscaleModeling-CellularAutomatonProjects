@@ -378,8 +378,11 @@ namespace GrainGrowthCellularAutomaton.Models
                                     imageGraphics.FillRectangle(grainColorSolidBrush, new Rectangle(cellPosition, cellSize));
                                 }
 
-                                grainCell.StartPositionOnImage = cellPosition;
-                                grainCell.EndPositionOnImage = cellPosition + cellSize;
+                                if (HasGrainCellPositionOnImageChanged(grainCell, cellPosition, cellSize))
+                                {
+                                    grainCell.StartPositionOnImage = new System.Windows.Point(cellPosition.X, cellPosition.Y);
+                                    grainCell.EndPositionOnImage = grainCell.StartPositionOnImage + new System.Windows.Vector(cellSize.Width, cellSize.Height);
+                                }
                             }
                         }
                     }
@@ -394,6 +397,14 @@ namespace GrainGrowthCellularAutomaton.Models
             }
 
             return bitmapImage;
+        }
+
+        private bool HasGrainCellPositionOnImageChanged(ICell grainCell, Point cellPosition, Size cellSize)
+        {
+            return grainCell.StartPositionOnImage.X != cellPosition.X ||
+                    grainCell.StartPositionOnImage.Y != cellPosition.Y ||
+                    grainCell.EndPositionOnImage.X != cellPosition.X + cellSize.Width ||
+                    grainCell.EndPositionOnImage.Y != cellPosition.Y + cellSize.Height;
         }
 
         public bool PutGrainNucleus(Point mousePositionOverImage)

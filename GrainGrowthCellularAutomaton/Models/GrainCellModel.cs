@@ -1,6 +1,6 @@
 ﻿using GrainGrowthCellularAutomaton.Models;
 using CellularAutomaton2D;
-using System.Drawing;
+using System.Windows;
 
 namespace GrainGrowthCellularAutomaton
 {
