@@ -167,7 +167,7 @@ namespace GrainGrowthCellularAutomaton.Models
                 movesMadeToNextRowCount < 2 * radius + 1;
                 movesMadeToNextRowCount++, row++, y--)
             {
-                if (row >= ColumnCount)
+                if (row >= RowCount)
                     row = 0;
 
                 for (int movesMadeToNextColumnCount = 0, column = upperLeftGrainCell.ColumnNumber, x = -1 * radius;
