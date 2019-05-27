@@ -429,7 +429,7 @@ namespace GrainGrowthCellularAutomaton.Models
 
         public void PutGrainNucleusesUniformly(int countInColumn, int countInRow)
         {
-            ClearGrid();
+            Clear();
 
             double stepInColumn = RowCount / (double)(countInColumn + 1);
             double stepInRow = ColumnCount / (double)(countInRow + 1);
@@ -456,7 +456,7 @@ namespace GrainGrowthCellularAutomaton.Models
 
         public void PutGrainNucleusesRandomly(int grainCount)
         {
-            ClearGrid();
+            Clear();
 
             while (grainCount > 0)
             {
@@ -479,7 +479,7 @@ namespace GrainGrowthCellularAutomaton.Models
             {
                 if (radius <= RowCount / 2 && radius <= ColumnCount / 2)
                 {
-                    ClearGrid();
+                    Clear();
 
                     int failsCount = 0;
                     bool probablyPossibleToPutANucleus = true;
@@ -633,13 +633,13 @@ namespace GrainGrowthCellularAutomaton.Models
             return true;
         }
 
-        private void ClearGrid()
+        public void Clear()
         {
-            SetGridToInitialState();
+            SetToInitialState();
             RemoveAllGrainsExceptInitial();
         }
 
-        private void SetGridToInitialState()
+        private void SetToInitialState()
         {
             foreach (var row in CurrentState)
                 foreach (var grainCell in row)

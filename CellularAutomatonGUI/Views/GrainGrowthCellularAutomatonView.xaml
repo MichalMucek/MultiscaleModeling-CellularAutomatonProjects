@@ -11,39 +11,25 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="300" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!--  Grain Growth Configuration GroupBox  -->
+        <!--  Grain Growth Grid settings GroupBox Row  -->
         <GroupBox
             Grid.Row="0"
-            Grid.RowSpan="2"
             Grid.Column="0"
-            Header="Configuration">
+            Header="Grid settings">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -53,70 +39,57 @@
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!--  Grain Growth Configuration GroupBox Row 0  -->
                 <TextBlock
                     Grid.Row="0"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="3"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Text="Grid" />
-
-                <!--  Grain Growth Configuration GroupBox Row 1  -->
-                <TextBlock
-                    Grid.Row="1"
                     Grid.Column="0"
                     Margin="3"
                     VerticalAlignment="Center"
                     Text="Columns:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="1"
+                    Grid.Row="0"
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
                     DefaultValue="{Binding ColumnCount}"
                     DisplayDefaultValueOnEmptyText="True"
-                    IsEnabled="{Binding IsStopped}"
+                    IsEnabled="{Binding IsGrainCellGridUnset}"
                     Maximum="1000"
                     Minimum="1"
                     Value="{Binding ColumnCount}" />
 
-                <!--  Grain Growth Configuration GroupBox Row 2  -->
                 <TextBlock
-                    Grid.Row="2"
+                    Grid.Row="1"
                     Grid.Column="0"
                     Margin="3"
                     VerticalAlignment="Center"
                     Text="Rows:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="2"
+                    Grid.Row="1"
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
                     DefaultValue="{Binding RowCount}"
                     DisplayDefaultValueOnEmptyText="True"
-                    IsEnabled="{Binding IsStopped}"
+                    IsEnabled="{Binding IsGrainCellGridUnset}"
                     Maximum="1000"
                     Minimum="1"
                     Value="{Binding RowCount}" />
 
-                <!--  Grain Growth Configuration GroupBox Row 3  -->
                 <TextBlock
-                    Grid.Row="3"
+                    Grid.Row="2"
                     Grid.Column="0"
                     Margin="3"
                     VerticalAlignment="Center"
                     Text="Neighborhood:" />
                 <ComboBox
-                    Grid.Row="3"
+                    Grid.Row="2"
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
-                    IsEnabled="{Binding IsStopped}"
+                    IsEnabled="{Binding IsGrainCellGridUnset}"
                     ItemsSource="{Binding CellNeighborhoods}"
                     SelectedItem="{Binding SelectedCellNeighborhood, Mode=TwoWay}">
                     <ComboBox.Resources>
@@ -129,15 +102,14 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <!--  Grain Growth Configuration GroupBox Row 4  -->
                 <TextBlock
-                    Grid.Row="4"
+                    Grid.Row="3"
                     Grid.Column="0"
                     Margin="3"
                     VerticalAlignment="Center"
                     Text="Neighborhood radius:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="4"
+                    Grid.Row="3"
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
@@ -148,19 +120,18 @@
                     Minimum="1"
                     Value="{Binding NeighborhoodRadius}" />
 
-                <!--  Grain Growth Configuration GroupBox Row 5  -->
                 <TextBlock
-                    Grid.Row="5"
+                    Grid.Row="4"
                     Grid.Column="0"
                     Margin="3"
                     VerticalAlignment="Center"
                     Text="BC:" />
                 <ComboBox
-                    Grid.Row="5"
+                    Grid.Row="4"
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
-                    IsEnabled="{Binding IsStopped}"
+                    IsEnabled="{Binding IsGrainCellGridUnset}"
                     ItemsSource="{Binding BoundaryConditions}"
                     SelectedItem="{Binding SelectedBoundaryCondition, Mode=TwoWay}">
                     <ComboBox.Resources>
@@ -173,31 +144,44 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <!--  Grain Growth Configuration GroupBox Row 6  -->
-                <Separator
-                    Grid.Row="6"
+                <Button
+                    x:Name="SetOrUnsetGrainCellGrid"
+                    Grid.Row="5"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
+                    Width="60"
                     Margin="3"
-                    VerticalAlignment="Center" />
-
-                <!--  Grain Growth Configuration GroupBox Row 7  -->
-                <TextBlock
-                    Grid.Row="7"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="3"
-                    HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Text="Nucleation" />
+                    Content="{Binding SetOrUnsetGrainCellGridContent}" />
+            </Grid>
+        </GroupBox>
 
-                <!--  Grain Growth Configuration GroupBox Row 8  -->
+        <!--  Grain Growth Nucleation GroupBox  -->
+        <GroupBox
+            Grid.Row="1"
+            Grid.Column="0"
+            Header="Nucleation">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
                 <ComboBox
-                    Grid.Row="8"
+                    Grid.Row="0"
                     Grid.Column="0"
-                    Grid.ColumnSpan="2"
                     Margin="3"
                     VerticalAlignment="Center"
+                    IsEnabled="{Binding IsGrainCellGridSet}"
                     ItemsSource="{Binding NucleationMethods}"
                     SelectedItem="{Binding SelectedNucleationMethod, Mode=TwoWay}">
                     <ComboBox.Resources>
@@ -210,16 +194,31 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <!--  Grain Growth Configuration GroupBox Row 9  -->
-                <TextBlock
-                    Grid.Row="9"
-                    Grid.Column="0"
+                <StackPanel
+                    Grid.Row="0"
+                    Grid.Column="1"
                     Margin="3"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <TextBlock Text="Clicking enabled" />
+                    <CheckBox
+                        Margin="3,0,0,0"
+                        VerticalAlignment="Center"
+                        IsChecked="{Binding IsClickingOnImageEnabled}"
+                        IsEnabled="{Binding IsGrainCellGridSet}" />
+                </StackPanel>
+
+                <TextBlock
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Margin="3,5"
                     VerticalAlignment="Center"
                     Text="Nucleuses in column:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="9"
+                    Grid.Row="1"
                     Grid.Column="1"
+                    Grid.ColumnSpan="2"
                     Margin="3"
                     VerticalAlignment="Center"
                     DefaultValue="{Binding NucleusesInColumnCount}"
@@ -229,16 +228,16 @@
                     Minimum="1"
                     Value="{Binding NucleusesInColumnCount}" />
 
-                <!--  Grain Growth Configuration GroupBox Row 10  -->
                 <TextBlock
-                    Grid.Row="10"
+                    Grid.Row="2"
                     Grid.Column="0"
-                    Margin="3"
+                    Margin="3,5"
                     VerticalAlignment="Center"
                     Text="Nucleuses in row:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="10"
+                    Grid.Row="2"
                     Grid.Column="1"
+                    Grid.ColumnSpan="2"
                     Margin="3"
                     VerticalAlignment="Center"
                     DefaultValue="{Binding NucleusesInRowCount}"
@@ -248,16 +247,16 @@
                     Minimum="1"
                     Value="{Binding NucleusesInRowCount}" />
 
-                <!--  Grain Growth Configuration GroupBox Row 11  -->
                 <TextBlock
-                    Grid.Row="11"
+                    Grid.Row="3"
                     Grid.Column="0"
-                    Margin="3"
+                    Margin="3,5"
                     VerticalAlignment="Center"
                     Text="Nucleuses count:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="11"
+                    Grid.Row="3"
                     Grid.Column="1"
+                    Grid.ColumnSpan="2"
                     Margin="3"
                     VerticalAlignment="Center"
                     DefaultValue="{Binding RandomNucleusesCount}"
@@ -267,16 +266,16 @@
                     Minimum="1"
                     Value="{Binding RandomNucleusesCount}" />
 
-                <!--  Grain Growth Configuration GroupBox Row 12  -->
                 <TextBlock
-                    Grid.Row="12"
+                    Grid.Row="4"
                     Grid.Column="0"
-                    Margin="3"
+                    Margin="3,5"
                     VerticalAlignment="Center"
                     Text="Nucleus radius:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="12"
+                    Grid.Row="4"
                     Grid.Column="1"
+                    Grid.ColumnSpan="2"
                     Margin="3"
                     VerticalAlignment="Center"
                     DefaultValue="{Binding NucleusRadius}"
@@ -286,87 +285,50 @@
                     Minimum="1"
                     Value="{Binding NucleusRadius}" />
 
-                <!--  Grain Growth Configuration GroupBox Row 13  -->
                 <StackPanel
-                    Grid.Row="13"
-                    Grid.Column="0"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    Orientation="Horizontal">
-                    <TextBlock Text="Clicking enabled" />
-                    <CheckBox
-                        Margin="3,0,0,0"
-                        VerticalAlignment="Center"
-                        IsChecked="{Binding IsClickingOnImageEnabled}"
-                        IsEnabled="{Binding IsStarted}" />
-                </StackPanel>
-
-                <Button
-                    x:Name="Nucleate"
-                    Grid.Row="13"
-                    Grid.Column="1"
-                    Width="60"
-                    Margin="3"
-                    Content="Nucleate" />
-
-                <!--  Grain Growth Configuration GroupBox Row 14  -->
-                <Separator
-                    Grid.Row="14"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="3"
-                    VerticalAlignment="Center" />
-
-                <!--  Grain Growth Configuration GroupBox Row 15  -->
-                <StackPanel
-                    Grid.Row="15"
+                    Grid.Row="5"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
                     HorizontalAlignment="Center"
                     Orientation="Horizontal">
                     <Button
-                        x:Name="Reset"
-                        Width="56"
+                        x:Name="ClearGrainCellGrid"
+                        Width="60"
                         Margin="3"
-                        VerticalAlignment="Center"
-                        Content="Reset" />
+                        Content="Clear" />
                     <Button
-                        x:Name="StartStop"
-                        Width="56"
+                        x:Name="Nucleate"
+                        Width="60"
                         Margin="3"
-                        VerticalAlignment="Center"
-                        Content="{Binding StartStopContent}" />
-                    <Button
-                        x:Name="ContinuePause"
-                        Width="56"
-                        Margin="3"
-                        VerticalAlignment="Center"
-                        Content="{Binding ContinuePauseContent}" />
-                    <Button
-                        x:Name="ShowNextStep"
-                        Width="56"
-                        Margin="3"
-                        VerticalAlignment="Center"
-                        Content="Next" />
+                        Content="Nucleate" />
                 </StackPanel>
+            </Grid>
+        </GroupBox>
 
-                <!--  Grain Growth Configuration GroupBox Row 17  -->
-                <Separator
-                    Grid.Row="17"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="3"
-                    VerticalAlignment="Center" />
+        <!--  Grain Growth Growth GroupBox  -->
+        <GroupBox
+            Grid.Row="2"
+            Grid.Column="0"
+            Header="Growth">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-                <!--  Game of Life Configuration GroupBox Row 18  -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
                 <TextBlock
-                    Grid.Row="18"
+                    Grid.Row="0"
                     Grid.Column="0"
                     Margin="3"
                     VerticalAlignment="Center"
                     Text="Time interval [ms]:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="18"
+                    Grid.Row="0"
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
@@ -374,17 +336,56 @@
                     DisplayDefaultValueOnEmptyText="True"
                     Maximum="5000"
                     Minimum="10"
+                    IsEnabled="{Binding IsGrainCellGridSet}"
                     Value="{Binding TimeInterval}" />
 
-                <!--  Game of Life Configuration GroupBox Row 19  -->
+                <StackPanel
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+                    <Button
+                        x:Name="ContinueOrPauseGrowth"
+                        Width="60"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Content="{Binding ContinueOrPauseGrowthContent}" />
+                    <Button
+                        x:Name="ShowNextGrowthStep"
+                        Width="60"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Content="Next" />
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!--  Grain Growth View settings GroupBox  -->
+        <GroupBox
+            Grid.Row="4"
+            Grid.Column="0"
+            Header="View settings">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
                 <TextBlock
-                    Grid.Row="19"
+                    Grid.Row="0"
                     Grid.Column="0"
                     Margin="3"
                     VerticalAlignment="Center"
                     Text="Cell width [px]:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="19"
+                    Grid.Row="0"
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
@@ -394,15 +395,14 @@
                     Minimum="1"
                     Value="{Binding CellWidth}" />
 
-                <!--  Game of Life Configuration GroupBox Row 20  -->
                 <TextBlock
-                    Grid.Row="20"
+                    Grid.Row="1"
                     Grid.Column="0"
                     Margin="3"
                     VerticalAlignment="Center"
                     Text="Cell height [px]:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="20"
+                    Grid.Row="1"
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
@@ -412,21 +412,20 @@
                     Minimum="1"
                     Value="{Binding CellHeight}" />
 
-                <!--  Game of Life Configuration GroupBox Row 21  -->
                 <TextBlock
-                    Grid.Row="21"
+                    Grid.Row="2"
                     Grid.Column="0"
                     Margin="3"
                     VerticalAlignment="Center"
                     Text="Line width [px]:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="21"
+                    Grid.Row="2"
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
                     DefaultValue="{Binding LineWidth}"
                     DisplayDefaultValueOnEmptyText="True"
-                    Maximum="100"
+                    Maximum="50"
                     Minimum="0"
                     Value="{Binding LineWidth}" />
             </Grid>
@@ -435,7 +434,7 @@
         <!--  Grain Growth View GroupBox  -->
         <GroupBox
             Grid.Row="0"
-            Grid.RowSpan="2"
+            Grid.RowSpan="5"
             Grid.Column="1"
             Header="View">
             <Image

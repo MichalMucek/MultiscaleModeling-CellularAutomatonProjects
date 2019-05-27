@@ -15,8 +15,8 @@ namespace CellularAutomatonGUI.ViewModels
 {
     public class GrainGrowthCellularAutomatonViewModel : Screen
     {
-        private int columnCount = 11;
-        private int rowCount = 11;
+        private int columnCount = 31;
+        private int rowCount = 31;
         private NucleationMethodModel selectedNucleationMethod = NucleationMethodModel.Uniform;
         private int nucleusesInColumnCount = 1;
         private int nucleusesInRowCount = 1;
@@ -27,16 +27,17 @@ namespace CellularAutomatonGUI.ViewModels
         private bool isRandomMethodSelected = false;
         private bool isRandomWithRadiusMethodSelected = false;
         private int nucleusRadius = 1;
+        private bool canClearGrainCellGrid = false;
         private bool canNucleate = false;
-        private bool canStartStop = true;
-        private bool isStopped = true;
-        private bool canContinuePause = false;
-        private string continuePauseContent = "Continue";
-        private bool canShowNextStep = false;
-        private string startStopContent = "Start";
+        private bool canSetOrUnsetGrainCellGrid = true;
+        private bool isGrainCellGridUnset = true;
+        private bool canContinueOrPauseGrowth = false;
+        private string continueOrPauseGrowthContent = "Start";
+        private bool canShowNextGrowthStep = false;
+        private string setOrUnsetGrainCellGridContent = "Set";
         private int timeInterval = 250;
-        private int cellWidth = 5;
-        private int cellHeight = 5;
+        private int cellWidth = 12;
+        private int cellHeight = 12;
         private int lineWidth = 1;
         private BitmapImage grainCellGridBitmapImage;
         private bool growthIsDone = false;
@@ -72,6 +73,9 @@ namespace CellularAutomatonGUI.ViewModels
             cancellationToken = cancellationTokenSource.Token;
             ThreadPool.SetMinThreads(1, 1);
             ThreadPool.SetMaxThreads(1, 1);
+
+            CreateGrainCellGridPreview();
+            RunDrawerTask();
         }
 
         private async void EvolverAndDrawer_Tick(object sender, EventArgs e)
@@ -107,7 +111,7 @@ namespace CellularAutomatonGUI.ViewModels
                 growthIsDone = value;
 
                 if (growthIsDone)
-                    StartStop();
+                    SetOrUnsetGrainCellGrid();
 
                 NotifyOfPropertyChange(() => GrowthIsDone);
             }
@@ -122,6 +126,9 @@ namespace CellularAutomatonGUI.ViewModels
                 NotifyOfPropertyChange(() => ColumnCount);
                 NotifyOfPropertyChange(() => NucleusRadiusMaximum);
                 NotifyOfPropertyChange(() => GrainCellCount);
+
+                CreateGrainCellGridPreview();
+                RunDrawerTask();
             }
         }
 
@@ -134,7 +141,15 @@ namespace CellularAutomatonGUI.ViewModels
                 NotifyOfPropertyChange(() => RowCount);
                 NotifyOfPropertyChange(() => NucleusRadiusMaximum);
                 NotifyOfPropertyChange(() => GrainCellCount);
+
+                CreateGrainCellGridPreview();
+                RunDrawerTask();
             }
+        }
+
+        private void CreateGrainCellGridPreview()
+        {
+            grainCellGrid = new GrainCellGrid2DModel(columnCount, rowCount, CellNeighborhoodTypeModel.VonNeumann, BoundaryConditionModel.Absorbing);
         }
 
         public int GrainCellCount => rowCount * columnCount;
@@ -180,7 +195,7 @@ namespace CellularAutomatonGUI.ViewModels
 
         public bool IsRadialNeighborhoodSelected
         {
-            get => isRadialNeighborhoodSelected && isStopped;
+            get => isRadialNeighborhoodSelected && isGrainCellGridUnset;
             set
             {
                 isRadialNeighborhoodSelected = value;
@@ -242,7 +257,7 @@ namespace CellularAutomatonGUI.ViewModels
 
         public bool IsUniformMethodSelected
         {
-            get => isUniformMethodSelected;
+            get => isUniformMethodSelected && IsGrainCellGridSet;
             set
             {
                 isUniformMethodSelected = value;
@@ -262,7 +277,7 @@ namespace CellularAutomatonGUI.ViewModels
 
         public bool IsRandomMethodSelected
         {
-            get => isRandomMethodSelected;
+            get => isRandomMethodSelected && IsGrainCellGridSet;
             set
             {
                 isRandomMethodSelected = value;
@@ -272,7 +287,7 @@ namespace CellularAutomatonGUI.ViewModels
 
         public bool IsRandomWithRadiusMethodSelected
         {
-            get => isRandomWithRadiusMethodSelected;
+            get => isRandomWithRadiusMethodSelected && IsGrainCellGridSet;
             set
             {
                 isRandomWithRadiusMethodSelected = value;
@@ -303,9 +318,29 @@ namespace CellularAutomatonGUI.ViewModels
 
         public bool IsClickingOnImageEnabled { get; set; } = true;
 
+        public async void ClearGrainCellGrid()
+        {
+            await Task.Run(() => grainCellGrid.Clear());
+            RunDrawerTask();
+        }
+
+        public bool CanClearGrainCellGrid
+        {
+            get => canClearGrainCellGrid;
+            set
+            {
+                canClearGrainCellGrid = value;
+                NotifyOfPropertyChange(() => CanClearGrainCellGrid);
+            }
+        }
+
         public async void Nucleate()
         {
+            CanClearGrainCellGrid = false;
             CanNucleate = false;
+            CanSetOrUnsetGrainCellGrid = false;
+            CanContinueOrPauseGrowth = false;
+            CanShowNextGrowthStep = false;
 
             await Task.Run(() =>
             {
@@ -327,14 +362,17 @@ namespace CellularAutomatonGUI.ViewModels
                                 MessageBox.Show($"{putNucleusesCount} nucleus out of {randomNucleusesCount} with radius of {nucleusRadius} were possible to put.", "Random nucleation result");
                             else
                                 MessageBox.Show($"{putNucleusesCount} nucleuses out of {randomNucleusesCount} with radius of {nucleusRadius} were possible to put.", "Random nucleation result");
-
                         break;
                 }
             });
 
             RunDrawerTask();
 
+            CanClearGrainCellGrid = true;
             CanNucleate = true;
+            CanSetOrUnsetGrainCellGrid = true;
+            CanContinueOrPauseGrowth = true;
+            CanShowNextGrowthStep = true;
         }
 
         public bool CanNucleate
@@ -347,110 +385,124 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
-        public void Reset()
+        public void SetOrUnsetGrainCellGrid()
         {
-            StartStop();
-            StartStop();
-        }
-
-        public bool CanReset => IsStarted;
-
-        public async void StartStop()
-        {
-            CanStartStop = false;
-
-            if (startStopContent == "Start")
+            switch (setOrUnsetGrainCellGridContent)
             {
-                IsStopped = false;
-
-                await Task.Run(() =>
-                {
-                    switch (SelectedCellNeighborhood)
-                    {
-                        case CellNeighborhoodTypeModel.Radial:
-                        case CellNeighborhoodTypeModel.RadialWithCenterOfMass:
-                            grainCellGrid = new GrainCellGrid2DModel(
-                                columnCount,
-                                rowCount,
-                                SelectedCellNeighborhood,
-                                SelectedBoundaryCondition,
-                                neighborhoodRadius);
-                            break;
-
-                        default:
-                            grainCellGrid = new GrainCellGrid2DModel(
-                                columnCount,
-                                rowCount,
-                                SelectedCellNeighborhood,
-                                SelectedBoundaryCondition);
-                            break;
-                    }
-
+                case "Set":
+                    SetGrainCellGrid();
                     RunDrawerTask();
-                });
+                    break;
 
-                CanContinuePause = true;
-                CanShowNextStep = true;
-                CanNucleate = true;
-                StartStopContent = "Stop";
-                ContinuePauseContent = "Continue";
-            }
-            else if (startStopContent == "Stop")
-            {
-                evolverAndDrawerDispatcherTimer.Stop();
-
-                CancelTasksAndResetCancellationTokenSource();
-
-                IsStopped = true;
-                CanContinuePause = false;
-                CanShowNextStep = false;
-                CanNucleate = false;
-                StartStopContent = "Start";
-            }
-
-            CanStartStop = true;
-        }
-
-        public bool CanStartStop
-        {
-            get => canStartStop;
-            set
-            {
-                canStartStop = value;
-                NotifyOfPropertyChange(() => CanStartStop);
+                case "Unset":
+                    UnsetGrainCellGrid();
+                    break;
             }
         }
 
-        public bool IsStopped
+        private async void SetGrainCellGrid()
         {
-            get => isStopped;
+            CanSetOrUnsetGrainCellGrid = false;
+
+            await CreateNewGrainCellGrid();
+            IsGrainCellGridUnset = false;
+
+            CanContinueOrPauseGrowth = true;
+            CanShowNextGrowthStep = true;
+            CanClearGrainCellGrid = true;
+            CanNucleate = true;
+            SetOrUnsetGrainCellGridContent = "Unset";
+            ContinueOrPauseGrowthContent = "Start";
+
+            CanSetOrUnsetGrainCellGrid = true;
+        }
+
+        private Task CreateNewGrainCellGrid()
+        {
+            return Task.Run(() =>
+            {
+                switch (SelectedCellNeighborhood)
+                {
+                    case CellNeighborhoodTypeModel.Radial:
+                    case CellNeighborhoodTypeModel.RadialWithCenterOfMass:
+                        grainCellGrid = new GrainCellGrid2DModel(
+                            columnCount,
+                            rowCount,
+                            SelectedCellNeighborhood,
+                            SelectedBoundaryCondition,
+                            neighborhoodRadius);
+                        break;
+
+                    default:
+                        grainCellGrid = new GrainCellGrid2DModel(
+                            columnCount,
+                            rowCount,
+                            SelectedCellNeighborhood,
+                            SelectedBoundaryCondition);
+                        break;
+                }
+            });
+        }
+
+        private void UnsetGrainCellGrid()
+        {
+            CanSetOrUnsetGrainCellGrid = false;
+
+            evolverAndDrawerDispatcherTimer.Stop();
+            CancelTasksAndResetCancellationTokenSource();
+
+            IsGrainCellGridUnset = true;
+            CanContinueOrPauseGrowth = false;
+            CanShowNextGrowthStep = false;
+            CanClearGrainCellGrid = false;
+            CanNucleate = false;
+            SetOrUnsetGrainCellGridContent = "Set";
+
+            CanSetOrUnsetGrainCellGrid = true;
+        }
+
+        public bool CanSetOrUnsetGrainCellGrid
+        {
+            get => canSetOrUnsetGrainCellGrid;
             set
             {
-                isStopped = value;
-                IsStarted = !value;
-                NotifyOfPropertyChange(() => IsStopped);
+                canSetOrUnsetGrainCellGrid = value;
+                NotifyOfPropertyChange(() => CanSetOrUnsetGrainCellGrid);
+            }
+        }
+
+        public bool IsGrainCellGridUnset
+        {
+            get => isGrainCellGridUnset;
+            set
+            {
+                isGrainCellGridUnset = value;
+                IsGrainCellGridSet = !value;
+                NotifyOfPropertyChange(() => IsGrainCellGridUnset);
                 NotifyOfPropertyChange(() => IsRadialNeighborhoodSelected);
+                NotifyOfPropertyChange(() => IsUniformMethodSelected);
+                NotifyOfPropertyChange(() => IsRandomMethodSelected);
+                NotifyOfPropertyChange(() => IsRandomWithRadiusMethodSelected);
             }
         }
 
-        public bool IsStarted
+        public bool IsGrainCellGridSet
         {
-            get => !isStopped;
+            get => !isGrainCellGridUnset;
             set
             {
-                NotifyOfPropertyChange(() => IsStarted);
+                NotifyOfPropertyChange(() => IsGrainCellGridSet);
                 NotifyOfPropertyChange(() => CanNucleate);
-                NotifyOfPropertyChange(() => CanReset);
             }
         }
 
-        public string StartStopContent
+        public string SetOrUnsetGrainCellGridContent
         {
-            get => startStopContent;
+            get => setOrUnsetGrainCellGridContent;
             set
             {
-                startStopContent = value;
-                NotifyOfPropertyChange(() => StartStopContent);
+                setOrUnsetGrainCellGridContent = value;
+                NotifyOfPropertyChange(() => SetOrUnsetGrainCellGridContent);
             }
         }
 
@@ -462,62 +514,85 @@ namespace CellularAutomatonGUI.ViewModels
             cancellationToken = cancellationTokenSource.Token;
         }
 
-        public void ContinuePause()
+        public void ContinueOrPauseGrowth()
         {
-            switch (continuePauseContent)
+            switch (continueOrPauseGrowthContent)
             {
+                case "Start":
                 case "Continue":
-                    CanNucleate = false;
-                    evolverAndDrawerDispatcherTimer.Start();
-                    ContinuePauseContent = "Pause";
+                    ContinueGrowth();
                     break;
 
                 case "Pause":
-                    CanNucleate = true;
-                    evolverAndDrawerDispatcherTimer.Stop();
-                    CancelTasksAndResetCancellationTokenSource();
-                    ContinuePauseContent = "Continue";
+                    PauseGrowth();
                     break;
             }
         }
 
-        public bool CanContinuePause
+        private void ContinueGrowth()
         {
-            get => canContinuePause;
+            CanShowNextGrowthStep = false;
+            CanClearGrainCellGrid = false;
+            CanNucleate = false;
+            evolverAndDrawerDispatcherTimer.Start();
+            ContinueOrPauseGrowthContent = "Pause";
+        }
+
+        private void PauseGrowth()
+        {
+            evolverAndDrawerDispatcherTimer.Stop();
+            CancelTasksAndResetCancellationTokenSource();
+            CanShowNextGrowthStep = false;
+            CanClearGrainCellGrid = true;
+            CanNucleate = true;
+            ContinueOrPauseGrowthContent = "Continue";
+        }
+
+        public bool CanContinueOrPauseGrowth
+        {
+            get => canContinueOrPauseGrowth;
             set
             {
-                canContinuePause = value;
-                NotifyOfPropertyChange(() => CanContinuePause);
+                canContinueOrPauseGrowth = value;
+                NotifyOfPropertyChange(() => CanContinueOrPauseGrowth);
             }
         }
 
-        public string ContinuePauseContent
+        public string ContinueOrPauseGrowthContent
         {
-            get => continuePauseContent;
+            get => continueOrPauseGrowthContent;
             set
             {
-                continuePauseContent = value;
-                NotifyOfPropertyChange(() => ContinuePauseContent);
+                continueOrPauseGrowthContent = value;
+                NotifyOfPropertyChange(() => ContinueOrPauseGrowthContent);
             }
         }
 
-        public async void ShowNextStep()
+        public async void ShowNextGrowthStep()
         {
-            CanShowNextStep = false;
+            CanShowNextGrowthStep = false;
+            CanContinueOrPauseGrowth = false;
+            CanClearGrainCellGrid = false;
+            CanNucleate = false;
 
             await RunEvolverAndDrawerTask();
 
             if (!growthIsDone)
-                CanShowNextStep = true;
+            {
+                CanShowNextGrowthStep = true;
+                CanContinueOrPauseGrowth = true;
+                CanClearGrainCellGrid = true;
+                CanNucleate = true;
+            }
         }
 
-        public bool CanShowNextStep
+        public bool CanShowNextGrowthStep
         {
-            get => canShowNextStep;
+            get => canShowNextGrowthStep;
             set
             {
-                canShowNextStep = value;
-                NotifyOfPropertyChange(() => CanShowNextStep);
+                canShowNextGrowthStep = value;
+                NotifyOfPropertyChange(() => CanShowNextGrowthStep);
             }
         }
 
@@ -590,7 +665,7 @@ namespace CellularAutomatonGUI.ViewModels
 
             await Task.Run(() =>
             {
-                if (!isStopped && grainCellGrid != null && IsClickingOnImageEnabled)
+                if (!isGrainCellGridUnset && grainCellGrid != null && IsClickingOnImageEnabled)
                 {
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {

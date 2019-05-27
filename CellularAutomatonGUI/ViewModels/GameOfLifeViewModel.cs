@@ -15,8 +15,8 @@ namespace CellularAutomatonGUI.ViewModels
 {
     public class GameOfLifeViewModel : Screen
     {
-        private int columnCount = 30;
-        private int rowCount = 30;
+        private int columnCount = 31;
+        private int rowCount = 31;
         private CellNeighborhoodTypeModel selectedCellNeighborhood = CellNeighborhoodTypeModel.Moore;
         private BindableCollection<NumberOfCellsForRulesModel> birthRules;
         private NumberOfCellsForRulesModel selectedBirthRule;
@@ -26,12 +26,12 @@ namespace CellularAutomatonGUI.ViewModels
         private NumberOfCellsForRulesModel selectedSurvivalRule;
         private BindableCollection<NumberOfCellsForRulesModel> survivalVonNeumannRulesSafe;
         private BindableCollection<NumberOfCellsForRulesModel> survivalMooreRulesSafe;
-        private bool canStartStop = true;
-        private bool isStopped = true;
-        private bool canContinuePause = false;
-        private string continuePauseContent = "Continue";
-        private bool canShowNextStep = false;
-        private string startStopContent = "Start";
+        private bool canSetOrUnsetCellGrid = true;
+        private bool isCellGridUnset = true;
+        private bool canContinueOrPauseEvolution = false;
+        private string continueOrPauseEvolutionContent = "Start";
+        private bool canShowNextEvolutionStep = false;
+        private string setOrUnsetCellGridContent = "Set";
         private int timeIntervalInMilliseconds = 100;
         private int cellWidth = 12;
         private int cellHeight = 12;
@@ -80,6 +80,9 @@ namespace CellularAutomatonGUI.ViewModels
             cancellationToken = cancellationTokenSource.Token;
             ThreadPool.SetMinThreads(1, 1);
             ThreadPool.SetMaxThreads(1, 1);
+
+            cellGrid = new CellGrid2DModel(columnCount, rowCount, selectedCellNeighborhood, mooreRule, SelectedBoundaryCondition);
+            RunDrawerTask();
         }
 
         private async void EvolverAndDrawer_Tick(object sender, EventArgs e)
@@ -112,6 +115,8 @@ namespace CellularAutomatonGUI.ViewModels
             set
             {
                 columnCount = value;
+                CreateNewCellGridTask();
+                RunDrawerTask();
                 NotifyOfPropertyChange(() => ColumnCount);
             }
         }
@@ -122,6 +127,8 @@ namespace CellularAutomatonGUI.ViewModels
             set
             {
                 rowCount = value;
+                CreateNewCellGridTask();
+                RunDrawerTask();
                 NotifyOfPropertyChange(() => RowCount);
             }
         }
@@ -200,85 +207,100 @@ namespace CellularAutomatonGUI.ViewModels
 
         public BoundaryConditionModel SelectedBoundaryCondition { get; set; } = BoundaryConditionModel.Absorbing;
 
-        public async void StartStop()
+        public void SetOrUnsetCellGrid()
         {
-            CanStartStop = false;
+            CanSetOrUnsetCellGrid = false;
 
-            if (startStopContent == "Start")
+            switch (setOrUnsetCellGridContent)
             {
-                IsStopped = false;
-
-                await Task.Run(() =>
-                {
-                    switch (SelectedCellNeighborhood)
-                    {
-                        case CellNeighborhoodTypeModel.VonNeumann:
-                            cellGrid = new CellGrid2DModel(ColumnCount, RowCount, SelectedCellNeighborhood, vonNeumannRule, SelectedBoundaryCondition);
-                            break;
-
-                        case CellNeighborhoodTypeModel.Moore:
-                            cellGrid = new CellGrid2DModel(ColumnCount, RowCount, SelectedCellNeighborhood, mooreRule, SelectedBoundaryCondition);
-                            break;
-                    }
-
+                case "Set":
+                    SetCellGrid();
                     RunDrawerTask();
-                });
+                    break;
 
-                CellCount = RowCount * ColumnCount;
-                CanContinuePause = true;
-                CanShowNextStep = true;
-                StartStopContent = "Stop";
-                ContinuePauseContent = "Continue";
-            }
-            else
-            {
-                evolverAndDrawerDispatcherTimer.Stop();
-
-                CancelTasksAndResetCancellationTokenSource();
-
-                IsStopped = true;
-                CanContinuePause = false;
-                CanShowNextStep = false;
-                StartStopContent = "Start";
+                case "Unset":
+                    UnsetCellGrid();
+                    break;
             }
 
-            CanStartStop = true;
+            CanSetOrUnsetCellGrid = true;
         }
 
-        public bool CanStartStop
+        private async void SetCellGrid()
         {
-            get => canStartStop;
+            await CreateNewCellGridTask();
+            IsCellGridUnset = false;
+
+            CellCount = rowCount * columnCount;
+            CanContinueOrPauseEvolution = true;
+            CanShowNextEvolutionStep = true;
+            SetOrUnsetCellGridContent = "Unset";
+            ContinueOrPauseEvolutionContent = "Start";
+        }
+
+        private Task CreateNewCellGridTask()
+        {
+            return Task.Run(() =>
+            {
+                switch (SelectedCellNeighborhood)
+                {
+                    case CellNeighborhoodTypeModel.VonNeumann:
+                        cellGrid = new CellGrid2DModel(ColumnCount, RowCount, SelectedCellNeighborhood, vonNeumannRule, SelectedBoundaryCondition);
+                        break;
+
+                    case CellNeighborhoodTypeModel.Moore:
+                        cellGrid = new CellGrid2DModel(ColumnCount, RowCount, SelectedCellNeighborhood, mooreRule, SelectedBoundaryCondition);
+                        break;
+                }
+            });
+        }
+
+        private void UnsetCellGrid()
+        {
+            evolverAndDrawerDispatcherTimer.Stop();
+
+            CancelTasksAndResetCancellationTokenSource();
+
+            IsCellGridUnset = true;
+            CanContinueOrPauseEvolution = false;
+            CanShowNextEvolutionStep = false;
+            SetOrUnsetCellGridContent = "Set";
+        }
+
+        public bool CanSetOrUnsetCellGrid
+        {
+            get => canSetOrUnsetCellGrid;
             set
             {
-                canStartStop = value;
-                NotifyOfPropertyChange(() => CanStartStop);
+                canSetOrUnsetCellGrid = value;
+                NotifyOfPropertyChange(() => CanSetOrUnsetCellGrid);
             }
         }
 
-        public bool IsStopped
+        public bool IsCellGridUnset
         {
-            get => isStopped;
+            get => isCellGridUnset;
             set
             {
-                isStopped = value;
-                IsStarted = !value;
-                NotifyOfPropertyChange(() => IsStopped);
+                isCellGridUnset = value;
+                IsCellGridSet = !value;
+                NotifyOfPropertyChange(() => IsCellGridUnset);
             }
         }
 
-        public bool IsStarted
+        public bool IsCellGridSet
         {
-            get => !isStopped;
-            set => NotifyOfPropertyChange(() => IsStarted);
+            get => !isCellGridUnset;
+            set => NotifyOfPropertyChange(() => IsCellGridSet);
         }
 
-        public string StartStopContent
+        public string SetOrUnsetCellGridContent
         {
-            get => startStopContent;
+            get => setOrUnsetCellGridContent;
             set
             {
-                startStopContent = value;
-                NotifyOfPropertyChange(() => StartStopContent);
+                setOrUnsetCellGridContent = value;
+                NotifyOfPropertyChange(() => SetOrUnsetCellGridContent);
             }
         }
 
@@ -290,59 +312,75 @@ namespace CellularAutomatonGUI.ViewModels
             cancellationToken = cancellationTokenSource.Token;
         }
 
-        public void ContinuePause()
+        public void ContinueOrPauseEvolution()
         {
-            switch (continuePauseContent)
+            switch (continueOrPauseEvolutionContent)
             {
+                case "Start":
                 case "Continue":
-                    evolverAndDrawerDispatcherTimer.Start();
-                    ContinuePauseContent = "Pause";
+                    ContinueEvolution();
                     break;
 
                 case "Pause":
-                    evolverAndDrawerDispatcherTimer.Stop();
-                    CancelTasksAndResetCancellationTokenSource();
-                    ContinuePauseContent = "Continue";
+                    PauseEvolution();
                     break;
             }
         }
 
-        public bool CanContinuePause
+        private void ContinueEvolution()
         {
-            get => canContinuePause;
+            CanShowNextEvolutionStep = false;
+            evolverAndDrawerDispatcherTimer.Start();
+            ContinueOrPauseEvolutionContent = "Pause";
+        }
+
+        private void PauseEvolution()
+        {
+            evolverAndDrawerDispatcherTimer.Stop();
+            CancelTasksAndResetCancellationTokenSource();
+            CanShowNextEvolutionStep = true;
+            ContinueOrPauseEvolutionContent = "Continue";
+        }
+
+        public bool CanContinueOrPauseEvolution
+        {
+            get => canContinueOrPauseEvolution;
             set
             {
-                canContinuePause = value;
-                NotifyOfPropertyChange(() => CanContinuePause);
+                canContinueOrPauseEvolution = value;
+                NotifyOfPropertyChange(() => CanContinueOrPauseEvolution);
             }
         }
 
-        public string ContinuePauseContent
+        public string ContinueOrPauseEvolutionContent
         {
-            get => continuePauseContent;
+            get => continueOrPauseEvolutionContent;
             set
             {
-                continuePauseContent = value;
-                NotifyOfPropertyChange(() => ContinuePauseContent);
+                continueOrPauseEvolutionContent = value;
+                NotifyOfPropertyChange(() => ContinueOrPauseEvolutionContent);
             }
         }
 
-        public async void ShowNextStep()
+        public async void ShowNextEvolutionStep()
         {
-            CanShowNextStep = false;
+            CanShowNextEvolutionStep = false;
+            CanContinueOrPauseEvolution = false;
+            ContinueOrPauseEvolutionContent = "Continue";
 
             await RunEvolverAndDrawerTask();
 
-            CanShowNextStep = true;
+            CanShowNextEvolutionStep = true;
+            CanContinueOrPauseEvolution = true;
         }
 
-        public bool CanShowNextStep
+        public bool CanShowNextEvolutionStep
         {
-            get => canShowNextStep;
+            get => canShowNextEvolutionStep;
             set
             {
-                canShowNextStep = value;
-                NotifyOfPropertyChange(() => CanShowNextStep);
+                canShowNextEvolutionStep = value;
+                NotifyOfPropertyChange(() => CanShowNextEvolutionStep);
             }
         }
 
@@ -417,7 +455,7 @@ namespace CellularAutomatonGUI.ViewModels
 
             await Task.Run(() =>
             {
-                if (!isStopped && cellGrid != null)
+                if (!isCellGridUnset && cellGrid != null)
                 {
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {

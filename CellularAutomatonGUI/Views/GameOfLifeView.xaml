@@ -11,7 +11,10 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -19,11 +22,11 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!--  Game of Life Configuration GroupBox  -->
+        <!--  Life-like CA Grid settings GroupBox  -->
         <GroupBox
             Grid.Row="0"
             Grid.Column="0"
-            Header="Configuration">
+            Header="Grid settings">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -33,14 +36,6 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
@@ -48,7 +43,7 @@
                     <ColumnDefinition Width="130" />
                 </Grid.ColumnDefinitions>
 
-                <!--  Game of Life Configuration GroupBox Row 0  -->
+                <!--  Life-like CA Grid settings GroupBox Row 0  -->
                 <TextBlock
                     Grid.Row="0"
                     Grid.Column="0"
@@ -62,12 +57,12 @@
                     VerticalAlignment="Center"
                     DefaultValue="{Binding ColumnCount}"
                     DisplayDefaultValueOnEmptyText="True"
-                    IsEnabled="{Binding IsStopped}"
+                    IsEnabled="{Binding IsCellGridUnset}"
                     Maximum="1000"
                     Minimum="1"
                     Value="{Binding ColumnCount}" />
 
-                <!--  Game of Life Configuration GroupBox Row 1  -->
+                <!--  Life-like CA Grid settings GroupBox Row 1  -->
                 <TextBlock
                     Grid.Row="1"
                     Grid.Column="0"
@@ -81,12 +76,12 @@
                     VerticalAlignment="Center"
                     DefaultValue="{Binding RowCount}"
                     DisplayDefaultValueOnEmptyText="True"
-                    IsEnabled="{Binding IsStopped}"
+                    IsEnabled="{Binding IsCellGridUnset}"
                     Maximum="1000"
                     Minimum="1"
                     Value="{Binding RowCount}" />
 
-                <!--  Game of Life Configuration GroupBox Row 2  -->
+                <!--  Life-like CA Grid settings GroupBox Row 2  -->
                 <TextBlock
                     Grid.Row="2"
                     Grid.Column="0"
@@ -98,7 +93,7 @@
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
-                    IsEnabled="{Binding IsStopped}"
+                    IsEnabled="{Binding IsCellGridUnset}"
                     ItemsSource="{Binding CellNeighborhoods}"
                     SelectedItem="{Binding SelectedCellNeighborhood, Mode=TwoWay}">
                     <ComboBox.Resources>
@@ -111,7 +106,7 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <!--  Game of Life Configuration GroupBox Row 3  -->
+                <!--  Life-like CA Grid settings GroupBox Row 3  -->
                 <TextBlock
                     Grid.Row="3"
                     Grid.Column="0"
@@ -141,7 +136,7 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <!--  Game of Life Configuration GroupBox Row 4  -->
+                <!--  Life-like CA Grid settings GroupBox Row 4  -->
                 <TextBlock
                     Grid.Row="4"
                     Grid.Column="0"
@@ -171,7 +166,7 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <!--  Game of Life Configuration GroupBox Row 5  -->
+                <!--  Life-like CA Grid settings GroupBox Row 5  -->
                 <TextBlock
                     Grid.Row="5"
                     Grid.Column="0"
@@ -183,7 +178,7 @@
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
-                    IsEnabled="{Binding IsStopped}"
+                    IsEnabled="{Binding IsCellGridUnset}"
                     ItemsSource="{Binding BoundaryConditions}"
                     SelectedItem="{Binding SelectedBoundaryCondition, Mode=TwoWay}">
                     <ComboBox.Resources>
@@ -196,41 +191,186 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <!--  Game of Life Configuration GroupBox Row 6  -->
-                <Separator
+                <!--  Life-like CA Grid settings GroupBox Row 6  -->
+                <Button
+                    x:Name="SetOrUnsetCellGrid"
                     Grid.Row="6"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
+                    Width="60"
                     Margin="3"
-                    VerticalAlignment="Center" />
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Content="{Binding SetOrUnsetCellGridContent}" />
+            </Grid>
+        </GroupBox>
 
-                <!--  Game of Life Configuration GroupBox Row 7  -->
+        <!--  Life-like CA Patterns GroupBox  -->
+        <GroupBox
+            Grid.Row="1"
+            Grid.Column="0"
+            Header="Patterns">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+                    <Button
+                        x:Name="PutBeehiveInTheMiddle"
+                        Width="60"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Content="Beehive"
+                        IsEnabled="{Binding IsCellGridSet}" />
+                    <Button
+                        x:Name="PutGliderInTheMiddle"
+                        Width="60"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Content="Glider"
+                        IsEnabled="{Binding IsCellGridSet}" />
+                    <Button
+                        x:Name="PutBlinkerInTheMiddle"
+                        Width="60"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Content="Blinker"
+                        IsEnabled="{Binding IsCellGridSet}" />
+                </StackPanel>
+
+                <StackPanel
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    HorizontalAlignment="Center"
+                    Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Button
+                            x:Name="Randomize"
+                            Width="60"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Content="Random"
+                            IsEnabled="{Binding IsCellGridSet}" />
+                        <xctk:IntegerUpDown
+                            Width="60"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding RandomCellsToSetAliveCount}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsCellGridSet}"
+                            Maximum="{Binding CellCount}"
+                            Minimum="1"
+                            Value="{Binding RandomCellsToSetAliveCount}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    HorizontalAlignment="Center"
+                    Orientation="Vertical">
+                    <Button
+                        x:Name="ClearCellGridImage"
+                        Width="60"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Content="Clear"
+                        IsEnabled="{Binding IsCellGridSet}" />
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!--  Life-like CA Evolution GroupBox  -->
+        <GroupBox
+            Grid.Row="2"
+            Grid.Column="0"
+            Header="Evolution">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
                 <TextBlock
-                    Grid.Row="7"
+                    Grid.Row="0"
                     Grid.Column="0"
                     Margin="3"
                     VerticalAlignment="Center"
                     Text="Time interval [ms]:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="7"
+                    Grid.Row="0"
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
                     DefaultValue="{Binding TimeIntervalInMilliseconds}"
                     DisplayDefaultValueOnEmptyText="True"
+                    IsEnabled="{Binding IsCellGridSet}"
                     Maximum="5000"
                     Minimum="10"
                     Value="{Binding TimeIntervalInMilliseconds}" />
 
-                <!--  Game of Life Configuration GroupBox Row 8  -->
+                <StackPanel
+                    Grid.Row="11"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+                    <Button
+                        x:Name="ContinueOrPauseEvolution"
+                        Width="60"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Content="{Binding ContinueOrPauseEvolutionContent}" />
+                    <Button
+                        x:Name="ShowNextEvolutionStep"
+                        Width="60"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Content="Next" />
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox
+            Grid.Row="4"
+            Grid.Column="0"
+            Header="View settings">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
                 <TextBlock
-                    Grid.Row="8"
+                    Grid.Row="0"
                     Grid.Column="0"
                     Margin="3"
                     VerticalAlignment="Center"
                     Text="Cell width [px]:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="8"
+                    Grid.Row="0"
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
@@ -240,15 +380,14 @@
                     Minimum="1"
                     Value="{Binding CellWidth}" />
 
-                <!--  Game of Life Configuration GroupBox Row 9  -->
                 <TextBlock
-                    Grid.Row="9"
+                    Grid.Row="1"
                     Grid.Column="0"
                     Margin="3"
                     VerticalAlignment="Center"
                     Text="Cell height [px]:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="9"
+                    Grid.Row="1"
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
@@ -258,120 +397,29 @@
                     Minimum="1"
                     Value="{Binding CellHeight}" />
 
-                <!--  Game of Life Configuration GroupBox Row 10  -->
                 <TextBlock
-                    Grid.Row="10"
+                    Grid.Row="2"
                     Grid.Column="0"
                     Margin="3"
                     VerticalAlignment="Center"
                     Text="Line width [px]:" />
                 <xctk:IntegerUpDown
-                    Grid.Row="10"
+                    Grid.Row="2"
                     Grid.Column="1"
                     Margin="3"
                     VerticalAlignment="Center"
                     DefaultValue="{Binding LineWidth}"
                     DisplayDefaultValueOnEmptyText="True"
-                    Maximum="100"
+                    Maximum="50"
                     Minimum="0"
                     Value="{Binding LineWidth}" />
-
-                <!--  Game of Life Configuration GroupBox Row 11  -->
-                <StackPanel
-                    Grid.Row="11"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    HorizontalAlignment="Center"
-                    Orientation="Horizontal">
-                    <Button
-                        x:Name="StartStop"
-                        Width="60"
-                        Margin="3"
-                        VerticalAlignment="Center"
-                        Content="{Binding StartStopContent}" />
-                    <Button
-                        x:Name="ContinuePause"
-                        Width="60"
-                        Margin="3"
-                        VerticalAlignment="Center"
-                        Content="{Binding ContinuePauseContent}" />
-                    <Button
-                        x:Name="ShowNextStep"
-                        Width="60"
-                        Margin="3"
-                        VerticalAlignment="Center"
-                        Content="Next" />
-                </StackPanel>
-
-                <!--  Game of Life Configuration GroupBox Row 12  -->
-                <Separator
-                    Grid.Row="12"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="3"
-                    VerticalAlignment="Center" />
-
-                <!--  Game of Life Configuration GroupBox Row 13  -->
-                <StackPanel
-                    Grid.Row="13"
-                    Grid.ColumnSpan="2"
-                    HorizontalAlignment="Center"
-                    Orientation="Vertical">
-                    <Button
-                        x:Name="ClearCellGridImage"
-                        Width="60"
-                        Margin="3"
-                        VerticalAlignment="Center"
-                        Content="Clear"
-                        IsEnabled="{Binding IsStarted}" />
-                    <Button
-                        x:Name="PutBeehiveInTheMiddle"
-                        Width="60"
-                        Margin="3"
-                        VerticalAlignment="Center"
-                        Content="Beehive"
-                        IsEnabled="{Binding IsStarted}" />
-                    <Button
-                        x:Name="PutGliderInTheMiddle"
-                        Width="60"
-                        Margin="3"
-                        VerticalAlignment="Center"
-                        Content="Glider"
-                        IsEnabled="{Binding IsStarted}" />
-                    <Button
-                        x:Name="PutBlinkerInTheMiddle"
-                        Width="60"
-                        Margin="3"
-                        VerticalAlignment="Center"
-                        Content="Blinker"
-                        IsEnabled="{Binding IsStarted}" />
-                    <StackPanel Orientation="Horizontal">
-                        <Button
-                            x:Name="Randomize"
-                            Width="60"
-                            Margin="3"
-                            VerticalAlignment="Center"
-                            Content="Random"
-                            IsEnabled="{Binding IsStarted}" />
-                        <xctk:IntegerUpDown
-                            Width="60"
-                            Margin="3"
-                            VerticalAlignment="Center"
-                            DefaultValue="{Binding RandomCellsToSetAliveCount}"
-                            DisplayDefaultValueOnEmptyText="True"
-                            IsEnabled="{Binding IsStarted}"
-                            Maximum="{Binding CellCount}"
-                            Minimum="1"
-                            Value="{Binding RandomCellsToSetAliveCount}" />
-                    </StackPanel>
-                </StackPanel>
             </Grid>
         </GroupBox>
 
-        <!--  Game of Life View GroupBox  -->
+        <!--  Life-like CA View GroupBox  -->
         <GroupBox
             Grid.Row="0"
-            Grid.RowSpan="2"
+            Grid.RowSpan="5"
             Grid.Column="1"
             Header="View">
             <Image
