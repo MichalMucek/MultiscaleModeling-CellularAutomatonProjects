@@ -91,7 +91,7 @@
     <Compile Include="EnumDescriptionConverter.cs" />
     <Compile Include="ViewModels\CellGridImageViewModel.cs" />
     <Compile Include="ViewModels\ElementaryCellularAutomatonViewModel.cs" />
-    <Compile Include="ViewModels\GameOfLifeViewModel.cs" />
+    <Compile Include="ViewModels\LifeLikeCellularAutomatonViewModel.cs" />
     <Compile Include="ViewModels\GrainGrowthCellularAutomatonViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="Views\CellGridImageView.xaml.cs">
@@ -100,8 +100,8 @@
     <Compile Include="Views\ElementaryCellularAutomatonView.xaml.cs">
       <DependentUpon>ElementaryCellularAutomatonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\GameOfLifeView.xaml.cs">
-      <DependentUpon>GameOfLifeView.xaml</DependentUpon>
+    <Compile Include="Views\LifeLikeCellularAutomatonView.xaml.cs">
+      <DependentUpon>LifeLikeCellularAutomatonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GrainGrowthCellularAutomatonView.xaml.cs">
       <DependentUpon>GrainGrowthCellularAutomatonView.xaml</DependentUpon>
@@ -150,7 +150,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\GameOfLifeView.xaml">
+    <Page Include="Views\LifeLikeCellularAutomatonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -172,9 +172,9 @@
       <Project>{f54369ee-971d-44a9-b97a-e9ffbfe58dec}</Project>
       <Name>ElementaryCellularAutomaton</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GameOfLife\GameOfLife.csproj">
+    <ProjectReference Include="..\LifeLikeCellularAutomaton\LifeLikeCellularAutomaton.csproj">
       <Project>{a4a4acef-57c8-4ed0-933c-98eaed75d4b6}</Project>
-      <Name>GameOfLife</Name>
+      <Name>LifeLikeCellularAutomaton</Name>
     </ProjectReference>
     <ProjectReference Include="..\GrainGrowthCellularAutomaton\GrainGrowthCellularAutomaton.csproj">
       <Project>{6ea38677-4fce-4860-8817-f5095f683c3b}</Project>

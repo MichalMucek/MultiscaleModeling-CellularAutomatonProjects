@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellularAutomatonGUI", "Cel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElementaryCellularAutomaton", "ElementaryCellularAutomaton\ElementaryCellularAutomaton.csproj", "{F54369EE-971D-44A9-B97A-E9FFBFE58DEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife", "GameOfLife\GameOfLife.csproj", "{A4A4ACEF-57C8-4ED0-933C-98EAED75D4B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeLikeCellularAutomaton", "LifeLikeCellularAutomaton\LifeLikeCellularAutomaton.csproj", "{A4A4ACEF-57C8-4ED0-933C-98EAED75D4B6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrainGrowthCellularAutomaton", "GrainGrowthCellularAutomaton\GrainGrowthCellularAutomaton.csproj", "{6EA38677-4FCE-4860-8817-F5095F683C3B}"
 EndProject

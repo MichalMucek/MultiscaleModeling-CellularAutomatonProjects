@@ -1,7 +1,7 @@
 ﻿using CellularAutomaton2D;
 using System.Windows;
 
-namespace GameOfLife.Models
+namespace LifeLikeCellularAutomaton.Models
 {
     public class CellModel : ICell
     {

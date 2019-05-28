@@ -1,6 +1,6 @@
 ﻿using CellularAutomaton2D.Models;
 
-namespace GameOfLife.Models
+namespace LifeLikeCellularAutomaton.Models
 {
     public class RuleModel
     {

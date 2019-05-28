@@ -7,7 +7,7 @@ using System.Windows.Media.Imaging;
 using CellularAutomaton2D;
 using CellularAutomaton2D.Models;
 
-namespace GameOfLife.Models
+namespace LifeLikeCellularAutomaton.Models
 {
     public class CellGrid2DModel : ICellGrid
     {

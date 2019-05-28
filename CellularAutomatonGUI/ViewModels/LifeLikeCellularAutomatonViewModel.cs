@@ -1,5 +1,5 @@
 ﻿using Caliburn.Micro;
-using GameOfLife.Models;
+using LifeLikeCellularAutomaton.Models;
 using CellularAutomaton2D.Models;
 using System;
 using System.Drawing;
@@ -13,7 +13,7 @@ using Image = System.Windows.Controls.Image;
 
 namespace CellularAutomatonGUI.ViewModels
 {
-    public class GameOfLifeViewModel : Screen
+    public class LifeLikeCellularAutomatonViewModel : Screen
     {
         private int columnCount = 31;
         private int rowCount = 31;
@@ -47,7 +47,7 @@ namespace CellularAutomatonGUI.ViewModels
         private RuleModel mooreRule = new RuleModel(CellNeighborhoodTypeModel.Moore);
         private CellGrid2DModel cellGrid;
 
-        public GameOfLifeViewModel()
+        public LifeLikeCellularAutomatonViewModel()
         {
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.Moore);
             CellNeighborhoods.Add(CellNeighborhoodTypeModel.VonNeumann);

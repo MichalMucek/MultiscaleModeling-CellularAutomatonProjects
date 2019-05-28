@@ -1,9 +1,9 @@
-﻿using GameOfLife.Models;
+﻿using LifeLikeCellularAutomaton.Models;
 using CellularAutomaton2D;
 using CellularAutomaton2D.Models;
 using System.Collections.Generic;
 
-namespace GameOfLife
+namespace LifeLikeCellularAutomaton
 {
     public class CellNeighborhood : ICellNeighborhood
     {

@@ -2,7 +2,7 @@
 using System.Windows.Media;
 using CellularAutomaton2D;
 
-namespace GameOfLife.Models
+namespace LifeLikeCellularAutomaton.Models
 {
     public class CellStateModel : ICellState
     {

@@ -1,4 +1,4 @@
-﻿namespace GameOfLife.Models
+﻿namespace LifeLikeCellularAutomaton.Models
 {
     public class NumberOfCellsForRulesModel
     {
