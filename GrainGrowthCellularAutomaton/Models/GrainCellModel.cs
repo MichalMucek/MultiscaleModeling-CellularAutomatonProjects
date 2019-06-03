@@ -2,6 +2,7 @@
 using CellularAutomaton2D;
 using System.Windows;
 using System;
+using System.Linq;
 
 namespace GrainGrowthCellularAutomaton
 {
@@ -64,13 +65,13 @@ namespace GrainGrowthCellularAutomaton
 
         private void RandomizeNewCenterOfMass()
         {
-            double x = GetRandomNumber(-Width / 2.0, Height / 2.0);
-            double y = GetRandomNumber(-Width / 2.0, Height / 2.0);
+            double x = GetRandomDouble(-Width / 2.0, Height / 2.0);
+            double y = GetRandomDouble(-Width / 2.0, Height / 2.0);
 
             CenterOfMass = new Point(x, y);
         }
 
-        private double GetRandomNumber(double minimum, double maximum)
+        private double GetRandomDouble(double minimum, double maximum)
             => random.NextDouble() * (maximum - minimum) + minimum;
 
         private void SetGlobalCenterOfMass()
@@ -80,6 +81,33 @@ namespace GrainGrowthCellularAutomaton
                 X = CenterOfMass.X + ColumnNumber + Width / 2.0,
                 Y = CenterOfMass.Y - RowNumber - Height / 2.0
             };
+        }
+
+        public double Energy
+        {
+            get
+            {
+                const double grainBoundaryEnergy = 1.0;
+                int otherGrainsInNeighborhoodCount = 0;
+
+                foreach (var grainCount in NeighboringCells.StatesCounts)
+                    if (grainCount.Key != State)
+                        otherGrainsInNeighborhoodCount += grainCount.Value;
+
+                return grainBoundaryEnergy * otherGrainsInNeighborhoodCount;
+            }
+        }
+
+        public bool IsOnGrainBoundary
+        {
+            get
+            {
+                if (NeighboringCells.StatesCounts.Count == 1)
+                    if (NeighboringCells.StatesCounts.ElementAt(0).Key == State)
+                        return true;
+
+                return false;
+            }
         }
     }
 }

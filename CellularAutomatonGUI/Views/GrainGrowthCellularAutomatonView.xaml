@@ -10,11 +10,7 @@
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -22,419 +18,474 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!--  Grain Growth Grid settings GroupBox Row  -->
-        <GroupBox
+        <ScrollViewer
             Grid.Row="0"
             Grid.Column="0"
-            Header="Grid settings">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+            VerticalScrollBarVisibility="Auto">
+            <StackPanel Orientation="Vertical">
+                <!--  Grain Growth Grid settings GroupBox Row  -->
+                <GroupBox Header="Grid settings">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                <TextBlock
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    Text="Columns:" />
-                <xctk:IntegerUpDown
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    DefaultValue="{Binding ColumnCount}"
-                    DisplayDefaultValueOnEmptyText="True"
-                    IsEnabled="{Binding IsGrainCellGridUnset}"
-                    Maximum="1000"
-                    Minimum="1"
-                    Value="{Binding ColumnCount}" />
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Columns:" />
+                        <xctk:IntegerUpDown
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding ColumnCount}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsGrainCellGridUnset}"
+                            Maximum="1000"
+                            Minimum="1"
+                            Value="{Binding ColumnCount}" />
 
-                <TextBlock
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    Text="Rows:" />
-                <xctk:IntegerUpDown
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    DefaultValue="{Binding RowCount}"
-                    DisplayDefaultValueOnEmptyText="True"
-                    IsEnabled="{Binding IsGrainCellGridUnset}"
-                    Maximum="1000"
-                    Minimum="1"
-                    Value="{Binding RowCount}" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Rows:" />
+                        <xctk:IntegerUpDown
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding RowCount}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsGrainCellGridUnset}"
+                            Maximum="1000"
+                            Minimum="1"
+                            Value="{Binding RowCount}" />
 
-                <TextBlock
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    Text="Neighborhood:" />
-                <ComboBox
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    IsEnabled="{Binding IsGrainCellGridUnset}"
-                    ItemsSource="{Binding CellNeighborhoods}"
-                    SelectedItem="{Binding SelectedCellNeighborhood, Mode=TwoWay}">
-                    <ComboBox.Resources>
-                        <cag:EnumDescriptionConverter x:Key="enumDescriptionConverter" />
-                    </ComboBox.Resources>
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Converter={StaticResource enumDescriptionConverter}}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Neighborhood:" />
+                        <ComboBox
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            IsEnabled="{Binding IsGrainCellGridUnset}"
+                            ItemsSource="{Binding CellNeighborhoods}"
+                            SelectedItem="{Binding SelectedCellNeighborhood, Mode=TwoWay}">
+                            <ComboBox.Resources>
+                                <cag:EnumDescriptionConverter x:Key="enumDescriptionConverter" />
+                            </ComboBox.Resources>
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource enumDescriptionConverter}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
 
-                <TextBlock
-                    Grid.Row="3"
-                    Grid.Column="0"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    Text="Neighborhood radius:" />
-                <xctk:IntegerUpDown
-                    Grid.Row="3"
-                    Grid.Column="1"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    DefaultValue="{Binding NeighborhoodRadius}"
-                    DisplayDefaultValueOnEmptyText="True"
-                    IsEnabled="{Binding IsRadialNeighborhoodSelected}"
-                    Maximum="{Binding NucleusRadiusMaximum}"
-                    Minimum="1"
-                    Value="{Binding NeighborhoodRadius}" />
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Neighborhood radius:" />
+                        <xctk:IntegerUpDown
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding NeighborhoodRadius}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsRadialNeighborhoodSelected}"
+                            Maximum="{Binding NucleusRadiusMaximum}"
+                            Minimum="1"
+                            Value="{Binding NeighborhoodRadius}" />
 
-                <TextBlock
-                    Grid.Row="4"
-                    Grid.Column="0"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    Text="BC:" />
-                <ComboBox
-                    Grid.Row="4"
-                    Grid.Column="1"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    IsEnabled="{Binding IsGrainCellGridUnset}"
-                    ItemsSource="{Binding BoundaryConditions}"
-                    SelectedItem="{Binding SelectedBoundaryCondition, Mode=TwoWay}">
-                    <ComboBox.Resources>
-                        <cag:EnumDescriptionConverter x:Key="enumDescriptionConverter" />
-                    </ComboBox.Resources>
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Converter={StaticResource enumDescriptionConverter}}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+                        <TextBlock
+                            Grid.Row="4"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="BC:" />
+                        <ComboBox
+                            Grid.Row="4"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            IsEnabled="{Binding IsGrainCellGridUnset}"
+                            ItemsSource="{Binding BoundaryConditions}"
+                            SelectedItem="{Binding SelectedBoundaryCondition, Mode=TwoWay}">
+                            <ComboBox.Resources>
+                                <cag:EnumDescriptionConverter x:Key="enumDescriptionConverter" />
+                            </ComboBox.Resources>
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource enumDescriptionConverter}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
 
-                <Button
-                    x:Name="SetOrUnsetGrainCellGrid"
-                    Grid.Row="5"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Width="60"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    Content="{Binding SetOrUnsetGrainCellGridContent}" />
-            </Grid>
-        </GroupBox>
+                        <Button
+                            x:Name="SetOrUnsetGrainCellGrid"
+                            Grid.Row="5"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            Width="60"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Content="{Binding SetOrUnsetGrainCellGridContent}" />
+                    </Grid>
+                </GroupBox>
 
-        <!--  Grain Growth Nucleation GroupBox  -->
-        <GroupBox
-            Grid.Row="1"
-            Grid.Column="0"
-            Header="Nucleation">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+                <!--  Grain Growth Nucleation GroupBox  -->
+                <GroupBox Header="Nucleation">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                <ComboBox
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    IsEnabled="{Binding IsGrainCellGridSet}"
-                    ItemsSource="{Binding NucleationMethods}"
-                    SelectedItem="{Binding SelectedNucleationMethod, Mode=TwoWay}">
-                    <ComboBox.Resources>
-                        <cag:EnumDescriptionConverter x:Key="enumDescriptionConverter" />
-                    </ComboBox.Resources>
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Converter={StaticResource enumDescriptionConverter}}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+                        <ComboBox
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            IsEnabled="{Binding IsGrainCellGridSet}"
+                            ItemsSource="{Binding NucleationMethods}"
+                            SelectedItem="{Binding SelectedNucleationMethod, Mode=TwoWay}">
+                            <ComboBox.Resources>
+                                <cag:EnumDescriptionConverter x:Key="enumDescriptionConverter" />
+                            </ComboBox.Resources>
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource enumDescriptionConverter}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
 
-                <StackPanel
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Margin="3"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Orientation="Horizontal">
-                    <TextBlock Text="Clicking enabled" />
-                    <CheckBox
-                        Margin="3,0,0,0"
-                        VerticalAlignment="Center"
-                        IsChecked="{Binding IsClickingOnImageEnabled}"
-                        IsEnabled="{Binding IsGrainCellGridSet}" />
-                </StackPanel>
+                        <StackPanel
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="3"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                            <TextBlock Text="Clicking enabled" />
+                            <CheckBox
+                                Margin="3,0,0,0"
+                                VerticalAlignment="Center"
+                                IsChecked="{Binding IsClickingOnImageEnabled}"
+                                IsEnabled="{Binding IsGrainCellGridSet}" />
+                        </StackPanel>
 
-                <TextBlock
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Margin="3,5"
-                    VerticalAlignment="Center"
-                    Text="Nucleuses in column:" />
-                <xctk:IntegerUpDown
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Grid.ColumnSpan="2"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    DefaultValue="{Binding NucleusesInColumnCount}"
-                    DisplayDefaultValueOnEmptyText="True"
-                    IsEnabled="{Binding IsUniformMethodSelected}"
-                    Maximum="{Binding RowCount}"
-                    Minimum="1"
-                    Value="{Binding NucleusesInColumnCount}" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="3,5"
+                            VerticalAlignment="Center"
+                            Text="Nucleuses in column:" />
+                        <xctk:IntegerUpDown
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="2"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding NucleusesInColumnCount}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsUniformMethodSelected}"
+                            Maximum="{Binding RowCount}"
+                            Minimum="1"
+                            Value="{Binding NucleusesInColumnCount}" />
 
-                <TextBlock
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    Margin="3,5"
-                    VerticalAlignment="Center"
-                    Text="Nucleuses in row:" />
-                <xctk:IntegerUpDown
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Grid.ColumnSpan="2"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    DefaultValue="{Binding NucleusesInRowCount}"
-                    DisplayDefaultValueOnEmptyText="True"
-                    IsEnabled="{Binding IsUniformMethodSelected}"
-                    Maximum="{Binding ColumnCount}"
-                    Minimum="1"
-                    Value="{Binding NucleusesInRowCount}" />
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Margin="3,5"
+                            VerticalAlignment="Center"
+                            Text="Nucleuses in row:" />
+                        <xctk:IntegerUpDown
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="2"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding NucleusesInRowCount}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsUniformMethodSelected}"
+                            Maximum="{Binding ColumnCount}"
+                            Minimum="1"
+                            Value="{Binding NucleusesInRowCount}" />
 
-                <TextBlock
-                    Grid.Row="3"
-                    Grid.Column="0"
-                    Margin="3,5"
-                    VerticalAlignment="Center"
-                    Text="Nucleuses count:" />
-                <xctk:IntegerUpDown
-                    Grid.Row="3"
-                    Grid.Column="1"
-                    Grid.ColumnSpan="2"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    DefaultValue="{Binding RandomNucleusesCount}"
-                    DisplayDefaultValueOnEmptyText="True"
-                    IsEnabled="{Binding IsRandomMethodSelected}"
-                    Maximum="{Binding GrainCellCount}"
-                    Minimum="1"
-                    Value="{Binding RandomNucleusesCount}" />
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="0"
+                            Margin="3,5"
+                            VerticalAlignment="Center"
+                            Text="Nucleuses count:" />
+                        <xctk:IntegerUpDown
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="2"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding RandomNucleusesCount}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsRandomMethodSelected}"
+                            Maximum="{Binding GrainCellCount}"
+                            Minimum="1"
+                            Value="{Binding RandomNucleusesCount}" />
 
-                <TextBlock
-                    Grid.Row="4"
-                    Grid.Column="0"
-                    Margin="3,5"
-                    VerticalAlignment="Center"
-                    Text="Nucleus radius:" />
-                <xctk:IntegerUpDown
-                    Grid.Row="4"
-                    Grid.Column="1"
-                    Grid.ColumnSpan="2"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    DefaultValue="{Binding NucleusRadius}"
-                    DisplayDefaultValueOnEmptyText="True"
-                    IsEnabled="{Binding IsRandomWithRadiusMethodSelected}"
-                    Maximum="{Binding NucleusRadiusMaximum}"
-                    Minimum="1"
-                    Value="{Binding NucleusRadius}" />
+                        <TextBlock
+                            Grid.Row="4"
+                            Grid.Column="0"
+                            Margin="3,5"
+                            VerticalAlignment="Center"
+                            Text="Nucleus radius:" />
+                        <xctk:IntegerUpDown
+                            Grid.Row="4"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="2"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding NucleusRadius}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsRandomWithRadiusMethodSelected}"
+                            Minimum="1"
+                            Value="{Binding NucleusRadius}" />
 
-                <StackPanel
-                    Grid.Row="5"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    HorizontalAlignment="Center"
-                    Orientation="Horizontal">
-                    <Button
-                        x:Name="ClearGrainCellGrid"
-                        Width="60"
-                        Margin="3"
-                        Content="Clear" />
-                    <Button
-                        x:Name="Nucleate"
-                        Width="60"
-                        Margin="3"
-                        Content="Nucleate" />
-                </StackPanel>
-            </Grid>
-        </GroupBox>
+                        <StackPanel
+                            Grid.Row="5"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal">
+                            <Button
+                                x:Name="ClearGrainCellGrid"
+                                Width="60"
+                                Margin="3"
+                                Content="Clear" />
+                            <Button
+                                x:Name="Nucleate"
+                                Width="60"
+                                Margin="3"
+                                Content="Nucleate" />
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
 
-        <!--  Grain Growth Growth GroupBox  -->
-        <GroupBox
-            Grid.Row="2"
-            Grid.Column="0"
-            Header="Growth">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+                <!--  Grain Growth Growth GroupBox  -->
+                <GroupBox Header="Growth">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                <TextBlock
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    Text="Time interval [ms]:" />
-                <xctk:IntegerUpDown
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    DefaultValue="{Binding TimeInterval}"
-                    DisplayDefaultValueOnEmptyText="True"
-                    Maximum="5000"
-                    Minimum="10"
-                    IsEnabled="{Binding IsGrainCellGridSet}"
-                    Value="{Binding TimeInterval}" />
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Time interval [ms]:" />
+                        <xctk:IntegerUpDown
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding TimeInterval}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsGrainCellGridSet}"
+                            Maximum="5000"
+                            Minimum="10"
+                            Value="{Binding TimeInterval}" />
 
-                <StackPanel
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    HorizontalAlignment="Center"
-                    Orientation="Horizontal">
-                    <Button
-                        x:Name="ContinueOrPauseGrowth"
-                        Width="60"
-                        Margin="3"
-                        VerticalAlignment="Center"
-                        Content="{Binding ContinueOrPauseGrowthContent}" />
-                    <Button
-                        x:Name="ShowNextGrowthStep"
-                        Width="60"
-                        Margin="3"
-                        VerticalAlignment="Center"
-                        Content="Next" />
-                </StackPanel>
-            </Grid>
-        </GroupBox>
+                        <StackPanel
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal">
+                            <Button
+                                x:Name="ContinueOrPauseGrowth"
+                                Width="60"
+                                Margin="3"
+                                VerticalAlignment="Center"
+                                Content="{Binding ContinueOrPauseGrowthContent}" />
+                            <Button
+                                x:Name="ShowNextGrowthStep"
+                                Width="60"
+                                Margin="3"
+                                VerticalAlignment="Center"
+                                Content="Next" />
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
 
-        <!--  Grain Growth View settings GroupBox  -->
-        <GroupBox
-            Grid.Row="4"
-            Grid.Column="0"
-            Header="View settings">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+                <!--  Grain Growth Smoothing (Monte Carlo) GroupBox  -->
+                <GroupBox Header="Smoothing (Monte Carlo)">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                <TextBlock
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    Text="Cell width [px]:" />
-                <xctk:IntegerUpDown
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    DefaultValue="{Binding CellWidth}"
-                    DisplayDefaultValueOnEmptyText="True"
-                    Maximum="100"
-                    Minimum="1"
-                    Value="{Binding CellWidth}" />
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Iterations:" />
+                        <xctk:IntegerUpDown
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding SmoothingIterationsCount}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsGrowthDone}"
+                            Maximum="1000"
+                            Minimum="1"
+                            Value="{Binding SmoothingIterationsCount}" />
 
-                <TextBlock
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    Text="Cell height [px]:" />
-                <xctk:IntegerUpDown
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    DefaultValue="{Binding CellHeight}"
-                    DisplayDefaultValueOnEmptyText="True"
-                    Maximum="100"
-                    Minimum="1"
-                    Value="{Binding CellHeight}" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="kT parameter:" />
+                        <xctk:DoubleUpDown
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding KTParameter}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsGrowthDone}"
+                            Maximum="6.0"
+                            Minimum="0.1"
+                            Value="{Binding KTParameter}" />
 
-                <TextBlock
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    Text="Line width [px]:" />
-                <xctk:IntegerUpDown
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Margin="3"
-                    VerticalAlignment="Center"
-                    DefaultValue="{Binding LineWidth}"
-                    DisplayDefaultValueOnEmptyText="True"
-                    Maximum="50"
-                    Minimum="0"
-                    Value="{Binding LineWidth}" />
-            </Grid>
-        </GroupBox>
+                        <Button
+                            x:Name="SmoothTheGrainCellGridWithMonteCarlo"
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            Width="60"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Content="Start" />
+                    </Grid>
+                </GroupBox>
+
+                <!--  Grain Growth View settings GroupBox  -->
+                <GroupBox Header="View settings">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Cell width [px]:" />
+                        <xctk:IntegerUpDown
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding CellWidth}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            Maximum="100"
+                            Minimum="1"
+                            Value="{Binding CellWidth}" />
+
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Cell height [px]:" />
+                        <xctk:IntegerUpDown
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding CellHeight}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            Maximum="100"
+                            Minimum="1"
+                            Value="{Binding CellHeight}" />
+
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Line width [px]:" />
+                        <xctk:IntegerUpDown
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding LineWidth}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            Maximum="50"
+                            Minimum="0"
+                            Value="{Binding LineWidth}" />
+                    </Grid>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
 
         <!--  Grain Growth View GroupBox  -->
         <GroupBox
             Grid.Row="0"
-            Grid.RowSpan="5"
             Grid.Column="1"
             Header="View">
             <Image
