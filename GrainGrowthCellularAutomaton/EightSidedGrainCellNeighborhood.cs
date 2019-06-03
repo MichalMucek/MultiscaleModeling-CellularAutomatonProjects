@@ -56,6 +56,9 @@ namespace GrainGrowthCellularAutomaton.Models
         {
             get
             {
+                if (random == null)
+                    random = new Random();
+
                 grainsCounts = new Dictionary<ICellState, int>();
 
                 switch (Type)

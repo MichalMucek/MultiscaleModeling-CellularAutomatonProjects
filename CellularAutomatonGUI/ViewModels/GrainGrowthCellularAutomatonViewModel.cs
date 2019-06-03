@@ -40,7 +40,8 @@ namespace CellularAutomatonGUI.ViewModels
         private int cellHeight = 12;
         private int lineWidth = 1;
         private BitmapImage grainCellGridBitmapImage;
-        private bool growthIsDone = false;
+        private bool isGrowthDone = false;
+        private bool canSmoothTheGrainCellGridWithMonteCarlo = false;
 
         private DispatcherTimer evolverAndDrawerDispatcherTimer;
         private CancellationTokenSource cancellationTokenSource;
@@ -96,7 +97,7 @@ namespace CellularAutomatonGUI.ViewModels
             return Task.Run(() =>
             {
                 grainCellGrid.Evolve();
-                GrowthIsDone = grainCellGrid.IsFullyPopulated;
+                IsGrowthDone = grainCellGrid.IsFullyPopulated;
 
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                         GrainCellGridBitmapImage = grainCellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth)
@@ -104,17 +105,21 @@ namespace CellularAutomatonGUI.ViewModels
             }, cancellationToken);
         }
 
-        public bool GrowthIsDone
+        public bool IsGrowthDone
         {
-            get => growthIsDone;
+            get => isGrowthDone;
             set
             {
-                growthIsDone = value;
+                isGrowthDone = value;
 
-                if (growthIsDone)
+                if (isGrowthDone)
+                {
                     SetOrUnsetGrainCellGrid();
+                    RunDrawerTask();
+                    CanSmoothTheGrainCellGridWithMonteCarlo = true;
+                }
 
-                NotifyOfPropertyChange(() => GrowthIsDone);
+                NotifyOfPropertyChange(() => IsGrowthDone);
             }
         }
 
@@ -125,7 +130,6 @@ namespace CellularAutomatonGUI.ViewModels
             {
                 columnCount = value;
                 NotifyOfPropertyChange(() => ColumnCount);
-                NotifyOfPropertyChange(() => NucleusRadiusMaximum);
                 NotifyOfPropertyChange(() => GrainCellCount);
 
                 CreateGrainCellGridPreview();
@@ -140,7 +144,6 @@ namespace CellularAutomatonGUI.ViewModels
             {
                 rowCount = value;
                 NotifyOfPropertyChange(() => RowCount);
-                NotifyOfPropertyChange(() => NucleusRadiusMaximum);
                 NotifyOfPropertyChange(() => GrainCellCount);
 
                 CreateGrainCellGridPreview();
@@ -306,17 +309,6 @@ namespace CellularAutomatonGUI.ViewModels
             }
         }
 
-        public int NucleusRadiusMaximum
-        {
-            get
-            {
-                if (columnCount < rowCount)
-                    return columnCount / 2;
-                else
-                    return rowCount / 2;
-            }
-        }
-
         public bool IsClickingOnImageEnabled { get; set; } = true;
 
         public async void ClearGrainCellGrid()
@@ -356,7 +348,7 @@ namespace CellularAutomatonGUI.ViewModels
                         break;
 
                     case NucleationMethodModel.RandomWithRadius:
-                        uint putNucleusesCount = grainCellGrid.PutGrainNucleusesRandomlyWithRadius(randomNucleusesCount, nucleusRadius);
+                        int putNucleusesCount = grainCellGrid.PutGrainNucleusesRandomlyWithRadius(randomNucleusesCount, nucleusRadius);
 
                         if (putNucleusesCount < randomNucleusesCount)
                             if (putNucleusesCount == 1)
@@ -408,10 +400,12 @@ namespace CellularAutomatonGUI.ViewModels
             await CreateNewGrainCellGrid();
             IsGrainCellGridUnset = false;
 
+            IsGrowthDone = false;
             CanContinueOrPauseGrowth = true;
             CanShowNextGrowthStep = true;
             CanClearGrainCellGrid = true;
             CanNucleate = true;
+            CanSmoothTheGrainCellGridWithMonteCarlo = false;
             SetOrUnsetGrainCellGridContent = "Unset";
             ContinueOrPauseGrowthContent = "Start";
 
@@ -581,7 +575,7 @@ namespace CellularAutomatonGUI.ViewModels
 
             await RunEvolverAndDrawerTask();
 
-            if (!growthIsDone)
+            if (!isGrowthDone)
             {
                 CanShowNextGrowthStep = true;
                 CanContinueOrPauseGrowth = true;
@@ -697,6 +691,53 @@ namespace CellularAutomatonGUI.ViewModels
             });
 
             RunDrawerTask();
+        }
+
+        private int smoothingIterationsCount = 10;
+
+        public int SmoothingIterationsCount
+        {
+            get => smoothingIterationsCount;
+            set
+            {
+                smoothingIterationsCount = value;
+                NotifyOfPropertyChange(() => SmoothingIterationsCount);
+            }
+        }
+
+        private double kTParameter = 0.1;
+
+        public double KTParameter
+        {
+            get => kTParameter;
+            set
+            {
+                kTParameter = value;
+                NotifyOfPropertyChange(() => KTParameter);
+            }
+        }
+
+        public async void SmoothTheGrainCellGridWithMonteCarlo()
+        {
+            CanSmoothTheGrainCellGridWithMonteCarlo = false;
+
+            await Task.Run(() =>
+                grainCellGrid.SmoothTheGrainsEdgesWithMonteCarloMethod(kTParameter, smoothingIterationsCount)
+            );
+
+            CanSmoothTheGrainCellGridWithMonteCarlo = true;
+
+            RunDrawerTask();
+        }
+
+        public bool CanSmoothTheGrainCellGridWithMonteCarlo
+        {
+            get => canSmoothTheGrainCellGridWithMonteCarlo;
+            set
+            {
+                canSmoothTheGrainCellGridWithMonteCarlo = value;
+                NotifyOfPropertyChange(() => CanSmoothTheGrainCellGridWithMonteCarlo);
+            }
         }
     }
 }

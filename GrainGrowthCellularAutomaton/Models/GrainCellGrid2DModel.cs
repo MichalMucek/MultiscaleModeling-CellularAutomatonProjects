@@ -25,7 +25,8 @@ namespace GrainGrowthCellularAutomaton.Models
         public int PopulatedCellsCount { get; private set; } = 0;
         public bool IsFullyPopulated => PopulatedCellsCount == CellCount;
 
-        private static Random random = new Random();
+        [ThreadStatic]
+        private static Random staticRandom;
 
         private MemoryStream imageMemoryStream;
         private BitmapImage bitmapImage;
@@ -37,6 +38,8 @@ namespace GrainGrowthCellularAutomaton.Models
             BoundaryConditionModel boundaryCondition,
             int cellNeighborhoodRadius = 0)
         {
+            CreateNewStaticRandom();
+
             ColumnCount = columnCount;
             RowCount = rowCount;
             NeighborhoodType = neighborhoodType;
@@ -50,6 +53,12 @@ namespace GrainGrowthCellularAutomaton.Models
             CreateNewGrainCellsForCurrentState();
             CreateRowsInPreviousState();
             AddNeighboringCellsToCellsState(CurrentState);
+        }
+
+        private void CreateNewStaticRandom()
+        {
+            if (staticRandom == null)
+                staticRandom = new Random();
         }
 
         private void CreateNewGrainCellsForCurrentState()
@@ -408,6 +417,8 @@ namespace GrainGrowthCellularAutomaton.Models
 
         private GrainModel GetGrainToExpand(GrainCellModel grainCell)
         {
+            CreateNewStaticRandom();
+
             var grainsWithMaxCount = GetNonInitialGrainsWithMaxCount(grainCell);
 
             if (grainsWithMaxCount.Any())
@@ -415,7 +426,7 @@ namespace GrainGrowthCellularAutomaton.Models
                 if (grainsWithMaxCount.Count() == 1)
                     return grainsWithMaxCount.First();
                 else
-                    return grainsWithMaxCount.ElementAt(random.Next(grainsWithMaxCount.Count()));
+                    return grainsWithMaxCount.ElementAt(staticRandom.Next(grainsWithMaxCount.Count()));
             }
             else
                 return (GrainModel)ZeroState;
@@ -594,12 +605,13 @@ namespace GrainGrowthCellularAutomaton.Models
 
         public void PutGrainNucleusesRandomly(int grainCount)
         {
+            CreateNewStaticRandom();
             Clear();
 
             while (grainCount > 0)
             {
-                int randomRow = random.Next(RowCount);
-                int randomColumn = random.Next(ColumnCount);
+                int randomRow = staticRandom.Next(RowCount);
+                int randomColumn = staticRandom.Next(ColumnCount);
 
                 if (CurrentState[randomRow][randomColumn].State == ZeroState)
                 {
@@ -611,53 +623,47 @@ namespace GrainGrowthCellularAutomaton.Models
             }
         }
 
-        public uint PutGrainNucleusesRandomlyWithRadius(int grainCount, int radius)
+        public int PutGrainNucleusesRandomlyWithRadius(int grainCount, int radius)
         {
             if (radius > 0)
             {
-                if (radius <= RowCount / 2 && radius <= ColumnCount / 2)
+                CreateNewStaticRandom();
+                Clear();
+
+                int failsCount = 0;
+                bool probablyPossibleToPutANucleus = true;
+
+                while (grainCount > 0)
                 {
-                    Clear();
-
-                    int failsCount = 0;
-                    bool probablyPossibleToPutANucleus = true;
-
-                    while (grainCount > 0)
+                    if (failsCount > 10 && !probablyPossibleToPutANucleus)
                     {
-                        if (failsCount > 10 && !probablyPossibleToPutANucleus)
-                        {
-                            if (IsPossibleToPutGrainNucleusWithRadiusAnywhere(radius))
-                                probablyPossibleToPutANucleus = true;
-                            else
-                                break;
-                        }
-
-                        int randomRow = random.Next(RowCount);
-                        int randomColumn = random.Next(ColumnCount);
-
-                        if (CurrentState[randomRow][randomColumn].State == ZeroState)
-                        {
-                            if (IsNoGrainWithinARadius((GrainCellModel)CurrentState[randomRow][randomColumn], radius))
-                            {
-                                AddNewGrain();
-                                CurrentState[randomRow][randomColumn].State = grains.Last();
-                                PopulatedCellsCount++;
-                                grainCount--;
-
-                                probablyPossibleToPutANucleus = false;
-                                failsCount = 0;
-                            }
-                            else
-                                failsCount++;
-                        }
+                        if (IsPossibleToPutGrainNucleusWithRadiusAnywhere(radius))
+                            probablyPossibleToPutANucleus = true;
+                        else
+                            break;
                     }
 
-                    return (uint)PopulatedCellsCount;
+                    int randomRow = staticRandom.Next(RowCount);
+                    int randomColumn = staticRandom.Next(ColumnCount);
+
+                    if (CurrentState[randomRow][randomColumn].State == ZeroState)
+                    {
+                        if (IsNoGrainWithinARadius((GrainCellModel)CurrentState[randomRow][randomColumn], radius))
+                        {
+                            AddNewGrain();
+                            CurrentState[randomRow][randomColumn].State = grains.Last();
+                            PopulatedCellsCount++;
+                            grainCount--;
+
+                            probablyPossibleToPutANucleus = false;
+                            failsCount = 0;
+                        }
+                        else
+                            failsCount++;
+                    }
                 }
-                else
-                {
-                    throw new ArgumentException("Radius can't be grater than grid size");
-                }
+
+                return PopulatedCellsCount;
             }
             else
                 throw new ArgumentException("Radius must be grater than 0");
@@ -693,9 +699,6 @@ namespace GrainGrowthCellularAutomaton.Models
         {
             if (radius <= 0)
                 throw new ArgumentException("Radius must be grater than 0");
-
-            if (radius > RowCount / 2 || radius > ColumnCount / 2)
-                throw new ArgumentException("Radius can't be grater than grid size");
 
             var upperLeftGrainCell = GetUpperLeftGrainCellFromSquarePerimiter(centerCell, radius);
 
@@ -822,5 +825,67 @@ namespace GrainGrowthCellularAutomaton.Models
                 }
             }
         }
+
+        public void SmoothTheGrainsEdgesWithMonteCarloMethod(double kTParameter, int iterations = 1)
+        {
+            for (int i = 0; i < iterations; i++)
+            {
+                bool[,] isGrainCellSelected = new bool[RowCount, ColumnCount];
+                int selectedGrainCellsCount = 0;
+
+                while (selectedGrainCellsCount < CellCount)
+                {
+                    int randomRow = staticRandom.Next(RowCount);
+                    int randomColumn = staticRandom.Next(ColumnCount);
+
+                    if (!isGrainCellSelected[randomRow, randomColumn])
+                    {
+                        isGrainCellSelected[randomRow, randomColumn] = true;
+                        selectedGrainCellsCount++;
+                        var selectedGrainCell = (GrainCellModel)CurrentState[randomRow][randomColumn];
+
+                        if (!selectedGrainCell.IsOnGrainBoundary)
+                        {
+                            double energyBefore = selectedGrainCell.Energy;
+
+                            var previousState = selectedGrainCell.State;
+                            SetCellGrainToRandomFromNeighborhood(selectedGrainCell);
+
+                            double energyAfter = selectedGrainCell.Energy;
+
+                            double probabilityOfTheChangeAcceptance = GetProbabilityOfTheChangeAcceptance(energyBefore, energyAfter, kTParameter);
+
+                            if (GetRandomDouble(0.0, 1.0) > probabilityOfTheChangeAcceptance)
+                                selectedGrainCell.State = previousState;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SetCellGrainToRandomFromNeighborhood(GrainCellModel grainCell)
+        {
+            var grainsCounts = grainCell.NeighboringCells.StatesCounts;
+
+            do
+            {
+                int randomNeighboringGrainInt = staticRandom.Next(grainsCounts.Count);
+
+                grainCell.State = grainsCounts.ElementAt(randomNeighboringGrainInt).Key;
+            } while (grainCell.State == ZeroState);
+        }
+
+        private double GetProbabilityOfTheChangeAcceptance(double energyBefore, double energyAfter, double kTParameter)
+        {
+            double energyChangeDifference = energyAfter - energyBefore;
+
+            if (energyChangeDifference <= 0)
+                return 1.0;
+            else
+                return Math.Exp(-energyChangeDifference / kTParameter);
+        }
+
+        private double GetRandomDouble(double minimum, double maximum)
+            => staticRandom.NextDouble() * (maximum - minimum) + minimum;
     }
 }
