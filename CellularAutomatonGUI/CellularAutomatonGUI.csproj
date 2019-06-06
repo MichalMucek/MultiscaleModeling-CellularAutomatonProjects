@@ -172,13 +172,13 @@
       <Project>{f54369ee-971d-44a9-b97a-e9ffbfe58dec}</Project>
       <Name>ElementaryCellularAutomaton</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LifeLikeCellularAutomaton\LifeLikeCellularAutomaton.csproj">
-      <Project>{a4a4acef-57c8-4ed0-933c-98eaed75d4b6}</Project>
-      <Name>LifeLikeCellularAutomaton</Name>
-    </ProjectReference>
     <ProjectReference Include="..\GrainGrowthCellularAutomaton\GrainGrowthCellularAutomaton.csproj">
       <Project>{6ea38677-4fce-4860-8817-f5095f683c3b}</Project>
       <Name>GrainGrowthCellularAutomaton</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LifeLikeCellularAutomaton\LifeLikeCellularAutomaton.csproj">
+      <Project>{a4a4acef-57c8-4ed0-933c-98eaed75d4b6}</Project>
+      <Name>LifeLikeCellularAutomaton</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

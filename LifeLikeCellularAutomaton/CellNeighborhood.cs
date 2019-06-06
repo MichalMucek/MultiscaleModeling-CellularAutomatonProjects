@@ -2,6 +2,7 @@
 using CellularAutomaton2D;
 using CellularAutomaton2D.Models;
 using System.Collections.Generic;
+using System;
 
 namespace LifeLikeCellularAutomaton
 {
@@ -9,7 +10,60 @@ namespace LifeLikeCellularAutomaton
     {
         private const int SIDES_COUNT = 8;
 
-        public CellNeighborhoodTypeModel Type { get; set; }
+        private CellNeighborhoodTypeModel type;
+
+        public CellNeighborhoodTypeModel Type
+        {
+            get => type;
+            set
+            {
+                switch (value)
+                {
+                    case CellNeighborhoodTypeModel.Radial:
+                    case CellNeighborhoodTypeModel.RadialWithCenterOfMass:
+                        throw new ArgumentException("EightSidedGrainCellNeighborhood can't be of radial type");
+                    default:
+                        type = value;
+                        break;
+                }
+            }
+        }
+
+        public int Count
+        {
+            get
+            {
+                int count = 0;
+
+                switch (type)
+                {
+                    case CellNeighborhoodTypeModel.VonNeumann:
+                        count = 4;
+                        break;
+
+                    case CellNeighborhoodTypeModel.Moore:
+                        count = 8;
+                        break;
+
+                    case CellNeighborhoodTypeModel.RandomPentagonal:
+                        count = 5;
+                        break;
+
+                    case CellNeighborhoodTypeModel.LeftHexagonal:
+                    case CellNeighborhoodTypeModel.RightHexagonal:
+                    case CellNeighborhoodTypeModel.RandomHexagonal:
+                        count = 6;
+                        break;
+
+                    case CellNeighborhoodTypeModel.Radial:
+                    case CellNeighborhoodTypeModel.RadialWithCenterOfMass:
+                        throw new ArgumentException("EightSidedGrainCellNeighborhood shouldn't be of radial type");
+                }
+
+                return count;
+            }
+        }
+
         public ICell Top { get => cells[0]; set => cells[0] = (CellModel)value; }
         public ICell TopRight { get => cells[1]; set => cells[1] = (CellModel)value; }
         public ICell Right { get => cells[2]; set => cells[2] = (CellModel)value; }

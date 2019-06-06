@@ -452,49 +452,19 @@ namespace GrainGrowthCellularAutomaton.Models
 
         public BitmapImage GetBitmapImage(int cellWidth, int cellHeight, int lineWidth)
         {
-            imageMemoryStream?.Dispose();
-            imageMemoryStream = new MemoryStream();
+            ResetImageMemoryStream();
             bitmapImage = new BitmapImage();
 
-            int imageWidth = ColumnCount * cellWidth + (ColumnCount + 1) * lineWidth;
-            int imageHeight = RowCount * cellHeight + (RowCount + 1) * lineWidth;
+            int imageWidth, imageHeight;
+            SetImageWidthAndHeight(out imageWidth, out imageHeight, cellWidth, cellHeight, lineWidth);
 
             using (var image = new Bitmap(imageWidth, imageHeight))
             {
                 using (var imageGraphics = Graphics.FromImage(image))
                 {
-                    imageGraphics.Clear(Color.White);
+                    imageGraphics.Clear(Color.FromArgb(ZeroState.Color.R, ZeroState.Color.G, ZeroState.Color.B));
 
-                    if (lineWidth > 0)
-                    {
-                        using (var blackPen = new Pen(Color.Black, lineWidth))
-                        {
-                            Point lineFirstPoint = new Point();
-                            Point lineSecondPoint = new Point();
-
-                            lineFirstPoint.X = 0;
-                            lineSecondPoint.X = imageWidth;
-
-                            for (int row = 0; row < RowCount + 1; row++)
-                            {
-                                lineFirstPoint.Y = row * (cellHeight + lineWidth) + lineWidth / 2;
-                                lineSecondPoint.Y = lineFirstPoint.Y;
-
-                                imageGraphics.DrawLine(blackPen, lineFirstPoint, lineSecondPoint);
-                            }
-
-                            lineFirstPoint.Y = 0;
-                            lineSecondPoint.Y = imageHeight;
-
-                            for (int column = 0; column < ColumnCount + 1; column++)
-                            {
-                                lineFirstPoint.X = column * (cellWidth + lineWidth) + lineWidth / 2;
-                                lineSecondPoint.X = lineFirstPoint.X;
-
-                                imageGraphics.DrawLine(blackPen, lineFirstPoint, lineSecondPoint);
-                            }
-                        }
-                    }
+                    DrawLinesGridOnImage(imageWidth, imageHeight, lineWidth, cellWidth, cellHeight, imageGraphics);
 
                     using (var grainColorSolidBrush = new SolidBrush(Color.White))
                     {
@@ -535,6 +505,107 @@ namespace GrainGrowthCellularAutomaton.Models
             }
 
             return bitmapImage;
+        }
+
+        public BitmapImage GetEnergyBitmapImage(int cellWidth, int cellHeight, int lineWidth)
+        {
+            ResetImageMemoryStream();
+            bitmapImage = new BitmapImage();
+
+            int imageWidth, imageHeight;
+            SetImageWidthAndHeight(out imageWidth, out imageHeight, cellWidth, cellHeight, lineWidth);
+
+            using (var image = new Bitmap(imageWidth, imageHeight))
+            {
+                using (var imageGraphics = Graphics.FromImage(image))
+                {
+                    imageGraphics.Clear(Color.FromArgb(ZeroState.Color.R, ZeroState.Color.G, ZeroState.Color.B));
+
+                    DrawLinesGridOnImage(imageWidth, imageHeight, lineWidth, cellWidth, cellHeight, imageGraphics);
+
+                    using (var grainCellEnergyLevelColorSolidBrush = new SolidBrush(Color.Yellow))
+                    {
+                        Point cellPosition = new Point();
+                        Size cellSize = new Size(cellWidth, cellHeight);
+
+                        foreach (var row in CurrentState)
+                        {
+                            cellPosition.Y = row.First().RowNumber * (cellHeight + lineWidth) + lineWidth;
+
+                            foreach (GrainCellModel grainCell in row)
+                            {
+                                cellPosition.X = grainCell.ColumnNumber * (cellWidth + lineWidth) + lineWidth;
+
+                                double grainCellEnergyPercentage = grainCell.Energy / grainCell.NeighboringCells.Count;
+
+                                grainCellEnergyLevelColorSolidBrush.Color = Color.FromArgb((int)(255 * grainCellEnergyPercentage), (int)(255 * grainCellEnergyPercentage), 0);
+                                imageGraphics.FillRectangle(grainCellEnergyLevelColorSolidBrush, new Rectangle(cellPosition, cellSize));
+
+                                if (HasGrainCellPositionOnImageChanged(grainCell, cellPosition, cellSize))
+                                {
+                                    grainCell.StartPositionOnImage = new System.Windows.Point(cellPosition.X, cellPosition.Y);
+                                    grainCell.EndPositionOnImage = grainCell.StartPositionOnImage + new System.Windows.Vector(cellSize.Width, cellSize.Height);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                bitmapImage.BeginInit();
+                image.Save(imageMemoryStream, ImageFormat.Png);
+                imageMemoryStream.Seek(0, SeekOrigin.Begin);
+                bitmapImage.StreamSource = imageMemoryStream;
+                bitmapImage.EndInit();
+                bitmapImage.Freeze();
+            }
+
+            return bitmapImage;
+        }
+
+        private void ResetImageMemoryStream()
+        {
+            imageMemoryStream?.Dispose();
+            imageMemoryStream = new MemoryStream();
+        }
+
+        private void SetImageWidthAndHeight(out int imageWidth, out int imageHeight, int cellWidth, int cellHeight, int lineWidth)
+        {
+            imageWidth = ColumnCount * cellWidth + (ColumnCount + 1) * lineWidth;
+            imageHeight = RowCount * cellHeight + (RowCount + 1) * lineWidth;
+        }
+
+        private void DrawLinesGridOnImage(int imageWidth, int imageHeight, int lineWidth, int cellWidth, int cellHeight, Graphics graphics)
+        {
+            if (lineWidth > 0)
+            {
+                using (var blackPen = new Pen(Color.Black, lineWidth))
+                {
+                    Point lineFirstPoint = new Point();
+                    Point lineSecondPoint = new Point();
+
+                    lineFirstPoint.X = 0;
+                    lineSecondPoint.X = imageWidth;
+
+                    for (int row = 0; row < RowCount + 1; row++)
+                    {
+                        lineFirstPoint.Y = row * (cellHeight + lineWidth) + lineWidth / 2;
+                        lineSecondPoint.Y = lineFirstPoint.Y;
+
+                        graphics.DrawLine(blackPen, lineFirstPoint, lineSecondPoint);
+                    }
+
+                    lineFirstPoint.Y = 0;
+                    lineSecondPoint.Y = imageHeight;
+
+                    for (int column = 0; column < ColumnCount + 1; column++)
+                    {
+                        lineFirstPoint.X = column * (cellWidth + lineWidth) + lineWidth / 2;
+                        lineSecondPoint.X = lineFirstPoint.X;
+
+                        graphics.DrawLine(blackPen, lineFirstPoint, lineSecondPoint);
+                    }
+                }
+            }
         }
 
         private bool HasGrainCellPositionOnImageChanged(ICell grainCell, Point cellPosition, Size cellSize)
@@ -828,6 +899,8 @@ namespace GrainGrowthCellularAutomaton.Models
 
         public void SmoothTheGrainsEdgesWithMonteCarloMethod(double kTParameter, int iterations = 1)
         {
+            CreateNewStaticRandom();
+
             for (int i = 0; i < iterations; i++)
             {
                 bool[,] isGrainCellSelected = new bool[RowCount, ColumnCount];
@@ -865,6 +938,8 @@ namespace GrainGrowthCellularAutomaton.Models
 
         private void SetCellGrainToRandomFromNeighborhood(GrainCellModel grainCell)
         {
+            CreateNewStaticRandom();
+
             var grainsCounts = grainCell.NeighboringCells.StatesCounts;
 
             do
@@ -886,6 +961,10 @@ namespace GrainGrowthCellularAutomaton.Models
         }
 
         private double GetRandomDouble(double minimum, double maximum)
-            => staticRandom.NextDouble() * (maximum - minimum) + minimum;
+        {
+            CreateNewStaticRandom();
+
+            return staticRandom.NextDouble() * (maximum - minimum) + minimum;
+        }
     }
 }

@@ -42,6 +42,7 @@ namespace CellularAutomatonGUI.ViewModels
         private BitmapImage grainCellGridBitmapImage;
         private bool isGrowthDone = false;
         private bool canSmoothTheGrainCellGridWithMonteCarlo = false;
+        private bool isShowingEnergyChecked = false;
 
         private DispatcherTimer evolverAndDrawerDispatcherTimer;
         private CancellationTokenSource cancellationTokenSource;
@@ -99,9 +100,7 @@ namespace CellularAutomatonGUI.ViewModels
                 grainCellGrid.Evolve();
                 IsGrowthDone = grainCellGrid.IsFullyPopulated;
 
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                        GrainCellGridBitmapImage = grainCellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth)
-                );
+                RunDrawerTask();
             }, cancellationToken);
         }
 
@@ -153,6 +152,8 @@ namespace CellularAutomatonGUI.ViewModels
 
         private void CreateGrainCellGridPreview()
         {
+            IsGrowthDone = false;
+            CanSmoothTheGrainCellGridWithMonteCarlo = false;
             grainCellGrid = new GrainCellGrid2DModel(columnCount, rowCount, CellNeighborhoodTypeModel.VonNeumann, BoundaryConditionModel.Absorbing);
         }
 
@@ -642,9 +643,23 @@ namespace CellularAutomatonGUI.ViewModels
         {
             await Task.Run(() =>
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                    GrainCellGridBitmapImage = grainCellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth)
-                )
+                {
+                    if (IsShowingEnergyChecked)
+                        GrainCellGridBitmapImage = grainCellGrid?.GetEnergyBitmapImage(cellWidth, cellHeight, lineWidth);
+                    else
+                        GrainCellGridBitmapImage = grainCellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth);
+                })
             );
+        }
+
+        public bool IsShowingEnergyChecked
+        {
+            get => isShowingEnergyChecked;
+            set
+            {
+                isShowingEnergyChecked = value;
+                RunDrawerTask();
+            }
         }
 
         public BitmapImage GrainCellGridBitmapImage
