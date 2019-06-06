@@ -9,7 +9,60 @@ namespace GrainGrowthCellularAutomaton.Models
     {
         private const int SIDES_COUNT = 8;
 
-        public CellNeighborhoodTypeModel Type { get; set; }
+        private CellNeighborhoodTypeModel type;
+
+        public CellNeighborhoodTypeModel Type
+        {
+            get => type;
+            set
+            {
+                switch (value)
+                {
+                    case CellNeighborhoodTypeModel.Radial:
+                    case CellNeighborhoodTypeModel.RadialWithCenterOfMass:
+                        throw new ArgumentException("EightSidedGrainCellNeighborhood can't be of radial type");
+                    default:
+                        type = value;
+                        break;
+                }
+            }
+        }
+
+        public int Count
+        {
+            get
+            {
+                int count = 0;
+
+                switch (type)
+                {
+                    case CellNeighborhoodTypeModel.VonNeumann:
+                        count = 4;
+                        break;
+
+                    case CellNeighborhoodTypeModel.Moore:
+                        count = 8;
+                        break;
+
+                    case CellNeighborhoodTypeModel.RandomPentagonal:
+                        count = 5;
+                        break;
+
+                    case CellNeighborhoodTypeModel.LeftHexagonal:
+                    case CellNeighborhoodTypeModel.RightHexagonal:
+                    case CellNeighborhoodTypeModel.RandomHexagonal:
+                        count = 6;
+                        break;
+
+                    case CellNeighborhoodTypeModel.Radial:
+                    case CellNeighborhoodTypeModel.RadialWithCenterOfMass:
+                        throw new ArgumentException("EightSidedGrainCellNeighborhood shouldn't be of radial type");
+                }
+
+                return count;
+            }
+        }
+
         public ICell Top { get => grainCells[0]; set => grainCells[0] = (GrainCellModel)value; }
         public ICell TopRight { get => grainCells[1]; set => grainCells[1] = (GrainCellModel)value; }
         public ICell Right { get => grainCells[2]; set => grainCells[2] = (GrainCellModel)value; }

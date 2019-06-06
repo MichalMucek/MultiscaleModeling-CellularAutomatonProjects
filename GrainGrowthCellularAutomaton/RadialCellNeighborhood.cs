@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CellularAutomaton2D;
 using CellularAutomaton2D.Models;
 
@@ -8,6 +9,7 @@ namespace GrainGrowthCellularAutomaton
     {
         public CellNeighborhoodTypeModel Type { get; private set; }
         public List<ICell> Cells { get; private set; } = new List<ICell>();
+        public int Count => Cells.Count;
         private Dictionary<ICellState, int> grainsCounts;
 
         public RadialGrainCellNeighborhood(List<ICell> cells, CellNeighborhoodTypeModel type)
@@ -32,6 +34,9 @@ namespace GrainGrowthCellularAutomaton
                             else
                                 grainsCounts.Add(grainCell.State, 1);
                         break;
+
+                    default:
+                        throw new ArgumentException("RadialGrainCellNeighborhood can be of radial type only");
                 }
 
                 return grainsCounts;

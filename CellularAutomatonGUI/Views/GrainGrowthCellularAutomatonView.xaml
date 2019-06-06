@@ -114,7 +114,6 @@
                             DefaultValue="{Binding NeighborhoodRadius}"
                             DisplayDefaultValueOnEmptyText="True"
                             IsEnabled="{Binding IsRadialNeighborhoodSelected}"
-                            Maximum="{Binding NucleusRadiusMaximum}"
                             Minimum="1"
                             Value="{Binding NeighborhoodRadius}" />
 
@@ -421,6 +420,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <Grid.ColumnDefinitions>
@@ -478,6 +478,22 @@
                             Maximum="50"
                             Minimum="0"
                             Value="{Binding LineWidth}" />
+
+                        <StackPanel
+                            Grid.Row="3"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            HorizontalAlignment="Left"
+                            Orientation="Horizontal">
+                            <TextBlock
+                                Margin="3"
+                                VerticalAlignment="Center"
+                                Text="Show energy" />
+                            <CheckBox
+                                Margin="3"
+                                VerticalAlignment="Center"
+                                IsChecked="{Binding IsShowingEnergyChecked}" />
+                        </StackPanel>
                     </Grid>
                 </GroupBox>
             </StackPanel>
