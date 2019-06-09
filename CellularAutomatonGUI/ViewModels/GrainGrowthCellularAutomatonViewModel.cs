@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using CellularAutomaton2D.Models;
+using CellularAutomatonGUI.Models;
 using GrainGrowthCellularAutomaton.Models;
 using System;
 using System.Drawing;
@@ -15,18 +16,18 @@ namespace CellularAutomatonGUI.ViewModels
 {
     public class GrainGrowthCellularAutomatonViewModel : Screen
     {
-        private int columnCount = 31;
-        private int rowCount = 31;
+        private int columnCount = 9;
+        private int rowCount = 9;
         private NucleationMethodModel selectedNucleationMethod = NucleationMethodModel.Uniform;
         private int nucleusesInColumnCount = 1;
         private int nucleusesInRowCount = 1;
         private int neighborhoodRadius = 1;
         private bool isRadialNeighborhoodSelected = false;
         private bool isUniformMethodSelected = true;
-        private int randomNucleusesCount = 1;
+        private int randomNucleusesCount = 10;
         private bool isRandomMethodSelected = false;
         private bool isRandomWithRadiusMethodSelected = false;
-        private int nucleusRadius = 1;
+        private int nucleusRadius = 10;
         private bool canClearGrainCellGrid = false;
         private bool canNucleate = false;
         private bool canSetOrUnsetGrainCellGrid = true;
@@ -35,10 +36,10 @@ namespace CellularAutomatonGUI.ViewModels
         private string continueOrPauseGrowthContent = "Start";
         private bool canShowNextGrowthStep = false;
         private string setOrUnsetGrainCellGridContent = "Set";
-        private int timeInterval = 250;
+        private int timeInterval = 100;
         private int cellWidth = 12;
         private int cellHeight = 12;
-        private int lineWidth = 1;
+        private int lineWidth = 0;
         private BitmapImage grainCellGridBitmapImage;
         private bool isGrowthDone = false;
         private bool canSmoothTheGrainCellGridWithMonteCarlo = false;
@@ -67,6 +68,10 @@ namespace CellularAutomatonGUI.ViewModels
             NucleationMethods.Add(NucleationMethodModel.Uniform);
             NucleationMethods.Add(NucleationMethodModel.Random);
             NucleationMethods.Add(NucleationMethodModel.RandomWithRadius);
+
+            GrainCellGridViewCategories.Add(GrainCellGridViewCategoryModel.Microstructure);
+            GrainCellGridViewCategories.Add(GrainCellGridViewCategoryModel.Energy);
+            GrainCellGridViewCategories.Add(GrainCellGridViewCategoryModel.DislocationDensity);
 
             evolverAndDrawerDispatcherTimer = new DispatcherTimer();
             evolverAndDrawerDispatcherTimer.Interval = TimeSpan.FromMilliseconds(timeInterval);
@@ -116,6 +121,7 @@ namespace CellularAutomatonGUI.ViewModels
                     SetOrUnsetGrainCellGrid();
                     RunDrawerTask();
                     CanSmoothTheGrainCellGridWithMonteCarlo = true;
+                    CanSpreadDislocations = true;
                 }
 
                 NotifyOfPropertyChange(() => IsGrowthDone);
@@ -644,12 +650,36 @@ namespace CellularAutomatonGUI.ViewModels
             await Task.Run(() =>
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    if (IsShowingEnergyChecked)
-                        GrainCellGridBitmapImage = grainCellGrid?.GetEnergyBitmapImage(cellWidth, cellHeight, lineWidth);
-                    else
-                        GrainCellGridBitmapImage = grainCellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth);
+                    switch (selectedGrainCellGridViewCategory)
+                    {
+                        case GrainCellGridViewCategoryModel.Microstructure:
+                            GrainCellGridBitmapImage = grainCellGrid?.GetBitmapImage(cellWidth, cellHeight, lineWidth);
+                            break;
+
+                        case GrainCellGridViewCategoryModel.Energy:
+                            GrainCellGridBitmapImage = grainCellGrid?.GetEnergyBitmapImage(cellWidth, cellHeight, lineWidth);
+                            break;
+
+                        case GrainCellGridViewCategoryModel.DislocationDensity:
+                            GrainCellGridBitmapImage = grainCellGrid?.GetDislocationDensityBitmapImage(cellWidth, cellHeight, lineWidth);
+                            break;
+                    }
                 })
             );
+        }
+
+        public BindableCollection<GrainCellGridViewCategoryModel> GrainCellGridViewCategories { get; } = new BindableCollection<GrainCellGridViewCategoryModel>();
+
+        public GrainCellGridViewCategoryModel selectedGrainCellGridViewCategory = GrainCellGridViewCategoryModel.Microstructure;
+
+        public GrainCellGridViewCategoryModel SelectedGrainCellGridViewCategory
+        {
+            get => selectedGrainCellGridViewCategory;
+            set
+            {
+                selectedGrainCellGridViewCategory = value;
+                RunDrawerTask();
+            }
         }
 
         public bool IsShowingEnergyChecked
@@ -753,6 +783,118 @@ namespace CellularAutomatonGUI.ViewModels
                 canSmoothTheGrainCellGridWithMonteCarlo = value;
                 NotifyOfPropertyChange(() => CanSmoothTheGrainCellGridWithMonteCarlo);
             }
+        }
+
+        private double strengtheningVariableA = 86710969050178.5;
+
+        public double StrengtheningVariableA
+        {
+            get => strengtheningVariableA;
+            set
+            {
+                strengtheningVariableA = value;
+                NotifyOfPropertyChange(() => StrengtheningVariableA);
+            }
+        }
+
+        private double recoveryVariableB = 9.41268203527779;
+
+        public double RecoveryVariableB
+        {
+            get => recoveryVariableB;
+            set
+            {
+                recoveryVariableB = value;
+                NotifyOfPropertyChange(() => RecoveryVariableB);
+            }
+        }
+
+        private double durationTime = 0.2;
+
+        public double DurationTime
+        {
+            get => durationTime;
+            set
+            {
+                durationTime = value;
+                NotifyOfPropertyChange(() => DurationTime);
+            }
+        }
+
+        private double timeStep = 0.001;
+
+        public double TimeStep
+        {
+            get => timeStep;
+            set
+            {
+                timeStep = value;
+                NotifyOfPropertyChange(() => TimeStep);
+            }
+        }
+
+        private double percentageOfFirstSet = 30.0;
+
+        public double PercentageOfFirstSet
+        {
+            get => percentageOfFirstSet;
+            set
+            {
+                percentageOfFirstSet = value;
+                NotifyOfPropertyChange(() => PercentageOfFirstSet);
+            }
+        }
+
+        public async void SpreadDislocations()
+        {
+            CanSpreadDislocations = false;
+
+            await Task.Run(() =>
+                grainCellGrid?.SpreadDislocations(strengtheningVariableA, recoveryVariableB, durationTime, timeStep, percentageOfFirstSet)
+            );
+
+            RunDrawerTask();
+            CanSpreadDislocations = true;
+        }
+
+        private bool canSpreadDislocations;
+
+        public bool CanSpreadDislocations
+        {
+            get => canSpreadDislocations;
+            set
+            {
+                canSpreadDislocations = value;
+                NotifyOfPropertyChange(() => CanSpreadDislocations);
+            }
+        }
+
+        private double criticalDislocationDensity = 4215840142323.42;
+
+        public double CriticalDislocationDensity
+        {
+            get => criticalDislocationDensity;
+            set
+            {
+                criticalDislocationDensity = value;
+                NotifyOfPropertyChange(() => CriticalDislocationDensity);
+            }
+        }
+
+        public async void NucleateRecrystallizedCells()
+        {
+            await Task.Run(() =>
+                grainCellGrid?.NucleateRecrystallizedCells(criticalDislocationDensity)
+            );
+
+            RunDrawerTask();
+        }
+
+        public async void Recrystallize()
+        {
+            await Task.Run(() => grainCellGrid?.Recrystallize());
+
+            RunDrawerTask();
         }
     }
 }

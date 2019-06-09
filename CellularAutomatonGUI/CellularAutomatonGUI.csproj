@@ -89,6 +89,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EnumDescriptionConverter.cs" />
+    <Compile Include="Models\GrainCellGridViewCategoryModel.cs" />
     <Compile Include="ViewModels\CellGridImageViewModel.cs" />
     <Compile Include="ViewModels\ElementaryCellularAutomatonViewModel.cs" />
     <Compile Include="ViewModels\LifeLikeCellularAutomatonViewModel.cs" />
@@ -138,9 +139,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Page Include="Views\CellGridImageView.xaml">
       <SubType>Designer</SubType>

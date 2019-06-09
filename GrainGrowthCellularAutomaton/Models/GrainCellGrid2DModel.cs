@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Media.Imaging;
 using CellularAutomaton2D;
 using CellularAutomaton2D.Models;
@@ -78,7 +79,7 @@ namespace GrainGrowthCellularAutomaton.Models
                 PreviousState.Add(new List<ICell>());
         }
 
-        private void AddNeighboringCellsToCellsState(List<List<ICell>> cellsState)
+        private void AddNeighboringCellsToCellsState(List<List<ICell>> cellsState, bool canSkipNonZeroState = true)
         {
             GrainCellModel outsideCell = new GrainCellModel((GrainModel)ZeroState);
 
@@ -86,7 +87,9 @@ namespace GrainGrowthCellularAutomaton.Models
             {
                 for (int column = 0; column < ColumnCount; column++, cellId++)
                 {
-                    if (cellsState[row][column].State == ZeroState)
+                    var grainCell = (GrainCellModel)cellsState[row][column];
+
+                    if (cellsState[row][column].State == ZeroState || !canSkipNonZeroState)
                     {
                         switch (NeighborhoodType)
                         {
@@ -99,35 +102,13 @@ namespace GrainGrowthCellularAutomaton.Models
                                 switch (BoundaryCondition)
                                 {
                                     case BoundaryConditionModel.Absorbing:
-                                        cellsState[row][column].NeighboringCells = new EightSidedGrainCellNeighborhood
-                                        {
-                                            Top = row == 0 ? outsideCell : cellsState[row - 1][column],
-                                            TopRight = row == 0 || column == ColumnCount - 1 ? outsideCell : cellsState[row - 1][column + 1],
-                                            Right = column == ColumnCount - 1 ? outsideCell : cellsState[row][column + 1],
-                                            BottomRight = row == RowCount - 1 || column == ColumnCount - 1 ? outsideCell : cellsState[row + 1][column + 1],
-                                            Bottom = row == RowCount - 1 ? outsideCell : cellsState[row + 1][column],
-                                            BottomLeft = row == RowCount - 1 || column == 0 ? outsideCell : cellsState[row + 1][column - 1],
-                                            Left = column == 0 ? outsideCell : cellsState[row][column - 1],
-                                            TopLeft = row == 0 || column == 0 ? outsideCell : cellsState[row - 1][column - 1],
-                                            Type = NeighborhoodType
-                                        };
-
+                                        grainCell.NeighboringCells = GetEightSidedGrainCellNeighborhoodForAbsorbingBC(outsideCell, cellsState, row, column, NeighborhoodType);
+                                        grainCell.VonNeumannCellNeighborhood = GetEightSidedGrainCellNeighborhoodForAbsorbingBC(outsideCell, cellsState, row, column, CellNeighborhoodTypeModel.VonNeumann);
                                         break;
 
                                     case BoundaryConditionModel.Periodic:
-                                        cellsState[row][column].NeighboringCells = new EightSidedGrainCellNeighborhood
-                                        {
-                                            Top = cellsState[row == 0 ? RowCount - 1 : row - 1][column],
-                                            TopRight = cellsState[row == 0 ? RowCount - 1 : row - 1][column == ColumnCount - 1 ? 0 : column + 1],
-                                            Right = cellsState[row][column == ColumnCount - 1 ? 0 : column + 1],
-                                            BottomRight = cellsState[row == RowCount - 1 ? 0 : row + 1][column == ColumnCount - 1 ? 0 : column + 1],
-                                            Bottom = cellsState[row == RowCount - 1 ? 0 : row + 1][column],
-                                            BottomLeft = cellsState[row == RowCount - 1 ? 0 : row + 1][column == 0 ? ColumnCount - 1 : column - 1],
-                                            Left = cellsState[row][column == 0 ? ColumnCount - 1 : column - 1],
-                                            TopLeft = cellsState[row == 0 ? RowCount - 1 : row - 1][column == 0 ? ColumnCount - 1 : column - 1],
-                                            Type = NeighborhoodType
-                                        };
-
+                                        grainCell.NeighboringCells = GetEightSidedGrainCellNeighborhoodForPeriodicBC(cellsState, row, column, NeighborhoodType);
+                                        grainCell.VonNeumannCellNeighborhood = GetEightSidedGrainCellNeighborhoodForPeriodicBC(cellsState, row, column, CellNeighborhoodTypeModel.VonNeumann);
                                         break;
                                 }
                                 break;
@@ -142,6 +123,8 @@ namespace GrainGrowthCellularAutomaton.Models
                                                 CellNeighborhoodRadius,
                                                 cellsState),
                                             NeighborhoodType);
+
+                                        grainCell.VonNeumannCellNeighborhood = GetEightSidedGrainCellNeighborhoodForAbsorbingBC(outsideCell, cellsState, row, column, CellNeighborhoodTypeModel.VonNeumann);
                                         break;
 
                                     case BoundaryConditionModel.Periodic:
@@ -151,6 +134,8 @@ namespace GrainGrowthCellularAutomaton.Models
                                                 CellNeighborhoodRadius,
                                                 cellsState),
                                             NeighborhoodType);
+
+                                        grainCell.VonNeumannCellNeighborhood = GetEightSidedGrainCellNeighborhoodForPeriodicBC(cellsState, row, column, CellNeighborhoodTypeModel.VonNeumann);
                                         break;
                                 }
                                 break;
@@ -165,6 +150,8 @@ namespace GrainGrowthCellularAutomaton.Models
                                                 CellNeighborhoodRadius,
                                                 cellsState),
                                             NeighborhoodType);
+
+                                        grainCell.VonNeumannCellNeighborhood = GetEightSidedGrainCellNeighborhoodForAbsorbingBC(outsideCell, cellsState, row, column, CellNeighborhoodTypeModel.VonNeumann);
                                         break;
 
                                     case BoundaryConditionModel.Periodic:
@@ -174,6 +161,8 @@ namespace GrainGrowthCellularAutomaton.Models
                                                 CellNeighborhoodRadius,
                                                 cellsState),
                                             NeighborhoodType);
+
+                                        grainCell.VonNeumannCellNeighborhood = GetEightSidedGrainCellNeighborhoodForPeriodicBC(cellsState, row, column, CellNeighborhoodTypeModel.VonNeumann);
                                         break;
                                 }
                                 break;
@@ -183,7 +172,39 @@ namespace GrainGrowthCellularAutomaton.Models
             }
         }
 
-        private List<ICell> GetGrainCellsWithinARadiusForPeriodicBc(GrainCellModel centerGrainCell, int radius, List<List<ICell>> cellsState)
+        private EightSidedGrainCellNeighborhood GetEightSidedGrainCellNeighborhoodForAbsorbingBC(GrainCellModel outsideCell, List<List<ICell>> cellsState, int row, int column, CellNeighborhoodTypeModel neighborhoodType)
+        {
+            return new EightSidedGrainCellNeighborhood
+            {
+                Top = row == 0 ? outsideCell : cellsState[row - 1][column],
+                TopRight = row == 0 || column == ColumnCount - 1 ? outsideCell : cellsState[row - 1][column + 1],
+                Right = column == ColumnCount - 1 ? outsideCell : cellsState[row][column + 1],
+                BottomRight = row == RowCount - 1 || column == ColumnCount - 1 ? outsideCell : cellsState[row + 1][column + 1],
+                Bottom = row == RowCount - 1 ? outsideCell : cellsState[row + 1][column],
+                BottomLeft = row == RowCount - 1 || column == 0 ? outsideCell : cellsState[row + 1][column - 1],
+                Left = column == 0 ? outsideCell : cellsState[row][column - 1],
+                TopLeft = row == 0 || column == 0 ? outsideCell : cellsState[row - 1][column - 1],
+                Type = neighborhoodType
+            };
+        }
+
+        private EightSidedGrainCellNeighborhood GetEightSidedGrainCellNeighborhoodForPeriodicBC(List<List<ICell>> cellsState, int row, int column, CellNeighborhoodTypeModel neighborhoodType)
+        {
+            return new EightSidedGrainCellNeighborhood
+            {
+                Top = cellsState[row == 0 ? RowCount - 1 : row - 1][column],
+                TopRight = cellsState[row == 0 ? RowCount - 1 : row - 1][column == ColumnCount - 1 ? 0 : column + 1],
+                Right = cellsState[row][column == ColumnCount - 1 ? 0 : column + 1],
+                BottomRight = cellsState[row == RowCount - 1 ? 0 : row + 1][column == ColumnCount - 1 ? 0 : column + 1],
+                Bottom = cellsState[row == RowCount - 1 ? 0 : row + 1][column],
+                BottomLeft = cellsState[row == RowCount - 1 ? 0 : row + 1][column == 0 ? ColumnCount - 1 : column - 1],
+                Left = cellsState[row][column == 0 ? ColumnCount - 1 : column - 1],
+                TopLeft = cellsState[row == 0 ? RowCount - 1 : row - 1][column == 0 ? ColumnCount - 1 : column - 1],
+                Type = neighborhoodType
+            };
+        }
+
+        private List<GrainCellModel> GetGrainCellsWithinARadiusForPeriodicBc(GrainCellModel centerGrainCell, int radius, List<List<ICell>> cellsState)
         {
             if (radius <= 0)
                 throw new ArgumentException("Radius must be grater than 0");
@@ -191,7 +212,7 @@ namespace GrainGrowthCellularAutomaton.Models
             if (radius > RowCount / 2 || radius > ColumnCount / 2)
                 throw new ArgumentException("Radius must be smaller than grid size");
 
-            List<ICell> grainCellsWithinARadius = new List<ICell>();
+            List<GrainCellModel> grainCellsWithinARadius = new List<GrainCellModel>();
 
             var upperLeftGrainCell = GetUpperLeftGrainCellFromSquarePerimiter(centerGrainCell, radius);
 
@@ -209,7 +230,7 @@ namespace GrainGrowthCellularAutomaton.Models
                     if (column >= ColumnCount)
                         column = 0;
 
-                    var grainCellInSquare = cellsState[row][column];
+                    var grainCellInSquare = (GrainCellModel)cellsState[row][column];
 
                     if (grainCellInSquare != centerGrainCell)
                     {
@@ -241,7 +262,7 @@ namespace GrainGrowthCellularAutomaton.Models
             return CurrentState[upperLeftGrainCellRow][upperLeftGrainCellColumn];
         }
 
-        private List<ICell> GetGrainCellsWithinARadiusForAbsorbingBc(GrainCellModel centerGrainCell, int radius, List<List<ICell>> cellsState)
+        private List<GrainCellModel> GetGrainCellsWithinARadiusForAbsorbingBc(GrainCellModel centerGrainCell, int radius, List<List<ICell>> cellsState)
         {
             if (radius <= 0)
                 throw new ArgumentException("Radius must be grater than 0");
@@ -249,9 +270,9 @@ namespace GrainGrowthCellularAutomaton.Models
             if (radius > RowCount / 2 || radius > ColumnCount / 2)
                 throw new ArgumentException("Radius must be smaller than grid size");
 
-            List<ICell> grainCellsWithinARadius = new List<ICell>();
+            List<GrainCellModel> grainCellsWithinARadius = new List<GrainCellModel>();
             GrainCellModel outsideGrainCell = new GrainCellModel((GrainModel)ZeroState);
-            ICell grainCellInSquare;
+            GrainCellModel grainCellInSquare;
 
             int upperLeftGrainCellRow = centerGrainCell.RowNumber - radius;
             int upperLeftGrainCellColumn = centerGrainCell.ColumnNumber - radius;
@@ -271,7 +292,7 @@ namespace GrainGrowthCellularAutomaton.Models
                             if (row == -1 || row == RowCount || column == -1 || column == ColumnCount)
                                 grainCellInSquare = outsideGrainCell;
                             else
-                                grainCellInSquare = cellsState[row][column];
+                                grainCellInSquare = (GrainCellModel)cellsState[row][column];
 
                             if (grainCellInSquare != centerGrainCell)
                             {
@@ -288,7 +309,7 @@ namespace GrainGrowthCellularAutomaton.Models
             return grainCellsWithinARadius;
         }
 
-        private List<ICell> GetGrainCellsWithCenterOfMassWithinARadiusForPeriodicBc(GrainCellModel centerGrainCell, int radius, List<List<ICell>> cellsState)
+        private List<GrainCellModel> GetGrainCellsWithCenterOfMassWithinARadiusForPeriodicBc(GrainCellModel centerGrainCell, int radius, List<List<ICell>> cellsState)
         {
             if (radius <= 0)
                 throw new ArgumentException("Radius must be grater than 0");
@@ -296,7 +317,7 @@ namespace GrainGrowthCellularAutomaton.Models
             if (radius > RowCount / 2 || radius > ColumnCount / 2)
                 throw new ArgumentException("Radius must be smaller than grid size");
 
-            List<ICell> grainCellsWithinARadius = new List<ICell>();
+            List<GrainCellModel> grainCellsWithinARadius = new List<GrainCellModel>();
 
             var upperLeftGrainCell = GetUpperLeftGrainCellFromSquarePerimiter(centerGrainCell, radius);
 
@@ -338,7 +359,7 @@ namespace GrainGrowthCellularAutomaton.Models
             return grainCellsWithinARadius;
         }
 
-        private List<ICell> GetGrainCellsWithCenterOfMassWithinARadiusForAbsorbingBc(GrainCellModel centerGrainCell, int radius, List<List<ICell>> cellsState)
+        private List<GrainCellModel> GetGrainCellsWithCenterOfMassWithinARadiusForAbsorbingBc(GrainCellModel centerGrainCell, int radius, List<List<ICell>> cellsState)
         {
             if (radius <= 0)
                 throw new ArgumentException("Radius must be grater than 0");
@@ -346,7 +367,7 @@ namespace GrainGrowthCellularAutomaton.Models
             if (radius > RowCount / 2 || radius > ColumnCount / 2)
                 throw new ArgumentException("Radius must be smaller than grid size");
 
-            List<ICell> grainCellsWithinARadius = new List<ICell>();
+            List<GrainCellModel> grainCellsWithinARadius = new List<GrainCellModel>();
             GrainCellModel outsideGrainCell = new GrainCellModel((GrainModel)ZeroState);
             GrainCellModel grainCellInSquare;
 
@@ -406,13 +427,13 @@ namespace GrainGrowthCellularAutomaton.Models
             }
         }
 
-        private void CopyCurrentStateToPrevious()
+        private void CopyCurrentStateToPrevious(bool canSkipNonZeroStateWhileAddingNeighboringCells = false)
         {
             PreviousState = CurrentState.ConvertAll(
                 row => new List<ICell>(row.ConvertAll(grainCell => new GrainCellModel((GrainCellModel)grainCell)))
             );
 
-            AddNeighboringCellsToCellsState(PreviousState);
+            AddNeighboringCellsToCellsState(PreviousState, canSkipNonZeroStateWhileAddingNeighboringCells);
         }
 
         private GrainModel GetGrainToExpand(GrainCellModel grainCell)
@@ -464,7 +485,7 @@ namespace GrainGrowthCellularAutomaton.Models
                 {
                     imageGraphics.Clear(Color.FromArgb(ZeroState.Color.R, ZeroState.Color.G, ZeroState.Color.B));
 
-                    DrawLinesGridOnImage(imageWidth, imageHeight, lineWidth, cellWidth, cellHeight, imageGraphics);
+                    DrawBlackOrWhiteLinesGridOnImage(imageWidth, imageHeight, lineWidth, cellWidth, cellHeight, imageGraphics);
 
                     using (var grainColorSolidBrush = new SolidBrush(Color.White))
                     {
@@ -475,7 +496,7 @@ namespace GrainGrowthCellularAutomaton.Models
                         {
                             cellPosition.Y = row.First().RowNumber * (cellHeight + lineWidth) + lineWidth;
 
-                            foreach (var grainCell in row)
+                            foreach (GrainCellModel grainCell in row)
                             {
                                 cellPosition.X = grainCell.ColumnNumber * (cellWidth + lineWidth) + lineWidth;
 
@@ -521,7 +542,7 @@ namespace GrainGrowthCellularAutomaton.Models
                 {
                     imageGraphics.Clear(Color.FromArgb(ZeroState.Color.R, ZeroState.Color.G, ZeroState.Color.B));
 
-                    DrawLinesGridOnImage(imageWidth, imageHeight, lineWidth, cellWidth, cellHeight, imageGraphics);
+                    DrawBlackOrWhiteLinesGridOnImage(imageWidth, imageHeight, lineWidth, cellWidth, cellHeight, imageGraphics, true);
 
                     using (var grainCellEnergyLevelColorSolidBrush = new SolidBrush(Color.Yellow))
                     {
@@ -562,6 +583,81 @@ namespace GrainGrowthCellularAutomaton.Models
             return bitmapImage;
         }
 
+        public BitmapImage GetDislocationDensityBitmapImage(int cellWidth, int cellHeight, int lineWidth)
+        {
+            ResetImageMemoryStream();
+            bitmapImage = new BitmapImage();
+
+            int imageWidth, imageHeight;
+            SetImageWidthAndHeight(out imageWidth, out imageHeight, cellWidth, cellHeight, lineWidth);
+
+            double maximumDislocationDensity = GetMaximumDislocationDensity();
+
+            using (var image = new Bitmap(imageWidth, imageHeight))
+            {
+                using (var imageGraphics = Graphics.FromImage(image))
+                {
+                    imageGraphics.Clear(Color.FromArgb(ZeroState.Color.R, ZeroState.Color.G, ZeroState.Color.B));
+
+                    DrawBlackOrWhiteLinesGridOnImage(imageWidth, imageHeight, lineWidth, cellWidth, cellHeight, imageGraphics);
+
+                    using (var grainCellEnergyLevelColorSolidBrush = new SolidBrush(Color.Yellow))
+                    {
+                        Point cellPosition = new Point();
+                        Size cellSize = new Size(cellWidth, cellHeight);
+
+                        foreach (var row in CurrentState)
+                        {
+                            cellPosition.Y = row.First().RowNumber * (cellHeight + lineWidth) + lineWidth;
+
+                            foreach (GrainCellModel grainCell in row)
+                            {
+                                cellPosition.X = grainCell.ColumnNumber * (cellWidth + lineWidth) + lineWidth;
+
+                                double grainCellDislocationDensityPercentage = maximumDislocationDensity != 0.0 ? grainCell.DislocationDensity / maximumDislocationDensity : 0.0;
+
+                                //Console.WriteLine($"R: {grainCell.RowNumber} C: {grainCell.ColumnNumber} DD: {grainCell.DislocationDensity} ({grainCellDislocationDensityPercentage * 100}%) MAX: {maximumDislocationDensity}");
+
+                                if (grainCellDislocationDensityPercentage <= 0.5)
+                                    grainCellEnergyLevelColorSolidBrush.Color = Color.FromArgb((int)(255 * grainCellDislocationDensityPercentage * 2), 255, 0);
+                                else
+                                    grainCellEnergyLevelColorSolidBrush.Color = Color.FromArgb(255, (int)(255 * (1.0 - grainCellDislocationDensityPercentage) * 2), 0);
+
+                                imageGraphics.FillRectangle(grainCellEnergyLevelColorSolidBrush, new Rectangle(cellPosition, cellSize));
+
+                                if (HasGrainCellPositionOnImageChanged(grainCell, cellPosition, cellSize))
+                                {
+                                    grainCell.StartPositionOnImage = new System.Windows.Point(cellPosition.X, cellPosition.Y);
+                                    grainCell.EndPositionOnImage = grainCell.StartPositionOnImage + new System.Windows.Vector(cellSize.Width, cellSize.Height);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                bitmapImage.BeginInit();
+                image.Save(imageMemoryStream, ImageFormat.Png);
+                imageMemoryStream.Seek(0, SeekOrigin.Begin);
+                bitmapImage.StreamSource = imageMemoryStream;
+                bitmapImage.EndInit();
+                bitmapImage.Freeze();
+            }
+
+            return bitmapImage;
+        }
+
+        private double GetMaximumDislocationDensity()
+        {
+            double maximumDislocationDensity = 0;
+
+            foreach (var row in CurrentState)
+                foreach (GrainCellModel grainCell in row)
+                    if (grainCell.DislocationDensity > maximumDislocationDensity)
+                        maximumDislocationDensity = grainCell.DislocationDensity;
+
+            return maximumDislocationDensity;
+        }
+
         private void ResetImageMemoryStream()
         {
             imageMemoryStream?.Dispose();
@@ -574,11 +670,11 @@ namespace GrainGrowthCellularAutomaton.Models
             imageHeight = RowCount * cellHeight + (RowCount + 1) * lineWidth;
         }
 
-        private void DrawLinesGridOnImage(int imageWidth, int imageHeight, int lineWidth, int cellWidth, int cellHeight, Graphics graphics)
+        private void DrawBlackOrWhiteLinesGridOnImage(int imageWidth, int imageHeight, int lineWidth, int cellWidth, int cellHeight, Graphics graphics, bool whiteLines = false)
         {
             if (lineWidth > 0)
             {
-                using (var blackPen = new Pen(Color.Black, lineWidth))
+                using (var blackPen = new Pen(whiteLines ? Color.White : Color.Black, lineWidth))
                 {
                     Point lineFirstPoint = new Point();
                     Point lineSecondPoint = new Point();
@@ -917,7 +1013,7 @@ namespace GrainGrowthCellularAutomaton.Models
                         selectedGrainCellsCount++;
                         var selectedGrainCell = (GrainCellModel)CurrentState[randomRow][randomColumn];
 
-                        if (!selectedGrainCell.IsOnGrainBoundary)
+                        if (selectedGrainCell.IsOnGrainBoundary)
                         {
                             double energyBefore = selectedGrainCell.Energy;
 
@@ -965,6 +1061,194 @@ namespace GrainGrowthCellularAutomaton.Models
             CreateNewStaticRandom();
 
             return staticRandom.NextDouble() * (maximum - minimum) + minimum;
+        }
+
+        public void SpreadDislocations(double strengtheningVariableA, double recoveryVariableB, double durationTimeInSeconds, double timeStepInSeconds, double firstDislocationSetPercentage)
+        {
+            StringBuilder stringBuilder = new StringBuilder(); //TODO: Ogarnąć to porządnie
+
+            ClearDislocations();
+            AddNeighboringCellsToCellsState(CurrentState, false);
+
+            const double ProbabilityThatGrainCellOnBoundaryGetsDislocationPackage = 0.8;
+            const double ProbabilityThatGrainCellNotOnBoundaryGetsDislocationPackage = 1.0 - ProbabilityThatGrainCellOnBoundaryGetsDislocationPackage;
+
+            double timeInSeconds = 0;
+            double dislocationPool = GetDislocationPool(strengtheningVariableA, recoveryVariableB, timeInSeconds);
+
+            stringBuilder.AppendLine($"{timeInSeconds} {dislocationPool}"); //TODO: Ogarnąć to porządnie
+
+            for (timeInSeconds += timeStepInSeconds; timeInSeconds <= durationTimeInSeconds; timeInSeconds += timeStepInSeconds)
+            {
+                dislocationPool = GetDislocationPool(strengtheningVariableA, recoveryVariableB, timeInSeconds) - dislocationPool;
+
+                stringBuilder.AppendLine($"{timeInSeconds} {GetDislocationPool(strengtheningVariableA, recoveryVariableB, timeInSeconds)}"); //TODO: Ogarnąć to porządnie
+                File.WriteAllText("timeInSeconds_dislocationPool.txt", stringBuilder.ToString()); //TODO: Ogarnąć to porządnie
+
+                double secondDislocationSet = dislocationPool * ((100.0 - firstDislocationSetPercentage) / 100.0);
+
+                double meanDislocationPerGrainCell = dislocationPool / CellCount;
+                double firstDislocationPackagePerCell = meanDislocationPerGrainCell * firstDislocationSetPercentage / 100.0;
+
+                foreach (var row in CurrentState)
+                    foreach (GrainCellModel grainCell in row)
+                        grainCell.DislocationDensity += firstDislocationPackagePerCell;
+
+                while (secondDislocationSet > 0)
+                {
+                    double secondDislocationPackagePerCell = GetRandomDouble(0.0, firstDislocationPackagePerCell);
+                    int randomRow = staticRandom.Next(RowCount);
+                    int randomColumn = staticRandom.Next(ColumnCount);
+
+                    var selectedGrainCell = (GrainCellModel)CurrentState[randomRow][randomColumn];
+
+                    if (secondDislocationSet >= secondDislocationPackagePerCell)
+                    {
+                        if (selectedGrainCell.IsOnGrainBoundary)
+                        {
+                            if (GetRandomDouble(0.0, 1.0) <= ProbabilityThatGrainCellOnBoundaryGetsDislocationPackage)
+                            {
+                                selectedGrainCell.DislocationDensity += secondDislocationPackagePerCell;
+                                secondDislocationSet -= secondDislocationPackagePerCell;
+                            }
+                        }
+                        else
+                        {
+                            if (GetRandomDouble(0.0, 1.0) <= ProbabilityThatGrainCellNotOnBoundaryGetsDislocationPackage)
+                            {
+                                selectedGrainCell.DislocationDensity += secondDislocationPackagePerCell;
+                                secondDislocationSet -= secondDislocationPackagePerCell;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (selectedGrainCell.IsOnGrainBoundary)
+                        {
+                            if (GetRandomDouble(0.0, 1.0) <= ProbabilityThatGrainCellOnBoundaryGetsDislocationPackage)
+                            {
+                                selectedGrainCell.DislocationDensity += secondDislocationSet;
+                                secondDislocationSet -= secondDislocationSet;
+                            }
+                        }
+                        else
+                        {
+                            if (GetRandomDouble(0.0, 1.0) <= ProbabilityThatGrainCellNotOnBoundaryGetsDislocationPackage)
+                            {
+                                selectedGrainCell.DislocationDensity += secondDislocationSet;
+                                secondDislocationSet -= secondDislocationSet;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private double GetDislocationPool(double strengtheningVariableA, double recoveryVariableB, double timeInSeconds)
+            => (strengtheningVariableA / recoveryVariableB) + (1 - (strengtheningVariableA / recoveryVariableB)) * Math.Exp(-recoveryVariableB * timeInSeconds);
+
+        private void ClearDislocations()
+        {
+            foreach (var row in CurrentState)
+                foreach (GrainCellModel grainCell in row)
+                    grainCell.DislocationDensity = 0;
+        }
+
+        public void NucleateRecrystallizedCells(double criticalDislocationDensity)
+        {
+            CopyCurrentStateToPrevious(false);
+
+            foreach (var row in PreviousState)
+                foreach (GrainCellModel grainCellToNucleate in row)
+                    if (grainCellToNucleate.IsOnGrainBoundary && grainCellToNucleate.DislocationDensity > criticalDislocationDensity)
+                    {
+                        AddNewGrain();
+                        var grainCellToNucleateFromCurrentState = (GrainCellModel)CurrentState[grainCellToNucleate.RowNumber][grainCellToNucleate.ColumnNumber];
+
+                        grainCellToNucleateFromCurrentState.IsRecrystallized = true;
+                        grainCellToNucleateFromCurrentState.DislocationDensity = criticalDislocationDensity;
+                        grainCellToNucleateFromCurrentState.State = grains.Last();
+                    }
+        }
+
+        public void Recrystallize()
+        {
+            CopyCurrentStateToPrevious(false);
+
+            foreach (var row in PreviousState)
+            {
+                foreach (GrainCellModel grainCellToRecrystallize in row)
+                {
+                    if (!grainCellToRecrystallize.IsRecrystallized)
+                    {
+                        if (grainCellToRecrystallize.RecrystallizedNeighboringGrainCells.Any())
+                        {
+                            if (grainCellToRecrystallize.RecrystallizedNeighboringGrainsCounts.Count == 0)
+                            {
+                                foreach (var grainCell in grainCellToRecrystallize.RecrystallizedNeighboringGrainCells)
+                                    Console.WriteLine($"{grainCell.RowNumber} {grainCell.ColumnNumber} {grainCell.IsRecrystallized}");
+
+                                throw new ArgumentException("Coś poszło nie tak");
+                            }
+
+                            bool canRecrystallize = true;
+
+                            List<GrainCellModel> neighboringGrainCellsFromPreviousState = grainCellToRecrystallize.NeighboringGrainCellsList;
+
+                            foreach (var grainCell in neighboringGrainCellsFromPreviousState)
+                                if (!grainCell.IsRecrystallized && grainCell.DislocationDensity >= grainCellToRecrystallize.DislocationDensity)
+                                {
+                                    canRecrystallize = false;
+                                    break;
+                                }
+
+                            if (canRecrystallize)
+                            {
+                                var grainCellToRecrystallizeFromCurrentState = (GrainCellModel)CurrentState[grainCellToRecrystallize.RowNumber][grainCellToRecrystallize.ColumnNumber];
+
+                                grainCellToRecrystallizeFromCurrentState.State = GetRecrystallizedGrainToExpand(grainCellToRecrystallize);
+                                grainCellToRecrystallizeFromCurrentState.IsRecrystallized = true;
+                                grainCellToRecrystallizeFromCurrentState.DislocationDensity = 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private ICellState GetRecrystallizedGrainToExpand(GrainCellModel grainCell)
+        {
+            CreateNewStaticRandom();
+
+            var recrystallizedGrainsWithMaxCount = GetRecrystallizedGrainsWithMaxCount(grainCell);
+
+            if (recrystallizedGrainsWithMaxCount.Count() == 1)
+                return recrystallizedGrainsWithMaxCount.First();
+            else
+                return recrystallizedGrainsWithMaxCount.ElementAt(staticRandom.Next(recrystallizedGrainsWithMaxCount.Count));
+        }
+
+        private List<ICellState> GetRecrystallizedGrainsWithMaxCount(GrainCellModel grainCell)
+        {
+            var recrystallizedNeighboringGrainsCounts = grainCell.RecrystallizedNeighboringGrainsCounts;
+            var grainsWithMaxCount = new List<ICellState>();
+
+            if (recrystallizedNeighboringGrainsCounts.Count > 1)
+            {
+                int maxCount = 0;
+
+                foreach (var grainCount in recrystallizedNeighboringGrainsCounts)
+                    if (grainCount.Value > maxCount && grainCount.Key != ZeroState)
+                        maxCount = grainCount.Value;
+
+                foreach (var grainCount in recrystallizedNeighboringGrainsCounts)
+                    if (grainCount.Value == maxCount && grainCount.Key != ZeroState)
+                        grainsWithMaxCount.Add(grainCount.Key);
+            }
+            else
+                grainsWithMaxCount.Add(recrystallizedNeighboringGrainsCounts.First().Key);
+
+            return grainsWithMaxCount;
         }
     }
 }

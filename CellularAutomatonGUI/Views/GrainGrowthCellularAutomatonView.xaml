@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="315" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
@@ -413,6 +413,171 @@
                     </Grid>
                 </GroupBox>
 
+                <!--  Grain Growth Dislocation cannon GroupBox  -->
+                <GroupBox Header="Dislocation cannon">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Strengthening variable (A):" />
+                        <xctk:DoubleUpDown
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding StrengtheningVariableA}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsGrowthDone}"
+                            Value="{Binding StrengtheningVariableA}" />
+
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Recovery variable (B):" />
+                        <xctk:DoubleUpDown
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding RecoveryVariableB}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsGrowthDone}"
+                            Value="{Binding RecoveryVariableB}" />
+
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Duration time [s]:" />
+                        <xctk:DoubleUpDown
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding DurationTime}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsGrowthDone}"
+                            Minimum="0.0"
+                            Value="{Binding DurationTime}" />
+
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Time step [s]:" />
+                        <xctk:DoubleUpDown
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding TimeStep}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsGrowthDone}"
+                            Minimum="0.0"
+                            Value="{Binding TimeStep}" />
+
+                        <TextBlock
+                            Grid.Row="4"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Percentage of first set:" />
+                        <xctk:DoubleUpDown
+                            Grid.Row="4"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding PercentageOfFirstSet}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsGrowthDone}"
+                            Minimum="0"
+                            Maximum="100"
+                            Value="{Binding PercentageOfFirstSet}" />
+
+                        <Button
+                            x:Name="SpreadDislocations"
+                            Grid.Row="5"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            Width="60"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Content="Start" />
+                    </Grid>
+                </GroupBox>
+
+                <!--  Grain Growth View settings GroupBox  -->
+                <GroupBox Header="DRX and nuclation">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Text="Critical dislocation" />
+                        <xctk:DoubleUpDown
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            DefaultValue="{Binding CriticalDislocationDensity}"
+                            DisplayDefaultValueOnEmptyText="True"
+                            IsEnabled="{Binding IsGrowthDone}"
+                            Value="{Binding CriticalDislocationDensity}" />
+
+                        <StackPanel
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center">
+                            <Button
+                            x:Name="NucleateRecrystallizedCells"
+                            Width="60"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Content="Nucleate" />
+
+                            <Button
+                            x:Name="Recrystallize"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            Content="Recrystallization step" />
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+
                 <!--  Grain Growth View settings GroupBox  -->
                 <GroupBox Header="View settings">
                     <Grid>
@@ -433,9 +598,32 @@
                             Grid.Column="0"
                             Margin="3"
                             VerticalAlignment="Center"
+                            Text="Show:" />
+                        <ComboBox
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="3"
+                            VerticalAlignment="Center"
+                            ItemsSource="{Binding GrainCellGridViewCategories}"
+                            SelectedItem="{Binding SelectedGrainCellGridViewCategory, Mode=TwoWay}">
+                            <ComboBox.Resources>
+                                <cag:EnumDescriptionConverter x:Key="enumDescriptionConverter" />
+                            </ComboBox.Resources>
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource enumDescriptionConverter}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="3"
+                            VerticalAlignment="Center"
                             Text="Cell width [px]:" />
                         <xctk:IntegerUpDown
-                            Grid.Row="0"
+                            Grid.Row="1"
                             Grid.Column="1"
                             Margin="3"
                             VerticalAlignment="Center"
@@ -446,13 +634,13 @@
                             Value="{Binding CellWidth}" />
 
                         <TextBlock
-                            Grid.Row="1"
+                            Grid.Row="2"
                             Grid.Column="0"
                             Margin="3"
                             VerticalAlignment="Center"
                             Text="Cell height [px]:" />
                         <xctk:IntegerUpDown
-                            Grid.Row="1"
+                            Grid.Row="2"
                             Grid.Column="1"
                             Margin="3"
                             VerticalAlignment="Center"
@@ -463,13 +651,13 @@
                             Value="{Binding CellHeight}" />
 
                         <TextBlock
-                            Grid.Row="2"
+                            Grid.Row="3"
                             Grid.Column="0"
                             Margin="3"
                             VerticalAlignment="Center"
                             Text="Line width [px]:" />
                         <xctk:IntegerUpDown
-                            Grid.Row="2"
+                            Grid.Row="3"
                             Grid.Column="1"
                             Margin="3"
                             VerticalAlignment="Center"
@@ -478,22 +666,6 @@
                             Maximum="50"
                             Minimum="0"
                             Value="{Binding LineWidth}" />
-
-                        <StackPanel
-                            Grid.Row="3"
-                            Grid.Column="0"
-                            Grid.ColumnSpan="2"
-                            HorizontalAlignment="Left"
-                            Orientation="Horizontal">
-                            <TextBlock
-                                Margin="3"
-                                VerticalAlignment="Center"
-                                Text="Show energy" />
-                            <CheckBox
-                                Margin="3"
-                                VerticalAlignment="Center"
-                                IsChecked="{Binding IsShowingEnergyChecked}" />
-                        </StackPanel>
                     </Grid>
                 </GroupBox>
             </StackPanel>

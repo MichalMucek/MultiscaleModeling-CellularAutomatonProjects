@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CellularAutomaton2D;
 using CellularAutomaton2D.Models;
 
@@ -103,6 +104,19 @@ namespace GrainGrowthCellularAutomaton.Models
             BottomLeft = bottomLeft;
             TopLeft = topLeft;
             Type = CellNeighborhoodTypeModel.Moore;
+        }
+
+        public EightSidedGrainCellNeighborhood(EightSidedGrainCellNeighborhood obj)
+        {
+            Top = obj.Top;
+            TopRight = obj.TopRight;
+            Right = obj.Right;
+            BottomRight = obj.BottomRight;
+            Bottom = obj.Bottom;
+            BottomLeft = obj.BottomLeft;
+            Left = obj.Left;
+            TopLeft = obj.TopLeft;
+            Type = obj.Type;
         }
 
         public Dictionary<ICellState, int> StatesCounts
@@ -230,6 +244,110 @@ namespace GrainGrowthCellularAutomaton.Models
                 grainsCounts[grainCells[sideIndex].State]++;
             else
                 grainsCounts.Add(grainCells[sideIndex].State, 1);
+        }
+
+        public List<GrainCellModel> GrainCells
+        {
+            get
+            {
+                List<GrainCellModel> grainCellsList = new List<GrainCellModel>();
+
+                switch (Type)
+                {
+                    case CellNeighborhoodTypeModel.VonNeumann:
+                        for (int sideIndex = 0; sideIndex < SIDES_COUNT; sideIndex += 2)
+                            grainCellsList.Add(grainCells[sideIndex]);
+
+                        break;
+
+                    case CellNeighborhoodTypeModel.Moore:
+                        return grainCells.ToList();
+
+                    case CellNeighborhoodTypeModel.RandomPentagonal:
+                        const int TopPentagonal = 0;
+                        const int RightPentagonal = 1;
+                        const int BottomPentagonal = 2;
+                        const int LeftPentagonal = 3;
+                        int randomSide = random.Next(4);
+
+                        switch (randomSide)
+                        {
+                            case TopPentagonal:
+                                return GetGrainsForPentagonalNeighborhood(6);
+
+                            case RightPentagonal:
+                                return GetGrainsForPentagonalNeighborhood(0);
+
+                            case BottomPentagonal:
+                                return GetGrainsForPentagonalNeighborhood(2);
+
+                            case LeftPentagonal:
+                                return GetGrainsForPentagonalNeighborhood(4);
+                        }
+                        break;
+
+                    case CellNeighborhoodTypeModel.LeftHexagonal:
+                        return GetGrainsForLeftHexagonalNeighborhood();
+
+                    case CellNeighborhoodTypeModel.RightHexagonal:
+                        return GetGrainsForRightHexagonalNeighborhood();
+
+                    case CellNeighborhoodTypeModel.RandomHexagonal:
+                        const int LeftHexagonal = 0;
+                        const int RightHexagonal = 1;
+
+                        int randomHexagonal = random.Next(2);
+
+                        switch (randomHexagonal)
+                        {
+                            case LeftHexagonal:
+                                return GetGrainsForLeftHexagonalNeighborhood();
+
+                            case RightHexagonal:
+                                return GetGrainsForRightHexagonalNeighborhood();
+                        }
+                        break;
+                }
+
+                return grainCellsList;
+            }
+        }
+
+        private List<GrainCellModel> GetGrainsForPentagonalNeighborhood(int startingIndex)
+        {
+            List<GrainCellModel> grainCellsList = new List<GrainCellModel>();
+
+            for (int sideIndex = startingIndex, checkedCells = 0; checkedCells < 5; sideIndex++, checkedCells++)
+            {
+                if (sideIndex == 8)
+                    sideIndex = 0;
+
+                grainCellsList.Add(grainCells[sideIndex]);
+            }
+
+            return grainCellsList;
+        }
+
+        private List<GrainCellModel> GetGrainsForLeftHexagonalNeighborhood()
+            => GetGrainsForHexagonalNeighborhood(0);
+
+        private List<GrainCellModel> GetGrainsForRightHexagonalNeighborhood()
+            => GetGrainsForHexagonalNeighborhood(6);
+
+        private List<GrainCellModel> GetGrainsForHexagonalNeighborhood(int startingIndex)
+        {
+            List<GrainCellModel> grainCellsList = new List<GrainCellModel>();
+
+            for (int sideIndex = startingIndex, checkedCells = 0; checkedCells < 7; sideIndex++, checkedCells++)
+            {
+                if (sideIndex == 8)
+                    sideIndex = 0;
+
+                if (checkedCells != 3)
+                    grainCellsList.Add(grainCells[sideIndex]);
+            }
+
+            return grainCellsList;
         }
     }
 }

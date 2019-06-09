@@ -8,14 +8,14 @@ namespace GrainGrowthCellularAutomaton
     internal class RadialGrainCellNeighborhood : ICellNeighborhood
     {
         public CellNeighborhoodTypeModel Type { get; private set; }
-        public List<ICell> Cells { get; private set; } = new List<ICell>();
-        public int Count => Cells.Count;
+        public List<GrainCellModel> GrainCells { get; private set; } = new List<GrainCellModel>();
+        public int Count => GrainCells.Count;
         private Dictionary<ICellState, int> grainsCounts;
 
-        public RadialGrainCellNeighborhood(List<ICell> cells, CellNeighborhoodTypeModel type)
+        public RadialGrainCellNeighborhood(List<GrainCellModel> grainCells, CellNeighborhoodTypeModel type)
         {
             Type = type;
-            Cells = cells;
+            GrainCells = grainCells;
         }
 
         public Dictionary<ICellState, int> StatesCounts
@@ -28,7 +28,7 @@ namespace GrainGrowthCellularAutomaton
                 {
                     case CellNeighborhoodTypeModel.Radial:
                     case CellNeighborhoodTypeModel.RadialWithCenterOfMass:
-                        foreach (GrainCellModel grainCell in Cells)
+                        foreach (GrainCellModel grainCell in GrainCells)
                             if (grainsCounts.ContainsKey(grainCell.State))
                                 grainsCounts[grainCell.State]++;
                             else
