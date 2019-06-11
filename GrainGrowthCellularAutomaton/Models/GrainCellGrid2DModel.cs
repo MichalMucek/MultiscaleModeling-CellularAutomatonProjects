@@ -1063,8 +1063,13 @@ namespace GrainGrowthCellularAutomaton.Models
             return staticRandom.NextDouble() * (maximum - minimum) + minimum;
         }
 
-        public void SpreadDislocations(double strengtheningVariableA, double recoveryVariableB, double durationTimeInSeconds, double timeStepInSeconds, double firstDislocationSetPercentage)
+        private double passedTimeInSeconds = 0;
+        private double dislocationPool = 0;
+
+        public void SpreadDislocations(double strengtheningVariableA, double recoveryVariableB, double durationTimeInSeconds, double timeStepInSeconds, double firstDislocationSetPercentage, double criticalDislocationDensity)
         {
+            CreateNewStaticRandom();
+
             StringBuilder stringBuilder = new StringBuilder(); //TODO: Ogarnąć to porządnie
 
             ClearDislocations();
@@ -1073,75 +1078,90 @@ namespace GrainGrowthCellularAutomaton.Models
             const double ProbabilityThatGrainCellOnBoundaryGetsDislocationPackage = 0.8;
             const double ProbabilityThatGrainCellNotOnBoundaryGetsDislocationPackage = 1.0 - ProbabilityThatGrainCellOnBoundaryGetsDislocationPackage;
 
-            double timeInSeconds = 0;
-            double dislocationPool = GetDislocationPool(strengtheningVariableA, recoveryVariableB, timeInSeconds);
-
-            stringBuilder.AppendLine($"{timeInSeconds} {dislocationPool}"); //TODO: Ogarnąć to porządnie
-
-            for (timeInSeconds += timeStepInSeconds; timeInSeconds <= durationTimeInSeconds; timeInSeconds += timeStepInSeconds)
+            if (passedTimeInSeconds == 0.0)
             {
-                dislocationPool = GetDislocationPool(strengtheningVariableA, recoveryVariableB, timeInSeconds) - dislocationPool;
+                dislocationPool = GetDislocationPool(strengtheningVariableA, recoveryVariableB, passedTimeInSeconds);
+                passedTimeInSeconds += timeStepInSeconds;
+            }
 
-                stringBuilder.AppendLine($"{timeInSeconds} {GetDislocationPool(strengtheningVariableA, recoveryVariableB, timeInSeconds)}"); //TODO: Ogarnąć to porządnie
-                File.WriteAllText("timeInSeconds_dislocationPool.txt", stringBuilder.ToString()); //TODO: Ogarnąć to porządnie
+            stringBuilder.AppendLine($"{passedTimeInSeconds} {dislocationPool}"); //TODO: Ogarnąć to porządnie
 
-                double secondDislocationSet = dislocationPool * ((100.0 - firstDislocationSetPercentage) / 100.0);
+            //for (passedTimeInSeconds += timeStepInSeconds; passedTimeInSeconds <= durationTimeInSeconds; passedTimeInSeconds += timeStepInSeconds)
+            //{
+            Console.WriteLine($"{passedTimeInSeconds} {GetDislocationPool(strengtheningVariableA, recoveryVariableB, passedTimeInSeconds)}");
 
-                double meanDislocationPerGrainCell = dislocationPool / CellCount;
-                double firstDislocationPackagePerCell = meanDislocationPerGrainCell * firstDislocationSetPercentage / 100.0;
+            dislocationPool = GetDislocationPool(strengtheningVariableA, recoveryVariableB, passedTimeInSeconds) - dislocationPool;
 
-                foreach (var row in CurrentState)
-                    foreach (GrainCellModel grainCell in row)
-                        grainCell.DislocationDensity += firstDislocationPackagePerCell;
+            stringBuilder.AppendLine($"{passedTimeInSeconds} {GetDislocationPool(strengtheningVariableA, recoveryVariableB, passedTimeInSeconds)}"); //TODO: Ogarnąć to porządnie
+            File.WriteAllText("timeInSeconds_dislocationPool.txt", stringBuilder.ToString()); //TODO: Ogarnąć to porządnie
 
-                while (secondDislocationSet > 0)
+            double secondDislocationSet = dislocationPool * ((100.0 - firstDislocationSetPercentage) / 100.0);
+
+            double meanDislocationPerGrainCell = dislocationPool / CellCount;
+            double firstDislocationPackagePerCell = meanDislocationPerGrainCell * firstDislocationSetPercentage / 100.0;
+
+            //double secondDislocationPackagePerCell = 0.001;
+
+            foreach (var row in CurrentState)
+                foreach (GrainCellModel grainCell in row)
+                    grainCell.DislocationDensity += firstDislocationPackagePerCell;
+
+            double secondDislocationPackagePerCell = firstDislocationPackagePerCell * 0.01;
+
+            while (secondDislocationSet > 0)
+            {
+                int randomRow = staticRandom.Next(RowCount);
+                int randomColumn = staticRandom.Next(ColumnCount);
+
+                var selectedGrainCell = (GrainCellModel)CurrentState[randomRow][randomColumn];
+
+                if (secondDislocationSet >= secondDislocationPackagePerCell)
                 {
-                    double secondDislocationPackagePerCell = GetRandomDouble(0.0, firstDislocationPackagePerCell);
-                    int randomRow = staticRandom.Next(RowCount);
-                    int randomColumn = staticRandom.Next(ColumnCount);
-
-                    var selectedGrainCell = (GrainCellModel)CurrentState[randomRow][randomColumn];
-
-                    if (secondDislocationSet >= secondDislocationPackagePerCell)
+                    if (selectedGrainCell.IsOnGrainBoundary)
                     {
-                        if (selectedGrainCell.IsOnGrainBoundary)
+                        if (GetRandomDouble(0.0, 1.0) <= ProbabilityThatGrainCellOnBoundaryGetsDislocationPackage)
                         {
-                            if (GetRandomDouble(0.0, 1.0) <= ProbabilityThatGrainCellOnBoundaryGetsDislocationPackage)
-                            {
-                                selectedGrainCell.DislocationDensity += secondDislocationPackagePerCell;
-                                secondDislocationSet -= secondDislocationPackagePerCell;
-                            }
-                        }
-                        else
-                        {
-                            if (GetRandomDouble(0.0, 1.0) <= ProbabilityThatGrainCellNotOnBoundaryGetsDislocationPackage)
-                            {
-                                selectedGrainCell.DislocationDensity += secondDislocationPackagePerCell;
-                                secondDislocationSet -= secondDislocationPackagePerCell;
-                            }
+                            selectedGrainCell.DislocationDensity += secondDislocationPackagePerCell;
+                            secondDislocationSet -= secondDislocationPackagePerCell;
                         }
                     }
                     else
                     {
-                        if (selectedGrainCell.IsOnGrainBoundary)
+                        if (GetRandomDouble(0.0, 1.0) <= ProbabilityThatGrainCellNotOnBoundaryGetsDislocationPackage)
                         {
-                            if (GetRandomDouble(0.0, 1.0) <= ProbabilityThatGrainCellOnBoundaryGetsDislocationPackage)
-                            {
-                                selectedGrainCell.DislocationDensity += secondDislocationSet;
-                                secondDislocationSet -= secondDislocationSet;
-                            }
+                            selectedGrainCell.DislocationDensity += secondDislocationPackagePerCell;
+                            secondDislocationSet -= secondDislocationPackagePerCell;
                         }
-                        else
+                    }
+
+                    //secondDislocationSet -= secondDislocationPackagePerCell;
+                }
+                else
+                {
+                    if (selectedGrainCell.IsOnGrainBoundary)
+                    {
+                        if (GetRandomDouble(0.0, 1.0) <= ProbabilityThatGrainCellOnBoundaryGetsDislocationPackage)
                         {
-                            if (GetRandomDouble(0.0, 1.0) <= ProbabilityThatGrainCellNotOnBoundaryGetsDislocationPackage)
-                            {
-                                selectedGrainCell.DislocationDensity += secondDislocationSet;
-                                secondDislocationSet -= secondDislocationSet;
-                            }
+                            selectedGrainCell.DislocationDensity += secondDislocationSet;
+                            secondDislocationSet -= secondDislocationSet;
+                        }
+                    }
+                    else
+                    {
+                        if (GetRandomDouble(0.0, 1.0) <= ProbabilityThatGrainCellNotOnBoundaryGetsDislocationPackage)
+                        {
+                            selectedGrainCell.DislocationDensity += secondDislocationSet;
+                            secondDislocationSet -= secondDislocationSet;
                         }
                     }
                 }
             }
+
+            NucleateRecrystallizedCells(criticalDislocationDensity);
+            Recrystallize();
+
+            passedTimeInSeconds += timeStepInSeconds;
+            //}
         }
 
         private double GetDislocationPool(double strengtheningVariableA, double recoveryVariableB, double timeInSeconds)
@@ -1166,7 +1186,7 @@ namespace GrainGrowthCellularAutomaton.Models
                         var grainCellToNucleateFromCurrentState = (GrainCellModel)CurrentState[grainCellToNucleate.RowNumber][grainCellToNucleate.ColumnNumber];
 
                         grainCellToNucleateFromCurrentState.IsRecrystallized = true;
-                        grainCellToNucleateFromCurrentState.DislocationDensity = criticalDislocationDensity;
+                        grainCellToNucleateFromCurrentState.DislocationDensity = 0;
                         grainCellToNucleateFromCurrentState.State = grains.Last();
                     }
         }
@@ -1179,39 +1199,39 @@ namespace GrainGrowthCellularAutomaton.Models
             {
                 foreach (GrainCellModel grainCellToRecrystallize in row)
                 {
-                    if (!grainCellToRecrystallize.IsRecrystallized)
+                    //if (!grainCellToRecrystallize.IsRecrystallized)
+                    //{
+                    if (grainCellToRecrystallize.RecrystallizedNeighboringGrainCells.Any())
                     {
-                        if (grainCellToRecrystallize.RecrystallizedNeighboringGrainCells.Any())
+                        if (grainCellToRecrystallize.RecrystallizedNeighboringGrainsCounts.Count == 0)
                         {
-                            if (grainCellToRecrystallize.RecrystallizedNeighboringGrainsCounts.Count == 0)
-                            {
-                                foreach (var grainCell in grainCellToRecrystallize.RecrystallizedNeighboringGrainCells)
-                                    Console.WriteLine($"{grainCell.RowNumber} {grainCell.ColumnNumber} {grainCell.IsRecrystallized}");
+                            foreach (var grainCell in grainCellToRecrystallize.RecrystallizedNeighboringGrainCells)
+                                Console.WriteLine($"{grainCell.RowNumber} {grainCell.ColumnNumber} {grainCell.IsRecrystallized}");
 
-                                throw new ArgumentException("Coś poszło nie tak");
+                            throw new ArgumentException("Coś poszło nie tak");
+                        }
+
+                        bool canRecrystallize = true;
+
+                        List<GrainCellModel> neighboringGrainCellsFromPreviousState = grainCellToRecrystallize.NeighboringGrainCellsList;
+
+                        foreach (var grainCell in neighboringGrainCellsFromPreviousState)
+                            if (!grainCell.IsRecrystallized && grainCell.DislocationDensity >= grainCellToRecrystallize.DislocationDensity)
+                            {
+                                canRecrystallize = false;
+                                break;
                             }
 
-                            bool canRecrystallize = true;
+                        if (canRecrystallize)
+                        {
+                            var grainCellToRecrystallizeFromCurrentState = (GrainCellModel)CurrentState[grainCellToRecrystallize.RowNumber][grainCellToRecrystallize.ColumnNumber];
 
-                            List<GrainCellModel> neighboringGrainCellsFromPreviousState = grainCellToRecrystallize.NeighboringGrainCellsList;
-
-                            foreach (var grainCell in neighboringGrainCellsFromPreviousState)
-                                if (!grainCell.IsRecrystallized && grainCell.DislocationDensity >= grainCellToRecrystallize.DislocationDensity)
-                                {
-                                    canRecrystallize = false;
-                                    break;
-                                }
-
-                            if (canRecrystallize)
-                            {
-                                var grainCellToRecrystallizeFromCurrentState = (GrainCellModel)CurrentState[grainCellToRecrystallize.RowNumber][grainCellToRecrystallize.ColumnNumber];
-
-                                grainCellToRecrystallizeFromCurrentState.State = GetRecrystallizedGrainToExpand(grainCellToRecrystallize);
-                                grainCellToRecrystallizeFromCurrentState.IsRecrystallized = true;
-                                grainCellToRecrystallizeFromCurrentState.DislocationDensity = 0;
-                            }
+                            grainCellToRecrystallizeFromCurrentState.State = GetRecrystallizedGrainToExpand(grainCellToRecrystallize);
+                            grainCellToRecrystallizeFromCurrentState.IsRecrystallized = true;
+                            grainCellToRecrystallizeFromCurrentState.DislocationDensity = 0;
                         }
                     }
+                    //}
                 }
             }
         }

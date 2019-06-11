@@ -850,10 +850,15 @@ namespace CellularAutomatonGUI.ViewModels
             CanSpreadDislocations = false;
 
             await Task.Run(() =>
-                grainCellGrid?.SpreadDislocations(strengtheningVariableA, recoveryVariableB, durationTime, timeStep, percentageOfFirstSet)
+                {
+                    for (double t = 0; t <= durationTime; t += timeStep)
+                    {
+                        grainCellGrid?.SpreadDislocations(strengtheningVariableA, recoveryVariableB, durationTime, timeStep, percentageOfFirstSet, criticalDislocationDensity);
+                        RunDrawerTask();
+                    }
+                }
             );
 
-            RunDrawerTask();
             CanSpreadDislocations = true;
         }
 
